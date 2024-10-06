@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 
-from seleniumwire import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
-import json
 from time import sleep
 
+from seleniumwire import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.actions.mouse_button import MouseButton
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+
 from utils.utils import (
-    format_record, format_response, print_record,
-    process_geojson_response)
+    cull_request_list,
+    format_response,
+    process_geojson_response,
+    pan_map
+)
 
 
 def setup_driver():
@@ -28,6 +31,7 @@ def setup_driver():
     driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()), options=options)
 
+    driver.maximize_window()
     driver.get(
         "https://www.waze.com/live-map?" +
         "utm_source=waze_website&utm_campaign=waze_website%27"
@@ -35,11 +39,10 @@ def setup_driver():
 
     try:
 
-        def acknowledge_boilerplate(
-            driver,
-            #html_classes=['wz-cc-disallow'],
-            html_classes=['wz-cc-disallow', 'waze-tour-tooltip__acknowledge'],
-            css_selectors=['.wz-downloadbar__close-button']):
+        def acknowledge_banners(
+          driver,
+          html_classes=['wz-cc-disallow', 'waze-tour-tooltip__acknowledge'],
+          css_selectors=['.wz-downloadbar__close-button']):
             """
             Take care of consent banner, and other visual annoyances
              """
@@ -56,7 +59,7 @@ def setup_driver():
                 print(f"Found HTML element with CSS selector: {_}")
                 element.click()
 
-        acknowledge_boilerplate(driver)
+        acknowledge_banners(driver)
         print('Initalized web driver!')
 
         return driver
@@ -86,8 +89,10 @@ def main_loop(driver):
 
     while True:
 
-        sleep(4)
         process_georss_requests(driver)
+        # cull_request_list(driver)
+        pan_map(driver)
+        sleep(10)
 
 
 def main():
