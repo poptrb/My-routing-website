@@ -1,0 +1,1246 @@
+[
+    {
+        "country": "RO",
+        "nThumbsUp": 4,
+        "city": "Bucure\u0219ti",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 9,
+        "type": "POLICE",
+        "fromNodeId": 163829804,
+        "uuid": "035deeb5-80e8-4699-ae78-ed093d00b776",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "street": "Str. Emil Racovi\u021b\u0103",
+        "additionalInfo": "",
+        "toNodeId": 248345916,
+        "id": "alert-1839385667/035deeb5-80e8-4699-ae78-ed093d00b776",
+        "nComments": 0,
+        "reportBy": "world_8xfaygps",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844315000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844577000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844685000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845097000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 2,
+        "roadType": 7,
+        "magvar": 145,
+        "wazeData": "world,26.119642,44.387699,035deeb5-80e8-4699-ae78-ed093d00b776",
+        "location": {
+            "x": 26.119642,
+            "y": 44.387699
+        },
+        "pubMillis": 1728844019000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 5,
+        "city": "Dudu",
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 339808221,
+        "uuid": "0780595e-6b41-4a8b-b0e8-34c0953bf47b",
+        "speed": 0,
+        "reportMood": 46,
+        "subtype": "",
+        "street": "Str. Apeductului",
+        "additionalInfo": "",
+        "toNodeId": 287663583,
+        "id": "alert-1839703957/0780595e-6b41-4a8b-b0e8-34c0953bf47b",
+        "nComments": 0,
+        "reportBy": "world_fq2mr4t7",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844986000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845001000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845005000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845014000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845043000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 2,
+        "roadType": 7,
+        "magvar": 284,
+        "wazeData": "world,25.980174,44.450322,0780595e-6b41-4a8b-b0e8-34c0953bf47b",
+        "location": {
+            "x": 25.980174,
+            "y": 44.450322
+        },
+        "pubMillis": 1728844910000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 2,
+        "inscale": false,
+        "comments": [
+            {
+                "reportMillis": 1728843272000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844055000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "reportRating": 1,
+        "reportByMunicipalityUser": "false",
+        "confidence": 1,
+        "reliability": 7,
+        "type": "POLICE",
+        "fromNodeId": 261325152,
+        "uuid": "10ef58b0-787d-49b9-8af9-e45647e757f6",
+        "nearBy": "Cernica",
+        "speed": 0,
+        "reportMood": 50,
+        "roadType": 4,
+        "magvar": 54,
+        "subtype": "",
+        "additionalInfo": "",
+        "wazeData": "world,26.279872,44.412467,10ef58b0-787d-49b9-8af9-e45647e757f6",
+        "toNodeId": 295014546,
+        "location": {
+            "x": 26.279872,
+            "y": 44.412467
+        },
+        "id": "alert-1839303706/10ef58b0-787d-49b9-8af9-e45647e757f6",
+        "nComments": 0,
+        "pubMillis": 1728842676000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 2,
+        "city": "Dudu",
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 7,
+        "type": "POLICE",
+        "fromNodeId": 337856963,
+        "uuid": "127c013f-79a9-4549-ac72-dd660c34b14d",
+        "speed": 0,
+        "reportMood": 46,
+        "subtype": "",
+        "street": "Str. Apeductului",
+        "additionalInfo": "",
+        "toNodeId": 287663586,
+        "id": "alert-1839535615/127c013f-79a9-4549-ac72-dd660c34b14d",
+        "nComments": 0,
+        "reportBy": "world_fq2mr4t7",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728845010000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845012000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "roadType": 7,
+        "magvar": 104,
+        "wazeData": "world,25.978686,44.45059,127c013f-79a9-4549-ac72-dd660c34b14d",
+        "location": {
+            "x": 25.978686,
+            "y": 44.45059
+        },
+        "pubMillis": 1728844923000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 1,
+        "inscale": false,
+        "comments": [
+            {
+                "reportMillis": 1728844593000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "city": "\u0218tef\u0103ne\u0219tii de Jos",
+        "reportRating": 0,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 6,
+        "type": "POLICE",
+        "fromNodeId": 294846002,
+        "uuid": "13af93c6-19af-4862-85c2-db43c785cb58",
+        "speed": 0,
+        "reportMood": 51,
+        "roadType": 2,
+        "magvar": 110,
+        "subtype": "",
+        "additionalInfo": "",
+        "wazeData": "world,26.178665,44.52369,13af93c6-19af-4862-85c2-db43c785cb58",
+        "toNodeId": 234712175,
+        "location": {
+            "x": 26.178665,
+            "y": 44.52369
+        },
+        "id": "alert-1839213292/13af93c6-19af-4862-85c2-db43c785cb58",
+        "nComments": 0,
+        "pubMillis": 1728844366000
+    },
+    {
+        "reportBy": "MariusNitaHappy5",
+        "country": "RO",
+        "inscale": true,
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 295198591,
+        "uuid": "19843fa8-23a8-4e31-83b3-b81b9d381621",
+        "nearBy": "C\u0103ld\u0103raru",
+        "speed": 0,
+        "reportMood": 51,
+        "roadType": 6,
+        "magvar": 210,
+        "subtype": "",
+        "additionalInfo": "",
+        "wazeData": "world,26.274823,44.407285,19843fa8-23a8-4e31-83b3-b81b9d381621",
+        "toNodeId": 321895430,
+        "location": {
+            "x": 26.274823,
+            "y": 44.407285
+        },
+        "id": "alert-1839525510/19843fa8-23a8-4e31-83b3-b81b9d381621",
+        "pubMillis": 1728844757000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 15,
+        "city": "Voluntari",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 262369161,
+        "uuid": "29db628e-5023-494f-b1cc-f42c4844e9df",
+        "speed": 0,
+        "reportMood": 46,
+        "subtype": "POLICE_HIDING",
+        "street": "Bd. Eroilor",
+        "additionalInfo": "",
+        "toNodeId": 262369402,
+        "id": "alert-1839165173/29db628e-5023-494f-b1cc-f42c4844e9df",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728843516000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843519000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843537000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843817000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844114000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844149000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844218000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844250000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844287000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844487000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844653000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844773000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844823000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844839000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845055000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 5,
+        "roadType": 7,
+        "magvar": 213,
+        "wazeData": "world,26.179242,44.500082,29db628e-5023-494f-b1cc-f42c4844e9df",
+        "location": {
+            "x": 26.179242,
+            "y": 44.500082
+        },
+        "pubMillis": 1728842682000
+    },
+    {
+        "country": "RO",
+        "inscale": false,
+        "city": "Bucure\u0219ti",
+        "reportRating": 0,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 164244981,
+        "uuid": "388edeef-6719-44ee-8fa0-6964c1c07f6e",
+        "speed": 0,
+        "reportMood": 10,
+        "roadType": 20,
+        "magvar": 17,
+        "subtype": "",
+        "additionalInfo": "",
+        "wazeData": "world,26.076297,44.446877,388edeef-6719-44ee-8fa0-6964c1c07f6e",
+        "toNodeId": 215958847,
+        "location": {
+            "x": 26.076297,
+            "y": 44.446877
+        },
+        "id": "alert-1839133285/388edeef-6719-44ee-8fa0-6964c1c07f6e",
+        "pubMillis": 1728843993000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 3,
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 8,
+        "type": "POLICE",
+        "fromNodeId": 295014840,
+        "uuid": "45c25957-1010-41f1-bfe0-7d247213aa60",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "additionalInfo": "",
+        "toNodeId": 295014548,
+        "id": "alert-1839142182/45c25957-1010-41f1-bfe0-7d247213aa60",
+        "nComments": 0,
+        "reportBy": "FL0RIN16",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728843550000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844178000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844486000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "nearBy": "Cernica",
+        "roadType": 6,
+        "magvar": 191,
+        "wazeData": "world,26.280443,44.413073,45c25957-1010-41f1-bfe0-7d247213aa60",
+        "location": {
+            "x": 26.280443,
+            "y": 44.413073
+        },
+        "pubMillis": 1728843542000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 2,
+        "city": "Ro\u0219u",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 7,
+        "type": "POLICE",
+        "fromNodeId": 337111274,
+        "uuid": "4b24c631-beab-4b7d-ac2d-f1dfeb908848",
+        "speed": 0,
+        "reportMood": 10,
+        "subtype": "",
+        "street": "Str. Apeductului",
+        "additionalInfo": "",
+        "toNodeId": 339802837,
+        "id": "alert-1838913036/4b24c631-beab-4b7d-ac2d-f1dfeb908848",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844238000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844415000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "roadType": 7,
+        "magvar": 359,
+        "wazeData": "world,25.987234,44.449058,4b24c631-beab-4b7d-ac2d-f1dfeb908848",
+        "location": {
+            "x": 25.987234,
+            "y": 44.449058
+        },
+        "pubMillis": 1728842665000
+    },
+    {
+        "country": "RO",
+        "inscale": true,
+        "city": "Bucure\u0219ti",
+        "reportRating": 0,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 111209087,
+        "uuid": "521f2ffc-5fba-470e-a45c-ff5d094bc030",
+        "speed": 0,
+        "reportMood": 1,
+        "roadType": 6,
+        "magvar": 340,
+        "subtype": "",
+        "street": "Bd. Gheorghe Magheru",
+        "additionalInfo": "",
+        "wazeData": "world,26.09683,44.446514,521f2ffc-5fba-470e-a45c-ff5d094bc030",
+        "toNodeId": 264341905,
+        "location": {
+            "x": 26.09683,
+            "y": 44.446514
+        },
+        "id": "alert-1839449474/521f2ffc-5fba-470e-a45c-ff5d094bc030",
+        "pubMillis": 1728843909000
+    },
+    {
+        "reportBy": "Dragosh20",
+        "country": "RO",
+        "inscale": true,
+        "city": "Dudu",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 175240002,
+        "uuid": "5cf80bf1-3af3-48df-ac90-d9899167bd69",
+        "speed": 0,
+        "reportMood": 1,
+        "roadType": 7,
+        "magvar": 284,
+        "subtype": "",
+        "street": "Str. Apeductului",
+        "additionalInfo": "",
+        "wazeData": "world,25.980844,44.4502,5cf80bf1-3af3-48df-ac90-d9899167bd69",
+        "toNodeId": 339808221,
+        "location": {
+            "x": 25.980844,
+            "y": 44.4502
+        },
+        "id": "alert-1839427509/5cf80bf1-3af3-48df-ac90-d9899167bd69",
+        "pubMillis": 1728845056000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 7,
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 294845968,
+        "uuid": "7414c3fe-b2fd-4d2f-830c-b7c12b6265c1",
+        "speed": 0,
+        "reportMood": 717,
+        "subtype": "",
+        "additionalInfo": "",
+        "toNodeId": 294846002,
+        "id": "alert-1839545115/7414c3fe-b2fd-4d2f-830c-b7c12b6265c1",
+        "nComments": 0,
+        "reportBy": "world_nudcjeu8",
+        "inscale": false,
+        "comments": [
+            {
+                "reportMillis": 1728844713000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844853000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844868000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845048000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845054000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845059000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845073000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 3,
+        "nearBy": "\u0218tef\u0103ne\u0219tii de Jos",
+        "roadType": 4,
+        "magvar": 61,
+        "wazeData": "world,26.178331,44.523723,7414c3fe-b2fd-4d2f-830c-b7c12b6265c1",
+        "location": {
+            "x": 26.178331,
+            "y": 44.523723
+        },
+        "pubMillis": 1728844671000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 7,
+        "city": "Voluntari",
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 262369179,
+        "uuid": "7c33ede1-5d96-4c87-be00-bccbc85bf7f2",
+        "speed": 0,
+        "reportMood": 50,
+        "subtype": "",
+        "street": "Bd. Eroilor",
+        "additionalInfo": "",
+        "toNodeId": 262369402,
+        "id": "alert-1839503990/7c33ede1-5d96-4c87-be00-bccbc85bf7f2",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844348000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844371000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844462000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844628000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844698000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844704000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845027000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 3,
+        "roadType": 7,
+        "magvar": 33,
+        "wazeData": "world,26.178577,44.499359,7c33ede1-5d96-4c87-be00-bccbc85bf7f2",
+        "location": {
+            "x": 26.178577,
+            "y": 44.499359
+        },
+        "pubMillis": 1728844006000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 1,
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 6,
+        "type": "POLICE",
+        "fromNodeId": 295014717,
+        "uuid": "7f4e477e-d33e-4fe3-95e5-2ed63f3ffad8",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "street": "DC55",
+        "additionalInfo": "",
+        "toNodeId": 295014716,
+        "id": "alert-1839107473/7f4e477e-d33e-4fe3-95e5-2ed63f3ffad8",
+        "nComments": 0,
+        "reportBy": "FL0RIN16",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728843820000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 0,
+        "nearBy": "Cernica",
+        "roadType": 6,
+        "magvar": 117,
+        "wazeData": "world,26.281254,44.41268,7f4e477e-d33e-4fe3-95e5-2ed63f3ffad8",
+        "location": {
+            "x": 26.281254,
+            "y": 44.41268
+        },
+        "pubMillis": 1728843550000
+    },
+    {
+        "country": "RO",
+        "inscale": true,
+        "city": "Bucure\u0219ti",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 201988825,
+        "uuid": "8fc6ef90-566c-465b-9cf5-89913a45173c",
+        "speed": 0,
+        "reportMood": 1,
+        "roadType": 7,
+        "magvar": 359,
+        "subtype": "",
+        "street": "Bd. Timi\u0219oara",
+        "additionalInfo": "",
+        "wazeData": "world,26.002238,44.424008,8fc6ef90-566c-465b-9cf5-89913a45173c",
+        "toNodeId": 165011259,
+        "location": {
+            "x": 26.002238,
+            "y": 44.424008
+        },
+        "id": "alert-1839181026/8fc6ef90-566c-465b-9cf5-89913a45173c",
+        "pubMillis": 1728843137000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 1,
+        "city": "Bucure\u0219ti",
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "reliability": 6,
+        "type": "POLICE",
+        "fromNodeId": 245555132,
+        "uuid": "9424d32c-0722-4b72-b9ff-15ecf30a1fd3",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "street": "Str. Doina",
+        "additionalInfo": "",
+        "toNodeId": 164040284,
+        "id": "alert-1839533842/9424d32c-0722-4b72-b9ff-15ecf30a1fd3",
+        "nComments": 0,
+        "reportBy": "blitzennn",
+        "inscale": false,
+        "comments": [
+            {
+                "reportMillis": 1728844215000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 0,
+        "roadType": 2,
+        "magvar": 134,
+        "wazeData": "world,26.083826,44.408042,9424d32c-0722-4b72-b9ff-15ecf30a1fd3",
+        "location": {
+            "x": 26.083826,
+            "y": 44.408042
+        },
+        "pubMillis": 1728843999000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 1,
+        "city": "Bucure\u0219ti",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 6,
+        "type": "POLICE",
+        "fromNodeId": 155699223,
+        "uuid": "95f1d959-8a11-45e7-bf56-2a6232c9ed15",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "street": "Bd. Lasc\u0103r Catargiu",
+        "additionalInfo": "",
+        "toNodeId": 155539287,
+        "id": "alert-1839748643/95f1d959-8a11-45e7-bf56-2a6232c9ed15",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728845093000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 0,
+        "roadType": 6,
+        "magvar": 305,
+        "wazeData": "world,26.093296,44.448824,95f1d959-8a11-45e7-bf56-2a6232c9ed15",
+        "location": {
+            "x": 26.093296,
+            "y": 44.448824
+        },
+        "pubMillis": 1728845073000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 3,
+        "city": "Bucure\u0219ti",
+        "reportRating": 0,
+        "reportByMunicipalityUser": "false",
+        "reliability": 8,
+        "type": "POLICE",
+        "fromNodeId": 205453466,
+        "uuid": "b63a47c7-aa0d-4aa0-ac39-c576c6f54c53",
+        "speed": 0,
+        "reportMood": 51,
+        "subtype": "",
+        "street": "\u0218os. Pavel D. Kiseleff",
+        "additionalInfo": "",
+        "toNodeId": 111000163,
+        "id": "alert-1839550464/b63a47c7-aa0d-4aa0-ac39-c576c6f54c53",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844929000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844938000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728845095000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "roadType": 6,
+        "magvar": 159,
+        "wazeData": "world,26.085175,44.453563,b63a47c7-aa0d-4aa0-ac39-c576c6f54c53",
+        "location": {
+            "x": 26.085175,
+            "y": 44.453563
+        },
+        "pubMillis": 1728844901000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 11,
+        "city": "Voluntari",
+        "reportRating": 1,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 262369402,
+        "uuid": "b6dd7c3f-8d8a-4ef0-8b88-d75e7d5b2c01",
+        "speed": 0,
+        "reportMood": 9,
+        "subtype": "POLICE_HIDING",
+        "street": "Bd. Eroilor",
+        "additionalInfo": "",
+        "toNodeId": 262369161,
+        "id": "alert-1839090060/b6dd7c3f-8d8a-4ef0-8b88-d75e7d5b2c01",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728842742000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728842989000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843122000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843147000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843159000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843184000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843287000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843357000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843439000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843786000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844500000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 5,
+        "roadType": 7,
+        "magvar": 359,
+        "wazeData": "world,26.179397,44.50025,b6dd7c3f-8d8a-4ef0-8b88-d75e7d5b2c01",
+        "location": {
+            "x": 26.179397,
+            "y": 44.50025
+        },
+        "pubMillis": 1728842322000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 28,
+        "city": "Bucure\u0219ti",
+        "reportRating": 0,
+        "reportByMunicipalityUser": "false",
+        "reliability": 10,
+        "type": "POLICE",
+        "fromNodeId": 110918394,
+        "uuid": "b9f501e7-472e-4190-8d7c-06c4070258e3",
+        "speed": 0,
+        "reportMood": 1,
+        "subtype": "",
+        "street": "\u0218os. Industriilor",
+        "additionalInfo": "",
+        "toNodeId": 298283265,
+        "id": "alert-1837910672/b9f501e7-472e-4190-8d7c-06c4070258e3",
+        "nComments": 0,
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728837248000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728838904000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839030000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839038000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839060000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839112000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839129000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839140000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839250000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839362000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839375000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839409000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839493000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839533000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839576000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839664000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839706000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728839820000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728840397000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728840471000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728840570000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728841387000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728841713000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728842365000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843119000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843503000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843939000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844957000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 5,
+        "roadType": 6,
+        "magvar": 293,
+        "wazeData": "world,26.220583,44.425787,b9f501e7-472e-4190-8d7c-06c4070258e3",
+        "location": {
+            "x": 26.220583,
+            "y": 44.425787
+        },
+        "pubMillis": 1728837207000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 3,
+        "city": "Bucure\u0219ti",
+        "reportRating": 1,
+        "reportByMunicipalityUser": "false",
+        "reliability": 8,
+        "type": "POLICE",
+        "fromNodeId": 111249916,
+        "uuid": "c5695915-65be-4bbd-a385-c83d936367d9",
+        "speed": 0,
+        "reportMood": 13533,
+        "subtype": "",
+        "street": "Str. Mircea Vulc\u0103nescu",
+        "additionalInfo": "",
+        "toNodeId": 288975392,
+        "id": "alert-1839301570/c5695915-65be-4bbd-a385-c83d936367d9",
+        "nComments": 0,
+        "reportBy": "vladrs1409",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728844350000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844435000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728844444000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "roadType": 6,
+        "magvar": 66,
+        "wazeData": "world,26.078671,44.44247,c5695915-65be-4bbd-a385-c83d936367d9",
+        "location": {
+            "x": 26.078671,
+            "y": 44.44247
+        },
+        "pubMillis": 1728844025000
+    },
+    {
+        "reportBy": "world_y3ul12nq",
+        "country": "RO",
+        "inscale": true,
+        "city": "Dudu",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 339808221,
+        "uuid": "d69f6310-b4d3-4cf0-8956-0177c013a686",
+        "speed": 0,
+        "reportMood": 50,
+        "roadType": 7,
+        "magvar": 107,
+        "subtype": "",
+        "street": "Str. Apeductului",
+        "additionalInfo": "",
+        "wazeData": "world,25.981136,44.450146,d69f6310-b4d3-4cf0-8956-0177c013a686",
+        "toNodeId": 175240002,
+        "location": {
+            "x": 25.981136,
+            "y": 44.450146
+        },
+        "id": "alert-1839451721/d69f6310-b4d3-4cf0-8956-0177c013a686",
+        "pubMillis": 1728845072000
+    },
+    {
+        "country": "RO",
+        "nThumbsUp": 2,
+        "city": "Jilava",
+        "reportRating": 2,
+        "reportByMunicipalityUser": "false",
+        "reliability": 7,
+        "type": "POLICE",
+        "fromNodeId": 178239094,
+        "uuid": "e76cae41-24a0-45f0-aa99-4e55542af0f8",
+        "speed": 0,
+        "reportMood": 51,
+        "subtype": "",
+        "street": "DJ401A - Str. Ungureni",
+        "additionalInfo": "",
+        "toNodeId": 178239102,
+        "id": "alert-1839335095/e76cae41-24a0-45f0-aa99-4e55542af0f8",
+        "nComments": 0,
+        "reportBy": "worldweb_uvis6bhj",
+        "inscale": true,
+        "comments": [
+            {
+                "reportMillis": 1728843805000,
+                "text": "",
+                "isThumbsUp": true
+            },
+            {
+                "reportMillis": 1728843959000,
+                "text": "",
+                "isThumbsUp": true
+            }
+        ],
+        "confidence": 1,
+        "roadType": 7,
+        "magvar": 135,
+        "wazeData": "world,26.092013,44.3257,e76cae41-24a0-45f0-aa99-4e55542af0f8",
+        "location": {
+            "x": 26.092013,
+            "y": 44.3257
+        },
+        "pubMillis": 1728843477000
+    },
+    {
+        "reportBy": "Mihaialici",
+        "country": "RO",
+        "inscale": true,
+        "city": "Afuma\u021bi",
+        "reportRating": 3,
+        "reportByMunicipalityUser": "false",
+        "confidence": 0,
+        "reliability": 5,
+        "type": "POLICE",
+        "fromNodeId": 274589502,
+        "uuid": "f1a4758a-4ef2-4724-8267-26775df6338a",
+        "speed": 0,
+        "reportMood": 10,
+        "roadType": 6,
+        "magvar": 54,
+        "subtype": "",
+        "street": "DN2 - \u0218os. Bucure\u0219ti-Urziceni",
+        "additionalInfo": "",
+        "wazeData": "world,26.231336,44.512804,f1a4758a-4ef2-4724-8267-26775df6338a",
+        "toNodeId": 330100184,
+        "location": {
+            "x": 26.231336,
+            "y": 44.512804
+        },
+        "id": "alert-1839698913/f1a4758a-4ef2-4724-8267-26775df6338a",
+        "pubMillis": 1728844906000
+    }
+]
