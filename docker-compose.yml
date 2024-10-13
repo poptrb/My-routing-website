@@ -1,0 +1,49 @@
+volumes:
+  osm:
+
+services:
+  osm-setup-1:
+    image: osm-setup:0.1
+    build:
+      context: ./containers/osm-setup/
+      dockerfile: Dockerfile
+    entrypoint:
+      - /usr/bin/bash
+      - /app/entrypoint.sh
+    volumes:
+      - osm:/data/osm
+
+  osrm:
+    container_name: osrm
+    depends_on:
+      osm-setup-1:
+        condition: service_completed_successfully
+    entrypoint: /data/entrypoint.sh
+    image: osrm/osrm-backend
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - osm:/data
+      - ./containers/osrm/entrypoint.sh:/data/entrypoint.sh
+
+  frontend:
+    environment:
+      - TZ=${TZ}
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./containers/frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./containers/frontend/html:/usr/share/nginx/html
+
+  backend:
+    build:
+      context: ./containers/backend/
+      dockerfile: Dockerfile
+    ports:
+      - 8001:80
+    command: uvicorn api:app --reload --host 0.0.0.0 --port 80
+
+
