@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 
-
-#     'Cookie': '_web_visitorid=c7cd2e57-c885-4a33-ae94-8c2476e2b72e;
-# _web_session=UzFZRjZCTXhVQWFEYVRlSTR0aHZheFBsWG1wb25QOWFYOVJrOUV0Y0FSYUJOQ2IwTmt1N1ZwaVFia04vSDR1QS0tVGZrRlpLTDJCczJmL2kzdm8
-# m9vdz09--d809d352dd2328959c267c5ba6c64994dac94c94; _csrf_token=OCtIBACLdlCEXo8OLO1WxHrxykOVGtmv-O6vDmeOoYI',
-
 import time
 import logging
 import requests
 import json
 
+import queue
+
+from itertools import chain, groupby
 from typing import Optional, List
 
 
-urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger = logging.getLogger("urllib3")
 urllib3_logger.setLevel(logging.CRITICAL)
 
 logging.basicConfig(
@@ -25,13 +23,32 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def consume_alerts(alert_queue: queue.Queue):
+    alerts = []
+
+    while not alert_queue.empty():
+        alerts.append(alert_queue.get())
+
+    alerts = list(chain.from_iterable(alerts))
+
+    logger.debug(f"Found {len(alerts)} total police reports")
+
+    unique_alerts = map(
+        lambda _: _[0], groupby(sorted(alerts, key=(lambda _: _["uuid"])))
+    )
+
+    logger.debug(f"Found {len(alerts)} total unique police reports")
+    logger.info([_["street"] for _ in unique_alerts if "street" in _.keys()])
+
+
 def scan_rectangle(
     session: requests.Session,
     top: float,
     right: float,
     bot: float,
     left: float,
-    lvl: int = 2,
+    lvl: int = 1,
+    alert_queue: queue.Queue = None,
 ):
     if lvl > 0:
         mid_height = bot + ((top - bot) / 2)
@@ -44,7 +61,9 @@ def scan_rectangle(
         ]
         for t, r, b, l in rects:
             time.sleep(1)
-            scan_rectangle(session, t, r, b, l, lvl=(lvl - 1))
+            scan_rectangle(
+                session, t, r, b, l, lvl=(lvl - 1), alert_queue=alert_queue
+            )
     else:
         params = {
             "top": str(top),
@@ -60,8 +79,9 @@ def scan_rectangle(
 
         if alerts:
             logging.info(
-                f"Found {len(alerts)} in sector N:{top}, S:{bot}, E: {right}, W: {left}"
+                f"Found {len(alerts)} police alerts in sector N:{top}, S:{bot}, E: {right}, W: {left}"
             )
+            alert_queue.put(alerts)
 
 
 def process_geo_rss_body(body: dict, alert_types=["POLICE"]) -> List:
@@ -104,14 +124,6 @@ def geo_rss_get(session: requests.Session, params: dict) -> Optional[dict]:
 
 
 def main():
-    params = {
-        "top": 44.435618668754174,
-        "bottom": 44.417965537803,
-        "left": 26.011831283569336,
-        "right": 26.193311691284183,
-        "env": "row",
-        "types": "alerts,traffic,users",
-    }
 
     params = {
         "top": 44.539,
@@ -122,6 +134,7 @@ def main():
         "types": "alerts",
     }
 
+    alert_queue = queue.Queue()
     with requests.Session() as session:
         scan_rectangle(
             session,
@@ -129,7 +142,10 @@ def main():
             params["right"],
             params["bottom"],
             params["left"],
+            alert_queue=alert_queue,
         )
+
+    consume_alerts(alert_queue)
 
 
 if __name__ == "__main__":
