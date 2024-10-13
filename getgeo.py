@@ -15,7 +15,7 @@ urllib3_logger = logging.getLogger("urllib3")
 urllib3_logger.setLevel(logging.CRITICAL)
 
 logging.basicConfig(
-    format="%(asctime)s %(levelname)s:%(message)s",
+    format="%(asctime)s %(levelname)s: %%(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     level=logging.DEBUG,
 )
@@ -33,12 +33,29 @@ def consume_alerts(alert_queue: queue.Queue):
 
     logger.debug(f"Found {len(alerts)} total police reports")
 
-    unique_alerts = map(
+    unique_alerts = list(map(
         lambda _: _[0], groupby(sorted(alerts, key=(lambda _: _["uuid"])))
-    )
+    ))
+
+    with open('alerts.json', 'w') as f:
+        json.dump(unique_alerts, f, indent=4)
 
     logger.debug(f"Found {len(alerts)} total unique police reports")
-    logger.info([_["street"] for _ in unique_alerts if "street" in _.keys()])
+
+    logger.info(
+        "Police found on streets: " +
+        ", ".join([_["street"] for _ in unique_alerts if "street" in _.keys()])
+    )
+
+    logger.info(
+        "Police found at coordinates: " +
+        ", ".join(
+            [
+                f"({_["location"]["x"]},{_["location"]["y"]})"
+                for _ in unique_alerts
+                if "street" not in _.keys() and 'location' in _.keys()
+            ])
+    )
 
 
 def scan_rectangle(
