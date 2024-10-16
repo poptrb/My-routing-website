@@ -23,4 +23,4 @@ def log_police_alert(alerts: List[dict], unique_alerts: List[dict]):
                 if "street" not in _.keys() and "location" in _.keys()
             ]
         )
-        )
+    )

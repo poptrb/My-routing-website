@@ -11,19 +11,27 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 from tasks.geo_rss import refresh_reports
-from database import create_db_and_tables
+from database import create_db_and_tables, SessionDep
+from database.operations import get_reports
+from database.schemas import ReportBase
 
 
 logging.basicConfig(
-    format='%(levelname)s %(asctime)s %(module)s %(message)s',
-    datefmt='%Y/%m/%d %H:%M:%S',
-    level=logging.DEBUG
+    format="%(levelname)s %(asctime)s %(module)s %(message)s",
+    datefmt="%Y/%m/%d %H:%M:%S",
+    level=logging.DEBUG,
 )
+
 
 def run_scheduler():
     logging.getLogger("apscheduler").setLevel(logging.DEBUG)
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(refresh_reports, "interval", seconds=900,next_run_time=datetime.now())
+    scheduler.add_job(
+        refresh_reports,
+        "interval",
+        seconds=900,
+    )
+    # next_run_time=datetime.now())
 
     scheduler.start()
 
@@ -47,11 +55,10 @@ async def on_startup():
     run_scheduler()
 
 
-@app.get("/")
-def read_json_file():
-    with open("alerts.json", "r") as file:
-        data = json.load(file)
-    return data
+@app.get("/", response_model=list[ReportBase])
+async def get_top_reports(db_session: SessionDep):
+    result = await get_reports(db_session)
+    return result
 
 
 if __name__ == "__main__":

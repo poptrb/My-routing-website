@@ -39,6 +39,7 @@ async def process_alerts(
         )
 
         from asyncpg.exceptions import UniqueViolationError
+
         for u in unique_alerts:
             try:
                 await insert_report(db_session, u)
@@ -47,8 +48,6 @@ async def process_alerts(
 
         log_police_alert(alerts, unique_alerts)
 
-        # with open("alerts.json", "w") as f:
-        #     json.dump(unique_alerts, f, indent=4)
 
 async def scan_rectangle(
     session: ClientSession,

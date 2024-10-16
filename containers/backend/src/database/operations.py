@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +17,15 @@ async def insert_report(db: AsyncSession, data: dict) -> None:
         street=data["street"] if "street" in data.keys() else None,
         wazeData=data["wazeData"],
         location=f"POINT({data['location']['x']} {data['location']['y']})",
+        pubDate=datetime.fromtimestamp(data["pubMillis"] // 1000),
     )
 
     await report.save(db)
+
+
+async def get_reports(db: AsyncSession, top: int | None = 50):
+    result = await db.execute(
+        select(Report).order_by(Report.pubDate.desc()).limit(top)
+    )
+    return result.scalars()
+    # return result.scalars().all()

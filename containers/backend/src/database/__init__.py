@@ -25,8 +25,9 @@ class Base(DeclarativeBase):
             db_session.add(self)
             return await db_session.commit()
         except IntegrityError as e:
-            #if isinstance(e.orig.exc_type, UniqueViolationError):
-            logger.debug(f"Duplicate record: {e.orig.args}")
+            # if isinstance(e.orig.exc_type, UniqueViolationError):
+            exc = e.orig
+            logger.debug(f"Duplicate record: {exc}")
             await db_session.rollback()
         except UniqueViolationError:
             await db_session.rollback()
