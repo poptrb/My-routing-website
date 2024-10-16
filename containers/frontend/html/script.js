@@ -1,12 +1,17 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  var map = L.map("leafletmap", {"doubleClickZoom": false}).setView([44.4183, 26.1042], 15);
+  var map = L.map("leafletmap", {"doubleClickZoom": false}).setView([44.4183, 26.1042], 19);
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 16,
+    maxZoom: 13,
     attribution:
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
+  policeIcon = L.icon({
+    iconUrl: 'police_badge.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  })
 
 
   let geoServiceEndpoint = 'http://localhost:5000/route/v1/driving/'
@@ -85,10 +90,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await response.json();
 
       data.forEach(item => {
-        const lat = item.location.x;
-        const lng = item.location.y;
+        const lat = item.location.y;
+        const lng = item.location.x;
 
-        L.marker([lat, lng]).addTo(map);
+        L.marker([lat, lng], {icon: policeIcon}).addTo(map);
       });
     } catch (error) {
       console.error('Error fetching data:', error);
