@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta
 import json
-import math
 import time
 import pdb
 
 from selenium.webdriver import ActionChains, Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
-    StaleElementReferenceException,
     MoveTargetOutOfBoundsException,
 )
+
+import rlcompleter
+
+pdb.Pdb.complete = rlcompleter.Completer(locals()).complete
 
 
 def format_record(record):
@@ -63,37 +63,26 @@ def process_geojson_response(response):
         ):
             record = format_record(record)
 
-        # print_record(record)
+            print_record(record)
 
 
 def cull_request_list(driver):
     current_time = datetime.now()
-    one_minute_ago = current_time - timedelta(minutes=1)
-    filtered_list = [
-        entry
-        for entry in driver.requests
-        if datetime.fromtimestamp(entry["pubMillis"]) < one_minute_ago
-    ]
-    print(
-        len(filtered_list),
-        [format_response(req)["date"] for req in driver.requests],
-    )
+    one_minute_ago = current_time - timedelta(minutes=5)
 
+    request_list = []
 
-def find_tile_by_loc(tiles, p):
-    try:
-        return list(
-            filter(
-                lambda _: _.location["x"] == p[0] and _.location["y"] == p[1],
-                tiles,
-            )
-        )[0]
-    except Exception as e:
-        print(
-            f"Could not find tile with location {(p[0], p[1])} in tile list!",
-            e,
-        )
-        return None
+    for r in driver.requests:
+        if (
+            hasattr(r.response, "body")
+            and "live-map/api/georss" in r.url
+            # and r.response.date > one_minute_ago
+        ):
+            request_list.append(r)
+
+    print(f"GeoRSS requests: {len(request_list)}")
+    pdb.set_trace()
+    return request_list
 
 
 def get_viewport_latlng(driver: Firefox) -> (int, int):
@@ -103,8 +92,15 @@ def get_viewport_latlng(driver: Firefox) -> (int, int):
     return (lat, lng)
 
 
-def pan_map(driver: Firefox, viewport_size: dict = None):
+def pan_map(driver: Firefox):
 
+    # pdb.set_trace()
+    clientHeight = driver.execute_script(
+        "return document.documentElement.clientHeight"
+    )
+    clientWidth = driver.execute_script(
+        "return document.documentElement.clientWidth"
+    )
     map_container = driver.find_element(
         By.XPATH, './/div[contains(@class,"wm-map__leaflet wm-map")]'
     )
@@ -115,19 +111,37 @@ def pan_map(driver: Firefox, viewport_size: dict = None):
         # map_container, 0, -1 * window_size['height'] / 2.0  # pan upwards
         # map_container, 0, window_size['height'] / 2.0  # pan downwards
 
+        print(f"Initial position: {get_viewport_latlng(driver)}")
         # pdb.set_trace()
         for _ in range(3):
             ActionChains(driver).drag_and_drop_by_offset(
-                map_container, 0, (viewport_size["height"] // 2)
+                map_container, 0, (clientHeight // 2)
             ).perform()
             print(get_viewport_latlng(driver))
-            time.sleep(1)
+            time.sleep(3)
 
         for _ in range(3):
             ActionChains(driver).drag_and_drop_by_offset(
-                map_container, viewport_size["width"] // 2, 0
+                map_container, clientWidth // 2, 0
             ).perform()
-            time.sleep(1)
+            print(get_viewport_latlng(driver))
+            time.sleep(3)
+
+        for _ in range(3):
+            ActionChains(driver).drag_and_drop_by_offset(
+                map_container, -1 * (clientWidth // 2), 0
+            ).perform()
+            print(get_viewport_latlng(driver))
+            time.sleep(3)
+
+        for _ in range(3):
+            ActionChains(driver).drag_and_drop_by_offset(
+                map_container, 0, -1 * (clientHeight // 2)
+            ).perform()
+            print(get_viewport_latlng(driver))
+            time.sleep(3)
+
+        print(f"Final position: {get_viewport_latlng(driver)}")
 
     except MoveTargetOutOfBoundsException as e:
         print(
