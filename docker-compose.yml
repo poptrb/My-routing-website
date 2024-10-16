@@ -4,6 +4,9 @@ volumes:
 
 networks:
   db:
+  external:
+    driver:
+      bridge
 
 services:
   osm-setup-1:
@@ -77,8 +80,9 @@ services:
       - .env
     networks:
       - db
+      - external
     ports:
-      - 8001:80
+      - 127.0.0.1:8001:80
     restart: unless-stopped
     command: uvicorn api:app --reload --host 0.0.0.0 --port 80
     volumes:
