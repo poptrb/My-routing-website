@@ -9,8 +9,7 @@ networks:
       bridge
 
 services:
-  osm-setup-1:
-    image: osm-setup:0.1
+  osm-setup:
     build:
       context: ./containers/osm-setup/
       dockerfile: Dockerfile
@@ -22,7 +21,7 @@ services:
 
   osrm:
     depends_on:
-      osm-setup-1:
+      osm-setup:
         condition: service_completed_successfully
     entrypoint: /data/entrypoint.sh
     image: osrm/osrm-backend
@@ -34,15 +33,18 @@ services:
       - ./containers/osrm/entrypoint.sh:/data/entrypoint.sh
 
   frontend:
+    tty: true
+    stdin_open: true
     environment:
       - TZ=${TZ}
-    image: nginx
+    build:
+      context: ./containers/react-frontend/
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - 8000:80
+      - 8000:3000
     volumes:
-      - ./containers/frontend/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./containers/frontend/html:/usr/share/nginx/html
+      - ./containers/react-frontend/:/app
 
   postgis:
     container_name: geo-db
