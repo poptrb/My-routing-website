@@ -5,11 +5,6 @@ WORKDIR /app
 
 COPY ./package.json package.json
 
-RUN npm install && \
-    npx create-react-app temp && \
-    cp -apr temp/* . && \
-    rm -rf temp
-
 RUN npm install
 
 COPY ./src/ src/
