@@ -44,7 +44,7 @@ services:
     ports:
       - 8000:3000
     volumes:
-      - ./containers/react-frontend/:/app
+      - ./containers/react-frontend/src:/app/src
 
   postgis:
     container_name: geo-db
