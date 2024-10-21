@@ -3,7 +3,7 @@ import json
 import os
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
@@ -29,9 +29,9 @@ def run_scheduler():
     scheduler.add_job(
         refresh_reports,
         "interval",
-        seconds=900,
+        seconds=60 * 5,
+        next_run_time=(datetime.now())
     )
-    # next_run_time=datetime.now())
 
     scheduler.start()
 
