@@ -1,6 +1,7 @@
 volumes:
   osm:
   postgis:
+  osm-valhalla:
 
 networks:
   db:
@@ -19,6 +20,20 @@ services:
     volumes:
       - osm:/data/osm
 
+  valhalla:
+    tty: true
+    stdin_open: true
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+      # entrypoint: /bin/bash
+    environment:
+      tile_urls: "https://download.geofabrik.de/europe/romania-latest.osm.pbf"
+      server_threads: 4
+    networks:
+      - external
+    ports:
+      - 8002:8002
+    volumes:
+      - osm-valhalla:/custom_files
   osrm:
     depends_on:
       osm-setup:
