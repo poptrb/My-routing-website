@@ -2,33 +2,91 @@ import * as React from 'react';
 import { useCallback, useRef, useEffect, useState } from 'react';
 import Map, {useMap} from 'react-map-gl';
 
-import 'mapbox-gl/dist/mapbox-gl.css';
 
-import {getUserCoordinates} from './location.js'
+// import {getUserCoordinates, getUserLocation} from './location.js'
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
 
 export function UserLocation() {
-  const [userCoords, setUserCoords] = useState()
-  useEffect(() => {
-    setUserCoords(getUserCoordinates())
-    console.log(userCoords)
-  }, [userCoords]);
+  const [userLocationLog, setUserLocationLog] = useState('Checking location permissions.')
+  const [userLocation, setUserLocation] = useState({})
 
-  if (!userCoords) {
+  const fetchLocation = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.permissions.query({ name: "geolocation" }).then((r) => {
+              if (r.state === "granted" || r.state === "prompt") {
+                return navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    setUserLocation({
+                      latitude: pos.coords.latitude,
+                      longitude: pos.coords.longitude,
+                      accuracy: pos.coords.accuracy
+                    })
+                  },
+
+                  (err) => {
+                    setUserLocationLog(err.message)
+                  }
+                )
+              } else if (r.state === "denied") {
+                setUserLocationLog('Please allow location access')
+              }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLocation()
+  }, [fetchLocation])
+
+  if (!userLocation.longitude) {
     return(
       <div>
-      Loading...
+      {userLocationLog}
       </div>
-    );
+    )
   } else {
     return(
-      <MapView userCoords={userCoords}/>
-    );
+      <div>
+      {`Latitude: ${userLocation.latitude}; Longitude: ${userLocation.longitude}`}
+      <MapView userCoords={userLocation} />
+      </div>
+    )
   }
 };
 
 export function MapView({userCoords}) {
+
+  const [viewState, setViewState] = useState({
+    longitude: userCoords.longitude,
+    latitude: userCoords.latitude,
+    zoom: 12
+  });
+
+  let userLocation = useRef(
+    {
+      latitude: null,
+      longitude: null,
+      accuracy: null
+    }
+  )
+
+  // useEffect(() => {
+  //   userLocation.current = getUserLocation()
+  // }, [userLocation]);
+
+  const onMapMove = (evt) => {
+    console.log(evt.viewState);
+    setViewState(evt.viewState);
+  };
+  // const onMapLoad = (evt) => {
+  //   let userLocation = getUserLocation()
+  //   setViewState({
+  //     longitude: userLocation.longitude,
+  //     latitude: userLocation.latitude,
+  //     accuracy: userLocation.accuracy
+  //   });
+  // };
 
   // const onLoad = useCallback((evt) => {
   //   if (userCoords) {
@@ -41,16 +99,14 @@ export function MapView({userCoords}) {
 
   return (
       <Map
-      id="mymap"
-      initialViewState={{
-        // Bucharest center
-        longitude: userCoords.longitude,
-        latitude: userCoords.latitude,
-        zoom: 14
-      }}
+      {...viewState}
+      reuseMaps
+      id="report-map"
       style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       mapboxAccessToken={MAPBOX_TOKEN}
+      onMove={onMapMove}
+      //onLoad={onMapLoad}
     />
   );
 }
