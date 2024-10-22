@@ -3,15 +3,17 @@ import {useCallback} from 'react';
 
 
 
- export const FlexboxComponent = ({clickedPoints, updateClickedPoints}) => {
+ export const FlexboxComponent = ({clickedPoints, updateClickedPoints, updateRouteGeoJSON}) => {
   const onResetButtonClick = useCallback(() => {
     updateClickedPoints([])
-  }, [updateClickedPoints])
+    updateRouteGeoJSON(null)
+
+  }, [updateClickedPoints, updateRouteGeoJSON])
 
   return (
     <div style={{ display: 'flex' }}>
       <div style={{ flex: 1 }}>
-        <div>"Ceva text plm"</div>
+        <div>Resetare calatorie</div>
         <button id='reset-trip-button' onClick={onResetButtonClick}>Reset</button>
       </div>
     </div>

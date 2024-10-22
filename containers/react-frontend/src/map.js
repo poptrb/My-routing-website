@@ -13,7 +13,7 @@ export function UserLocation() {
   const [userLocationLog, setUserLocationLog] = useState('Checking location permissions.')
   const [userLocation, setUserLocation] = useState({})
   const [clickedPoints, setClickedPoints] = useState([]);
-
+  const [routeGeoJSON, setRouteGeoJSON] = useState();
 
   const fetchLocation = useCallback(() => {
     if (navigator.geolocation) {
@@ -47,6 +47,10 @@ export function UserLocation() {
     setClickedPoints(value)
   }
 
+  const updateRouteGeoJSON = (value) => {
+    setRouteGeoJSON(value)
+  }
+
   if (!userLocation.longitude) {
     return(
       <div>
@@ -60,18 +64,21 @@ export function UserLocation() {
         <FlexboxComponent
           clickedPoints={clickedPoints}
           updateClickedPoints={updateClickedPoints}
+          updateRouteGeoJSON={updateRouteGeoJSON}
         />
         <MapView
           userCoords={userLocation}
           clickedPoints={clickedPoints}
           setClickedPoints={updateClickedPoints}
+          routeGeoJSON={routeGeoJSON}
+          updateRouteGeoJSON={updateRouteGeoJSON}
         />
       </div>
     )
   }
 };
 
-export function MapView({userCoords, clickedPoints, setClickedPoints}) {
+export function MapView({userCoords, clickedPoints, setClickedPoints, routeGeoJSON, updateRouteGeoJSON}) {
 
   const pointLayerStyle = {
     id: 'point',
@@ -82,6 +89,7 @@ export function MapView({userCoords, clickedPoints, setClickedPoints}) {
     }
   };
 
+  const [reportGeoJSON, setReportGeoJSON] = useState([]);
 
   const [viewState, setViewState] = useState({
     longitude: userCoords.longitude,
@@ -89,7 +97,6 @@ export function MapView({userCoords, clickedPoints, setClickedPoints}) {
     zoom: 13
   });
 
-  const [reportGeoJSON, setReportGeoJSON] = useState([]);
 
   const onMapClick = (evt) => {
     setClickedPoints([...clickedPoints, {
@@ -145,7 +152,11 @@ export function MapView({userCoords, clickedPoints, setClickedPoints}) {
         </Source>
         : null
       }
-      <MapLine pointList={clickedPoints} excludePoints={reportGeoJSON}/>
+      <MapLine
+        pointList={clickedPoints}
+        excludePoints={reportGeoJSON}
+        routeGeoJSON={routeGeoJSON}
+        updateRouteGeoJSON={updateRouteGeoJSON}/>
       </Map>
   );
 }

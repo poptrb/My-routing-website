@@ -103,9 +103,8 @@ export const decodeRouteGeoJSON = (data) => {
     return
 };
 
-export function MapLine({pointList, excludePoints}) {
+export function MapLine({pointList, excludePoints, routeGeoJSON, updateRouteGeoJSON}) {
 
-  const [routeGeoJSON, setRouteGeoJSON] = useState();
   const [locationGeoJSON, setLocationGeoJSON]= useState();
 
   const showRoute = useCallback(async() => {
@@ -113,9 +112,9 @@ export function MapLine({pointList, excludePoints}) {
     const geoJSON = decodeRouteGeoJSON(data);
     console.log(data)
     if (geoJSON) {
-      setRouteGeoJSON(geoJSON);
+      updateRouteGeoJSON(geoJSON);
     };
-  }, [pointList, excludePoints]);
+  }, [pointList, excludePoints, updateRouteGeoJSON]);
 
   useEffect(() => {
     showRoute();
