@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { useCallback, useRef, useEffect, useState } from 'react';
-import Map, {useMap, Source, Layer} from 'react-map-gl';
+import { useCallback, useEffect, useState } from 'react';
+import Map, {Source, Layer} from 'react-map-gl';
 
 import {MapLine} from './map_line'
-import {getRouteGeoJSON, decodeRouteGeoJSON} from './map_line'
 
 // import {getUserCoordinates, getUserLocation} from './location.js'
 
@@ -85,9 +84,6 @@ export function MapView({userCoords}) {
     }]);
   };
 
-  const onMapSourceData = (evt) => {
-    console.log(evt)
-  };
   const onMapMove = (evt) => {
     setViewState(evt.viewState);
   };

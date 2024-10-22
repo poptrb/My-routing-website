@@ -3,7 +3,7 @@ import * as React from 'react';
 import {MapProvider} from 'react-map-gl';
 
 
-import { MapView, UserLocation } from './map'
+import { UserLocation } from './map'
 import { Controls } from './map-controls'
 
 

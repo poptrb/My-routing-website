@@ -1,13 +1,14 @@
 import * as polyline from '@mapbox/polyline'
 import {useCallback, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
+import {circle} from '@turf/circle'
 
 const lineLayerStyle = {
   id: "route",
   type: "line",
   paint: {
-    'line-color': '#b3ffb3',
-    'line-width': 4
+    'line-color': '#00b300',
+    'line-width': 6
   },
   layout: {
     'line-cap': 'round',
@@ -19,22 +20,38 @@ const locationLayerStyle = {
   id: 'point',
   type: 'circle',
   paint: {
-    'circle-radius': 6,
+    'circle-radius': 10,
     'circle-color': '#ffff66'
   }
 };
 
-const getExcludedFromGeoJSON = (excludePoints) => {
-   // Build excludeLocations from GeoJSON FeatureCollection
-   const excludeLocations = excludePoints.features.map((f) => {
-     return ({
-       lat: f.geometry.coordinates[1],
-       lon: f.geometry.coordinates[0]
-     })
-   });
+const buildExcludedPolygonsFromGeoJSON = (excludePoints, radius) => {
+  const options = {
+    steps: 12,
+    units: "metres"
+  }
 
-  return excludeLocations
+  const excludePolygons = excludePoints.features.map((f) => {
+
+    const circleCenter = [
+      f.geometry.coordinates[1],
+      f.geometry.coordinates[0]
+    ];
+
+    const circlePolygon = circle(circleCenter, radius, options)
+    const circlePolygonVertices = circlePolygon.geometry.coordinates[0].map((x) => {
+      return [
+        x[1],
+        x[0]
+      ];
+    });
+    return circlePolygonVertices
+
+  });
+
+  return excludePolygons
 }
+
 
 export const getRouteGeoJSON = async(pointList, excludePoints) => {
   if (pointList.length < 2) {
@@ -48,19 +65,11 @@ export const getRouteGeoJSON = async(pointList, excludePoints) => {
     };
   });
 
-  console.log({
-    locations: locations,
-    exclude_locations: getExcludedFromGeoJSON(excludePoints),
-    costing: 'auto',
-    direction_options: {
-      units: 'kilometres'
-    }
-  })
   const route_response = await fetch("http://localhost:8002/optimized_route?json=", {
     method: 'POST',
     body: JSON.stringify({
       locations: locations,
-      exclude_locations: getExcludedFromGeoJSON(excludePoints),
+      exclude_polygons: buildExcludedPolygonsFromGeoJSON(excludePoints, 30),
       costing: 'auto',
       direction_options: {
         units: 'kilometres'
