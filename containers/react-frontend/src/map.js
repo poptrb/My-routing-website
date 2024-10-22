@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useCallback, useRef, useEffect, useState } from 'react';
 import Map, {useMap, Source, Layer} from 'react-map-gl';
 
+import {MapLine} from './map_line'
+import {getRouteGeoJSON, decodeRouteGeoJSON} from './map_line'
 
 // import {getUserCoordinates, getUserLocation} from './location.js'
 
@@ -57,7 +59,7 @@ export function UserLocation() {
 
 export function MapView({userCoords}) {
 
-  const layerStyle = {
+  const pointLayerStyle = {
     id: 'point',
     type: 'circle',
     paint: {
@@ -66,14 +68,39 @@ export function MapView({userCoords}) {
     }
   };
 
+  const lineLayerStyle = {
+    id: "route",
+    type: "line",
+    paint: {
+      'line-color': '#007cbf',
+      'line-width': 8
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    }
+  }
+
   const [viewState, setViewState] = useState({
     longitude: userCoords.longitude,
     latitude: userCoords.latitude,
     zoom: 13
   });
 
-  const [reportGeoJSON, setReportGeoJSON] = useState([])
+  const [reportGeoJSON, setReportGeoJSON] = useState([]);
+  const [clickedPoints, setClickedPoints] = useState([]);
+  const [routeGeoJSON, setRouteGeoJSON] = useState();
 
+  const onMapClick = (evt) => {
+    setClickedPoints([...clickedPoints, {
+      longitude: evt.lngLat.lng,
+      latitude: evt.lngLat.lat
+    }]);
+  };
+
+  const onMapSourceData = (evt) => {
+    console.log(evt)
+  };
   const onMapMove = (evt) => {
     setViewState(evt.viewState);
   };
@@ -103,6 +130,21 @@ export function MapView({userCoords}) {
     fetchReports()
   }, [fetchReports])
 
+
+  const showRoute = useCallback(async() => {
+    const data = await getRouteGeoJSON(clickedPoints);
+    const geoJSON = decodeRouteGeoJSON(data);
+    if (geoJSON) {
+      setRouteGeoJSON(geoJSON);
+    };
+  }, [clickedPoints]);
+
+  useEffect(() => {
+    showRoute();
+  }, [showRoute])
+
+      //<MapLine pointList={clickedPoints}/>
+  routeGeoJSON && console.log(routeGeoJSON);
   return (
       <Map
       {...viewState}
@@ -111,10 +153,24 @@ export function MapView({userCoords}) {
       style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/streets-v12"
       mapboxAccessToken={MAPBOX_TOKEN}
+      onClick={onMapClick}
+      onSourceData={onMapSourceData}
       onMove={onMapMove}>
-      <Source id="my-data" type="geojson" data={reportGeoJSON}>
-        <Layer {...layerStyle} />
-      </Source>
+
+      { reportGeoJSON
+        ?
+        <Source key="report-source" id="report-source" type="geojson" data={reportGeoJSON}>
+          <Layer {...pointLayerStyle} id="report-layer"/>
+        </Source>
+        : null
+      }
+      { routeGeoJSON
+        ?
+        <Source key="route-source" id="route-source" type="geojson" data={routeGeoJSON}>
+          <Layer {...lineLayerStyle} id="route-layer" source="route-source"/>
+        </Source>
+        : null
+      }
       </Map>
   );
 }
