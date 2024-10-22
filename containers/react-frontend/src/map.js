@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import Map, {Source, Layer} from 'react-map-gl';
 
+import {FlexboxComponent} from './map_controls_flexbox'
 import {MapLine} from './map_line'
 
 // import {getUserCoordinates, getUserLocation} from './location.js'
@@ -11,6 +12,8 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmp
 export function UserLocation() {
   const [userLocationLog, setUserLocationLog] = useState('Checking location permissions.')
   const [userLocation, setUserLocation] = useState({})
+  const [clickedPoints, setClickedPoints] = useState([]);
+
 
   const fetchLocation = useCallback(() => {
     if (navigator.geolocation) {
@@ -40,6 +43,10 @@ export function UserLocation() {
     fetchLocation()
   }, [fetchLocation])
 
+  const updateClickedPoints = (value) => {
+    setClickedPoints(value)
+  }
+
   if (!userLocation.longitude) {
     return(
       <div>
@@ -49,14 +56,22 @@ export function UserLocation() {
   } else {
     return(
       <div>
-      {`Latitude: ${userLocation.latitude}; Longitude: ${userLocation.longitude}`}
-      <MapView userCoords={userLocation} />
+        {`Latitude: ${userLocation.latitude}; Longitude: ${userLocation.longitude}`}
+        <FlexboxComponent
+          clickedPoints={clickedPoints}
+          updateClickedPoints={updateClickedPoints}
+        />
+        <MapView
+          userCoords={userLocation}
+          clickedPoints={clickedPoints}
+          setClickedPoints={updateClickedPoints}
+        />
       </div>
     )
   }
 };
 
-export function MapView({userCoords}) {
+export function MapView({userCoords, clickedPoints, setClickedPoints}) {
 
   const pointLayerStyle = {
     id: 'point',
@@ -75,7 +90,6 @@ export function MapView({userCoords}) {
   });
 
   const [reportGeoJSON, setReportGeoJSON] = useState([]);
-  const [clickedPoints, setClickedPoints] = useState([]);
 
   const onMapClick = (evt) => {
     setClickedPoints([...clickedPoints, {
