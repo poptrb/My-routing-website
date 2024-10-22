@@ -2,31 +2,74 @@ import * as polyline from '@mapbox/polyline'
 import {useCallback, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
 
-export const getRouteGeoJSON = async(pointList) => {
-    if (pointList.length < 2) {
-      return null
+const lineLayerStyle = {
+  id: "route",
+  type: "line",
+  paint: {
+    'line-color': '#b3ffb3',
+    'line-width': 4
+  },
+  layout: {
+    'line-cap': 'round',
+    'line-join': 'round'
+  }
+}
+
+const locationLayerStyle = {
+  id: 'point',
+  type: 'circle',
+  paint: {
+    'circle-radius': 6,
+    'circle-color': '#ffff66'
+  }
+};
+
+const getExcludedFromGeoJSON = (excludePoints) => {
+   // Build excludeLocations from GeoJSON FeatureCollection
+   const excludeLocations = excludePoints.features.map((f) => {
+     return ({
+       lat: f.geometry.coordinates[1],
+       lon: f.geometry.coordinates[0]
+     })
+   });
+
+  return excludeLocations
+}
+
+export const getRouteGeoJSON = async(pointList, excludePoints) => {
+  if (pointList.length < 2) {
+    return null
+  }
+
+  const locations = pointList.map((x) => {
+    return {
+      lat: x.latitude,
+      lon: x.longitude
+    };
+  });
+
+  console.log({
+    locations: locations,
+    exclude_locations: getExcludedFromGeoJSON(excludePoints),
+    costing: 'auto',
+    direction_options: {
+      units: 'kilometres'
     }
+  })
+  const route_response = await fetch("http://localhost:8002/optimized_route?json=", {
+    method: 'POST',
+    body: JSON.stringify({
+      locations: locations,
+      exclude_locations: getExcludedFromGeoJSON(excludePoints),
+      costing: 'auto',
+      direction_options: {
+        units: 'kilometres'
+      }
+    })
+  });
 
-    const locations = pointList.map((x) => {
-      return {
-        lat: x.latitude,
-        lon: x.longitude
-      };
-    });
-
-    const route_response = await fetch("http://localhost:8002/optimized_route?json=", {
-      method: 'POST',
-      body: JSON.stringify({
-        locations: locations,
-        costing: 'auto',
-        direction_options: {
-          units: 'kilometres'
-        }
-      })
-    });
-
-    const data = await route_response.json()
-    return data
+  const data = await route_response.json()
+  return data
 }
 
 
@@ -35,23 +78,13 @@ export const decodeRouteGeoJSON = (data) => {
       return
     };
     if (data.trip && data.trip.legs) {
-      const routeLegs = data.trip.legs.map((leg) => {
-        let lineString = polyline.toGeoJSON(leg.shape, 6)
-        console.log(lineString)
-        // const reversedCoordinates = lineString.geometry.coordinates.map((c) => {
-        //   return [c[1], c[0]]
-        // })
-        // lineString.geometry.coordinates = reversedCoordinates;
-        return lineString;
-      });
 
-      const routeFeatures = routeLegs.map(routeLeg => {
-        return({
+      const routeFeatures = data.trip.legs.map((leg) => {
+        return ({
           type: 'Feature',
-          geometry: routeLeg
-        });
+          geometry: polyline.toGeoJSON(leg.shape, 6)
+        })
       });
-
 
       return ({
         type: 'FeatureCollection',
@@ -61,43 +94,57 @@ export const decodeRouteGeoJSON = (data) => {
     return
 };
 
-export function MapLine({pointList}) {
+export function MapLine({pointList, excludePoints}) {
 
   const [routeGeoJSON, setRouteGeoJSON] = useState();
+  const [locationGeoJSON, setLocationGeoJSON]= useState();
 
   const showRoute = useCallback(async() => {
-    const data = await getRouteGeoJSON(pointList);
+    const data = await getRouteGeoJSON(pointList, excludePoints);
     const geoJSON = decodeRouteGeoJSON(data);
+    console.log(data)
     if (geoJSON) {
       setRouteGeoJSON(geoJSON);
     };
-  }, [pointList]);
+  }, [pointList, excludePoints]);
 
   useEffect(() => {
     showRoute();
   }, [showRoute])
 
-  console.log(routeGeoJSON);
-  if (routeGeoJSON) {
-    console.log('Should draw MapLine');
-    return (
-      <Source key="route-data" id="route-data" type="geojson" data={routeGeoJSON}>
-        <Layer
-          key="route-layer"
-          id="route"
-          type="line"
-          paint={{
-            'line-color': '#ffff00',
-            'line-width': 50
-          }}
-        >
-        </Layer>
-      </Source>
-    )
-  } else {
-    return (
-      <>
-      </>
-    );
-  };
+  useEffect(() => {
+    if (pointList) {
+
+      const locationFeatures = pointList.map((point) => {
+        return ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [point.longitude, point.latitude]
+          }
+        })
+      });
+      setLocationGeoJSON({
+        type: 'FeatureCollection',
+        features: locationFeatures
+      })
+    }
+  }, [pointList])
+
+  return(
+    <>
+    { routeGeoJSON
+      ? <Source key="route-source" id="route-source" type="geojson" data={routeGeoJSON}>
+          <Layer {...lineLayerStyle} id="route-layer" source="route-source"/>
+        </Source>
+      : null
+    }
+    { locationGeoJSON
+      ? <Source key="location-source" id="location-source" type="geojson" data={locationGeoJSON}>
+          <Layer {...locationLayerStyle} id="location-layer" source="location-source"/>
+        </Source>
+      : null
+    }
+    </>
+  );
 };

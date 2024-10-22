@@ -63,23 +63,11 @@ export function MapView({userCoords}) {
     id: 'point',
     type: 'circle',
     paint: {
-      'circle-radius': 10,
+      'circle-radius': 8,
       'circle-color': '#007cbf'
     }
   };
 
-  const lineLayerStyle = {
-    id: "route",
-    type: "line",
-    paint: {
-      'line-color': '#007cbf',
-      'line-width': 8
-    },
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    }
-  }
 
   const [viewState, setViewState] = useState({
     longitude: userCoords.longitude,
@@ -89,7 +77,6 @@ export function MapView({userCoords}) {
 
   const [reportGeoJSON, setReportGeoJSON] = useState([]);
   const [clickedPoints, setClickedPoints] = useState([]);
-  const [routeGeoJSON, setRouteGeoJSON] = useState();
 
   const onMapClick = (evt) => {
     setClickedPoints([...clickedPoints, {
@@ -130,21 +117,6 @@ export function MapView({userCoords}) {
     fetchReports()
   }, [fetchReports])
 
-
-  const showRoute = useCallback(async() => {
-    const data = await getRouteGeoJSON(clickedPoints);
-    const geoJSON = decodeRouteGeoJSON(data);
-    if (geoJSON) {
-      setRouteGeoJSON(geoJSON);
-    };
-  }, [clickedPoints]);
-
-  useEffect(() => {
-    showRoute();
-  }, [showRoute])
-
-      //<MapLine pointList={clickedPoints}/>
-  routeGeoJSON && console.log(routeGeoJSON);
   return (
       <Map
       {...viewState}
@@ -154,7 +126,6 @@ export function MapView({userCoords}) {
       mapStyle="mapbox://styles/mapbox/streets-v12"
       mapboxAccessToken={MAPBOX_TOKEN}
       onClick={onMapClick}
-      onSourceData={onMapSourceData}
       onMove={onMapMove}>
 
       { reportGeoJSON
@@ -164,13 +135,7 @@ export function MapView({userCoords}) {
         </Source>
         : null
       }
-      { routeGeoJSON
-        ?
-        <Source key="route-source" id="route-source" type="geojson" data={routeGeoJSON}>
-          <Layer {...lineLayerStyle} id="route-layer" source="route-source"/>
-        </Source>
-        : null
-      }
+      <MapLine pointList={clickedPoints} excludePoints={reportGeoJSON}/>
       </Map>
   );
 }
