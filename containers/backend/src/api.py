@@ -12,8 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from tasks.geo_rss import refresh_reports
 from database import create_db_and_tables, SessionDep
-from database.operations import get_reports
+from database.operations import get_reports, get_reports_two
 from database.schemas import ReportBase
+from database.schema import GetReportsRequest
 
 
 logging.basicConfig(
@@ -29,8 +30,8 @@ def run_scheduler():
     scheduler.add_job(
         refresh_reports,
         "interval",
-        seconds=60 * 5,
-        next_run_time=(datetime.now())
+        seconds=60 * 60,
+        # next_run_time=(datetime.now())
     )
 
     scheduler.start()
@@ -58,6 +59,14 @@ async def on_startup():
 @app.get("/", response_model=list[ReportBase])
 async def get_top_reports(db_session: SessionDep):
     result = await get_reports(db_session)
+    return result
+
+
+@app.post("/reports", response_model=list[ReportBase])
+async def get_reports_by_bbox(
+    request: GetReportsRequest, db_session: SessionDep
+):
+    result = await get_reports_two(db_session, request)
     return result
 
 
