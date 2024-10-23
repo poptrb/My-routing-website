@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, update, or_, and_
 
 from .models import Report
+from .schema import GetReportsRequest
 
 
 async def insert_report(db: AsyncSession, data: dict) -> None:
@@ -27,5 +28,38 @@ async def get_reports(db: AsyncSession, top: int | None = 50):
     result = await db.execute(
         select(Report).order_by(Report.pubDate.desc()).limit(top)
     )
+    return result.scalars()
+
+
+async def get_reports_two(db: AsyncSession, data: GetReportsRequest):
+
+    limit_date: datetime = datetime.now() - timedelta(minutes=60 * 5)
+
+    result = await db.execute(
+        select(Report)
+        .filter(
+            Report.location.ST_Within(
+                func.ST_MakeEnvelope(
+                    data.bbox.lon_min,
+                    data.bbox.lon_max,
+                    data.bbox.lat_min,
+                    data.bbox.lat_max,
+                    4326,
+                )
+            )
+        )
+        .filter(Report.pubDate > limit_date)
+    )
+
+    # where(Report.location.contains(
+    #    func.ST_Transform(
+    #        func.ST_MakeEnvelope(
+    #            data.bbox.lon_min,
+    #            data.bbox.lon_max,
+    #            data.bbox.lat_min,
+    #            data.bbox.lat_max,
+    #            4326
+    #        )))))
+
     return result.scalars()
     # return result.scalars().all()

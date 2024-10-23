@@ -7,9 +7,8 @@ from itertools import chain, groupby
 from typing import Optional, List
 
 from aiohttp import ClientSession
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import SessionDep, async_session_maker
+from database import async_session_maker
 from database.operations import insert_report
 from logger.alerts import log_police_alert
 

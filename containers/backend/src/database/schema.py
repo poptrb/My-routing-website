@@ -45,3 +45,16 @@ class ReportData(BaseModel):
     wazeData: str
     location: dict
     pubMillis: int
+
+
+class Bbox(BaseModel):
+    lat_min: float
+    lat_max: float
+    lon_min: float
+    lon_max: float
+
+
+class GetReportsRequest(BaseModel):
+    bbox: Bbox
+    top: int | None
+    since: datetime | None
