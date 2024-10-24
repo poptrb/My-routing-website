@@ -1,47 +1,32 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import Map, {Source, Layer} from 'react-map-gl';
 
 import {FlexboxComponent} from './map_controls_flexbox'
 import {MapLine} from './map_line'
+import {Locator} from './user_locator'
 
 // import {getUserCoordinates, getUserLocation} from './location.js'
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
 
-export function UserLocation() {
+export function AppContext() {
   const [userLocationLog, setUserLocationLog] = useState('Checking location permissions.')
   const [userLocation, setUserLocation] = useState({})
   const [clickedPoints, setClickedPoints] = useState([]);
   const [routeGeoJSON, setRouteGeoJSON] = useState();
+  const [controlBox, setControlBox] = useState();
 
-  const fetchLocation = useCallback(() => {
-    if (navigator.geolocation) {
-      navigator.permissions.query({ name: "geolocation" }).then((r) => {
-        if (r.state === "granted" || r.state === "prompt") {
-          return navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              setUserLocation({
-                latitude: pos.coords.latitude,
-                longitude: pos.coords.longitude,
-                accuracy: pos.coords.accuracy
-              })
-            },
 
-            (err) => {
-              setUserLocationLog(err.message)
-            }
-          )
-        } else if (r.state === "denied") {
-          setUserLocationLog('Please allow location access')
-        }
-      });
-    };
-  }, []);
+  // setControlBox({...controlBox, test: 'test-value'})
 
-  useEffect(() => {
-    fetchLocation()
-  }, [fetchLocation])
+  const updateUserLocation = (value) => {
+    setUserLocation(value)
+  }
+
+  const updateUserLocationLog = (value) => {
+    setUserLocationLog(value)
+  }
 
   const updateClickedPoints = (value) => {
     setClickedPoints(value)
@@ -51,35 +36,49 @@ export function UserLocation() {
     setRouteGeoJSON(value)
   }
 
-  if (!userLocation.longitude) {
-    return(
-      <div>
-      {userLocationLog}
-      </div>
-    )
-  } else {
+  const updateControlBox = (value) => {
+    setControlBox(value)
+  }
+
+  //if (!userLocation.longitude) {
+  //  return(
+  //    <div>
+  //    {userLocationLog}
+  //    </div>
+  //  )
+  //} else {
     return(
       <div>
         {`Latitude: ${userLocation.latitude}; Longitude: ${userLocation.longitude}`}
+        <Locator
+          updateUserLocation={updateUserLocation}
+          updateUserLocationLog={updateUserLocationLog}
+        />
         <FlexboxComponent
           clickedPoints={clickedPoints}
+          controlBox={controlBox}
           updateClickedPoints={updateClickedPoints}
           updateRouteGeoJSON={updateRouteGeoJSON}
+          updteControlBox={updateControlBox}
         />
-        <MapView
-          userCoords={userLocation}
-          clickedPoints={clickedPoints}
-          setClickedPoints={updateClickedPoints}
-          routeGeoJSON={routeGeoJSON}
-          updateRouteGeoJSON={updateRouteGeoJSON}
-        />
+        { userLocation.longitude
+          ? <MapView
+              userCoords={userLocation}
+              controlBox={controlBox}
+              clickedPoints={clickedPoints}
+              setClickedPoints={updateClickedPoints}
+              routeGeoJSON={routeGeoJSON}
+              updateRouteGeoJSON={updateRouteGeoJSON}
+            />
+          : null
+        }
       </div>
     )
-  }
+  //}
 };
 
 export function MapView({userCoords, clickedPoints, setClickedPoints, routeGeoJSON, updateRouteGeoJSON}) {
-
+  const mapRef = useRef()
   const pointLayerStyle = {
     id: 'point',
     type: 'circle',
@@ -99,17 +98,28 @@ export function MapView({userCoords, clickedPoints, setClickedPoints, routeGeoJS
 
 
   const onMapClick = (evt) => {
+    // console.log(evt)
     setClickedPoints([...clickedPoints, {
       longitude: evt.lngLat.lng,
       latitude: evt.lngLat.lat
     }]);
+    console.log(evt)
   };
 
   const onMapMove = (evt) => {
     setViewState(evt.viewState);
+
   };
 
-  const fetchReports = useCallback(async() => {
+  const onMapDblClick = (evt) => {
+    if (mapRef.current) {
+      //const bbox = mapRef.current.getBounds()
+    }
+    console.log(evt)
+  }
+
+
+  const fetchReports = useMemo(() => async() => {
 
     const response = await fetch("http://localhost:8001")
     const data = await response.json()
@@ -134,14 +144,17 @@ export function MapView({userCoords, clickedPoints, setClickedPoints, routeGeoJS
     fetchReports()
   }, [fetchReports])
 
+      // ref={mapRef}
   return (
       <Map
       {...viewState}
       reuseMaps
+      ref={mapRef}
       id="report-map"
       style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/streets-v12"
       mapboxAccessToken={MAPBOX_TOKEN}
+      onDblClick={onMapDblClick}
       onClick={onMapClick}
       onMove={onMapMove}>
 

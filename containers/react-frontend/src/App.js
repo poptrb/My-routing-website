@@ -3,7 +3,7 @@ import * as React from 'react';
 import {MapProvider} from 'react-map-gl';
 
 
-import { UserLocation } from './map'
+import { AppContext } from './map'
 import { Controls } from './map-controls'
 
 
@@ -11,7 +11,7 @@ export default function App() {
   return (
   <MapProvider>
     <Controls />
-    <UserLocation />
+    <AppContext />
   </MapProvider>
   )
 

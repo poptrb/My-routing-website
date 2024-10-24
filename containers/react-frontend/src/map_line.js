@@ -1,5 +1,5 @@
 import * as polyline from '@mapbox/polyline'
-import {useCallback, useEffect, useState} from 'react';
+import {useMemo, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
 import {circle} from '@turf/circle'
 
@@ -107,10 +107,9 @@ export function MapLine({pointList, excludePoints, routeGeoJSON, updateRouteGeoJ
 
   const [locationGeoJSON, setLocationGeoJSON]= useState();
 
-  const showRoute = useCallback(async() => {
+  const showRoute = useMemo(() => async() => {
     const data = await getRouteGeoJSON(pointList, excludePoints);
     const geoJSON = decodeRouteGeoJSON(data);
-    console.log(data)
     if (geoJSON) {
       updateRouteGeoJSON(geoJSON);
     };
