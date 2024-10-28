@@ -22,16 +22,23 @@ from fastapi_users.db import (
 from database import Base
 
 
-class Token(Base):
-    id: Mapped[int]
+class SignupToken(Base):
+    __tablename__ = "signup_token"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
     token_hash: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime)
     used_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    user_id: Mapped["User"] = relationship(back_populates="user")
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     role: Mapped[str] = mapped_column(String)
     signup_date: Mapped[datetime] = mapped_column(DateTime)
+    token_id: Mapped[int] = mapped_column(ForeignKey("signup_token.id"))
+    token: Mapped["SignupToken"] = relationship(back_populates="user_id")
 
 
 class Report(Base):

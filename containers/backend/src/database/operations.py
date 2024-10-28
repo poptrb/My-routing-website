@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, update, or_, and_
 
-from .models import Report, User, Token
+from .models import Report, User, SignupToken
 from .schema import GetReportsRequest
 from . import get_async_session
 
@@ -16,7 +16,7 @@ async def insert_token(db: AsyncSession, data: dict) -> None:
     pass
 
 
-async def get_token(db: AsyncSession, data: dict) -> Token:
+async def get_token(db: AsyncSession, data: dict) -> SignupToken:
     pass
 
 

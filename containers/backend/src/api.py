@@ -15,6 +15,7 @@ from database import create_db_and_tables, SessionDep
 from database.operations import get_reports, get_reports_two
 from database.schemas import ReportBase
 from database.schema import GetReportsRequest
+from auth.users import auth_backend, current_active_user, fastapi_users
 
 
 logging.basicConfig(
@@ -54,6 +55,13 @@ async def on_startup():
     logging.getLogger("tasks.geo_rss").setLevel(logging.DEBUG)
     await create_db_and_tables()
     run_scheduler()
+
+
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend),
+    prefix="/auth/jwt",
+    tags=["auth"],
+)
 
 
 @app.get("/", response_model=list[ReportBase])

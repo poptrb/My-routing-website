@@ -10,11 +10,10 @@ from fastapi_users.authentication import (
 )
 from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users import schemas
-from fastapi_users import models
 
-from database import get_user_db
+from database.operations import get_user_db
 from database.models import User
-from database.operations import verify_token
+from database.operations import get_token, insert_token
 from settings import settings
 
 SECRET = "SECRET"
@@ -30,7 +29,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         safe: bool = False,
         request: Optional[Request] = None,
     ) -> models.UP:
-        pass
+        super().__init__()
 
     async def on_after_register(
         self, user: User, request: Optional[Request] = None
