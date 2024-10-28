@@ -3,6 +3,7 @@ from logging import getLogger
 
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import Depends
+from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -73,6 +74,7 @@ async def create_db_and_tables():
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
+
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
     yield SQLAlchemyUserDatabase(session, User)
