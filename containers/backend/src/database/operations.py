@@ -1,11 +1,23 @@
 from datetime import datetime, timedelta
-from fastapi import HTTPException, status
+
+from argon2 import PasswordHasher
+from fastapi import Depends, HTTPException, status
+from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, update, or_, and_
 
-from .models import Report
+from .models import Report, User, Token
 from .schema import GetReportsRequest
+from . import get_async_session
+
+
+async def insert_token(db: AsyncSession, data: dict) -> None:
+    pass
+
+
+async def get_token(db: AsyncSession, data: dict) -> Token:
+    pass
 
 
 async def insert_report(db: AsyncSession, data: dict) -> None:
@@ -51,15 +63,9 @@ async def get_reports_two(db: AsyncSession, data: GetReportsRequest):
         .filter(Report.pubDate > limit_date)
     )
 
-    # where(Report.location.contains(
-    #    func.ST_Transform(
-    #        func.ST_MakeEnvelope(
-    #            data.bbox.lon_min,
-    #            data.bbox.lon_max,
-    #            data.bbox.lat_min,
-    #            data.bbox.lat_max,
-    #            4326
-    #        )))))
-
     return result.scalars()
     # return result.scalars().all()
+
+
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)

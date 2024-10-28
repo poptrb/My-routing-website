@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = os.getenv("JWT_ALGORITHM")
     jwt_expire: int = os.getenv("JWT_EXPIRE")
     jwt_secret: str = os.getenv("JWT_SECRET")
+    reset_pwd_token: str = os.getenv("RESET_PASSWORD_TOKEN")
+    verification_token: str = os.getenv("VERIFICATION_TOKEN")
 
 
 settings = Settings()

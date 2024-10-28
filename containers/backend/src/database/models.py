@@ -4,6 +4,7 @@ from uuid import UUID
 
 from sqlalchemy import (
     func,
+    Boolean,
     Float,
     ForeignKey,
     Integer,
@@ -13,8 +14,24 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
+from fastapi_users.db import (
+    SQLAlchemyBaseUserTableUUID,
+    SQLAlchemyUserDatabase,
+)
 
 from database import Base
+
+
+class Token(Base):
+    id: Mapped[int]
+    token_hash: Mapped[str] = mapped_column(String)
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+    used_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+
+
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    role: Mapped[str] = mapped_column(String)
+    signup_date: Mapped[datetime] = mapped_column(DateTime)
 
 
 class Report(Base):
