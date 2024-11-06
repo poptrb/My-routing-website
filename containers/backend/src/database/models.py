@@ -17,7 +17,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 from fastapi_users.db import (
     SQLAlchemyBaseUserTableUUID,
-    SQLAlchemyUserDatabase,
 )
 
 from database import Base
@@ -31,14 +30,13 @@ class SignupToken(Base):
     )
     token_hash: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime)
-    user_id: Mapped["User"] = relationship(back_populates="fastapi_user")
+    user_id: Mapped["User"] = relationship(back_populates="token")
     used_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "fastapi_user"
 
-    role: Mapped[str] = mapped_column(String)
     signup_date: Mapped[datetime] = mapped_column(DateTime)
     token_id: Mapped[int] = mapped_column(ForeignKey("signup_token.id"))
     token: Mapped["SignupToken"] = relationship(back_populates="user_id")
@@ -47,7 +45,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 class Report(Base):
     __tablename__ = "report"
     __table_args__ = (
-        Index('idx_report_pubDate', 'pubDate', postgresql_using="btree"),
+        Index("idx_report_pubDate", "pubDate", postgresql_using="btree"),
     )
 
     id: Mapped[str] = mapped_column(

@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
+from logging import getLogger
+from uuid import UUID
 
 from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from fastapi import Depends, HTTPException, status
 from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,16 +11,58 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, update, or_, and_
 
 from .models import Report, User, SignupToken
-from .schema import GetReportsRequest
+from .schemas import GetReportsRequest, SignupTokenModel
 from . import get_async_session
 
 
-async def insert_token(db: AsyncSession, data: dict) -> None:
-    pass
+logger = getLogger()
+ph = PasswordHasher()
 
 
-async def get_token(db: AsyncSession, data: dict) -> SignupToken:
-    pass
+async def insert_token(db: AsyncSession, data: SignupTokenModel) -> None:
+    token = SignupToken(
+        token_hash=ph.hash(data.token_hash), created_at=datetime.now()
+    )
+
+    await token.save(db)
+
+
+async def invalidate_token(db: AsyncSession, token_id: int) -> None:
+    token_result = await db.execute(
+        select(SignupToken).
+        where(SignupToken.id == token_id)
+    )
+
+    token = token_result.scalars().all()[0]
+
+    token.used_at = datetime.now()
+    await token.save(db)
+
+
+async def get_token_by_id(db: AsyncSession, id: UUID) -> SignupToken | None:
+    result = await db.execute(select(SignupToken).filter(SignupToken.id == id))
+    return result.one()
+
+
+async def get_token(db: AsyncSession, cleartext: str) -> SignupToken | None:
+    def verify_token(token, cleartext):
+        try:
+            ph.verify(token.token_hash, cleartext)
+            logger.debug(cleartext)
+            return token.token_hash
+        except (InvalidHashError, VerifyMismatchError):
+            return None
+
+    result = await db.execute(
+        select(SignupToken).
+        filter(SignupToken.used_at == None)
+    )
+
+    for token in result.scalars():
+        if verify_token(token, cleartext):
+            return token
+
+    raise HTTPException(401, 'Invalid token!')
 
 
 async def insert_report(db: AsyncSession, data: dict) -> None:

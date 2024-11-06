@@ -76,20 +76,20 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
+# async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+#     yield SQLAlchemyUserDatabase(session, User)
 
-    # try:
-    #     session = async_session_maker().session()
-    #     if session is None:
-    #         raise Exception('DBSessionManager not initalized')
+# try:
+#     session = async_session_maker().session()
+#     if session is None:
+#         raise Exception('DBSessionManager not initalized')
 
-    #     yield session
-    # except SQLAlchemyError as e:
-    #     logger.exception(e)
-    #     await session.rollback()
-    # finally:
-    #     session.close()
+#     yield session
+# except SQLAlchemyError as e:
+#     logger.exception(e)
+#     await session.rollback()
+# finally:
+#     session.close()
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_async_session)]
