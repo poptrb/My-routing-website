@@ -2,20 +2,19 @@ import * as React from 'react';
 
 import {MapProvider} from 'react-map-gl';
 
-
-import { UserLocation } from './map'
+import { ExternalProvider } from './ReportsProvider'
+import { CustomMap } from './Map'
 import { Controls } from './map-controls'
 
 
 export default function App() {
   return (
-  <MapProvider>
-    <Controls />
-    <UserLocation />
-  </MapProvider>
+  <ExternalProvider>
+    <MapProvider>
+        <Controls />
+        <CustomMap/>
+    </MapProvider>
+  </ExternalProvider>
   )
 
 }
-
-// const root = createRoot(document.body.appendChild(document.createElement('div')));
-// root.render(<Root />);
