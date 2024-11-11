@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import Map, {GeolocateControl, Source, Layer, useMap} from 'react-map-gl';
+import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
 
+import {ExternalProvider} from './ReportsProvider.js'
 import {FlexboxComponent} from './map_controls_flexbox'
 import {MapLine} from './map_line'
 import {useExternalContext} from './ReportsProvider'
@@ -11,6 +12,15 @@ import {bbox, center, lineString, bboxPolygon} from '@turf/turf'
 // import {getUserCoordinates, getUserLocation} from './location.js'
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
+
+const pointLayerStyle = {
+  id: 'point',
+  type: 'circle',
+  paint: {
+    'circle-radius': 10,
+    'circle-color': '#007cbf'
+  }
+};
 
 export function CustomMap() {
 
@@ -25,9 +35,8 @@ export function CustomMap() {
     setRouteStops(value)
   }
 
-
   return(
-    <>
+    <ExternalProvider>
       <FlexboxComponent
         clickedPoints={clickedPoints}
         updateClickedPoints={updateClickedPoints}
@@ -38,7 +47,7 @@ export function CustomMap() {
         routeStops={routeStops}
         updateRouteStops={updateRouteStops}
       />
-    </>
+    </ExternalProvider>
   );
 };
 
@@ -48,15 +57,6 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
   const geoControlRef = useRef()
   const geocoderControlRef = useRef()
   const externalContext = useExternalContext()
-  const pointLayerStyle = {
-    id: 'point',
-    type: 'circle',
-    paint: {
-      'circle-radius': 10,
-      'circle-color': '#007cbf'
-    }
-  };
-
 
    const [viewState, setViewState] = useState({
      longitude: 26.1025,
