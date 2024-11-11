@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Optional
 from logging import getLogger
 
@@ -48,6 +49,10 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                 raise HTTPException(401, detail="Invalid token!")
 
             user_create.token_id = token.id
+            user_create.is_active = True
+            user_create.is_verified = True
+            user_create.signup_date = datetime.now()
+
             del (user_create.token_cleartext)
 
         created_user = await super().create(user_create, safe, request=request)
