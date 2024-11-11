@@ -62,7 +62,7 @@ def do_run_migrations(connection: Connection) -> None:
         include_schemas=True,
         include_name=include_name,
         process_revision_directives=alembic_helpers.writer,
-        render_item=alembic_helpers.render_item
+        render_item=alembic_helpers.render_item,
     )
 
     with context.begin_transaction():
