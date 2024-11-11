@@ -57,6 +57,7 @@ async def get_token(db: AsyncSession, cleartext: str) -> SignupToken | None:
         select(SignupToken).
         filter(SignupToken.used_at == None)
     )
+    logger.info(result.scalars())
 
     for token in result.scalars():
         if verify_token(token, cleartext):
