@@ -1,20 +1,15 @@
-import * as React from 'react';
+import React from 'react';
+import {BrowserRouter} from 'react-router-dom'
 
-import {MapProvider} from 'react-map-gl';
-
-import { ExternalProvider } from './ReportsProvider'
-import { CustomMap } from './Map'
-import { Controls } from './map-controls'
-
+import {Router} from './Router';
+import {AuthProvider} from './context/AuthProvider'
 
 export default function App() {
   return (
-  <ExternalProvider>
-    <MapProvider>
-        <Controls />
-        <CustomMap/>
-    </MapProvider>
-  </ExternalProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <Router/>
+      </AuthProvider>
+    </BrowserRouter>
   )
-
 }
