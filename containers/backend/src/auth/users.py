@@ -51,7 +51,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             user_create.is_verified = True
             user_create.signup_date = datetime.now()
 
-            del (user_create.token_cleartext)
+            del user_create.token_cleartext
 
         created_user = await super().create(user_create, safe, request=request)
         return created_user
@@ -92,11 +92,11 @@ async def get_user_manager(
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 cookie_transport = CookieTransport(
-    cookie_max_age=3600,
+    cookie_max_age=3600 * 3,
     cookie_secure=False,
-    cookie_httponly=True,
-    cookie_samesite='strict',
-    cookie_domain=settings.domain
+    cookie_httponly=False,
+    cookie_samesite="none",
+    cookie_domain="localhost",
 )
 
 
@@ -104,16 +104,15 @@ def get_jwt_strategy() -> JWTStrategy[models.UP, models.ID]:
     return JWTStrategy(
         secret=settings.jwt_secret,
         algorithm=settings.jwt_algorithm,
-        lifetime_seconds=settings.jwt_expire
+        lifetime_seconds=settings.jwt_expire,
     )
 
 
 auth_backend = AuthenticationBackend(
     name="jwt",
-    transport=cookie_transport,
+    transport=bearer_transport,
     get_strategy=get_jwt_strategy,
 )
-
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 

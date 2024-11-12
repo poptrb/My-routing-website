@@ -1,13 +1,12 @@
-import asyncio
-import json
 import os
-import time
 import logging
-from datetime import datetime, timedelta
-from typing import List
+import json
 
+from aiohttp import ClientSession
+from aiohttp import ClientResponseError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -19,25 +18,26 @@ from database.operations import (
     insert_token,
     get_token,
 )
+
 from database.schemas import (
     SignupTokenModel,
     SignupTokenModelRead,
     ReportBase,
     UserRead,
     UserCreate,
-    UserUpdate,
     GetReportsRequest,
 )
 
-from database.models import User, SignupToken
+from database.models import User
 from auth.users import auth_backend, current_active_user, fastapi_users
-
 
 logging.basicConfig(
     format="%(levelname)s %(asctime)s %(module)s %(message)s",
     datefmt="%Y/%m/%d %H:%M:%S",
     level=logging.DEBUG,
 )
+
+logger = logging.getLogger()
 
 
 def run_scheduler():
@@ -97,27 +97,50 @@ app.include_router(
     tags=["auth"],
 )
 
-app.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
-)
-
 
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
 
 
-@app.get("/", response_model=list[ReportBase])
-async def get_top_reports(db_session: SessionDep):
+@app.get("/reports_latest", response_model=list[ReportBase])
+async def get_top_reports(
+    db_session: SessionDep,
+    user: User = Depends(current_active_user)
+):
     result = await get_reports(db_session)
     return result
 
 
-@app.post("/reports", response_model=list[ReportBase])
+@app.post("/geo/{full_path}")
+async def proxy_valhalla(
+    full_path: str,
+    request: Request,
+    response: JSONResponse,
+    user: User = Depends(current_active_user),
+):
+    url = f"http://valhalla:8002/{full_path}?json="
+    async with ClientSession() as session:
+        body = await request.json()
+        async with session.post(url, json=body) as r:
+            try:
+                body = await r.json()
+                response.status_code = status.HTTP_200_OK
+                return body
+            except ClientResponseError as e:
+                response.status_code = e.status
+                response.header = e.headers
+                return e.message
+
+
+@app.post(
+    "/reports",
+    response_model=list[ReportBase],
+)
 async def get_reports_by_bbox(
-    request: GetReportsRequest, db_session: SessionDep
+    request: GetReportsRequest,
+    db_session: SessionDep,
+    user: User = Depends(current_active_user),
 ):
     result = await get_reports_two(db_session, request)
     return result
