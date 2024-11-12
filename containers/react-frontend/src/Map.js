@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
 
-import {ExternalProvider} from './ReportsProvider.js'
+import {ExternalProvider, useExternalContext} from './context/ReportsProvider.js'
 import {FlexboxComponent} from './map_controls_flexbox'
 import {MapLine} from './map_line'
-import {useExternalContext} from './ReportsProvider'
 import {GeocoderControl} from './GeocoderControl'
+import {useBackend} from './hooks/useBackend'
 
 import {bbox, center, lineString, bboxPolygon} from '@turf/turf'
 
@@ -35,6 +35,7 @@ export function CustomMap() {
     setRouteStops(value)
   }
 
+
   return(
     <ExternalProvider>
       <FlexboxComponent
@@ -55,7 +56,6 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
 
   const mapRef = useRef()
   const geoControlRef = useRef()
-  const geocoderControlRef = useRef()
   const externalContext = useExternalContext()
 
    const [viewState, setViewState] = useState({
@@ -100,17 +100,17 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
 
     if (userLocationRef.current) {
 
-    const line = lineString([
-      [destinationRef.current.longitude, destinationRef.current.latitude],
-      [userLocationRef.current.longitude, userLocationRef.current.latitude]
-    ])
+      const line = lineString([
+        [destinationRef.current.longitude, destinationRef.current.latitude],
+        [userLocationRef.current.longitude, userLocationRef.current.latitude]
+      ])
 
-
-    const bbox_center = center(bboxPolygon(bbox(line)))
-    mapRef.current.flyTo({
-      center: bbox_center.geometry.coordinates,
-      zoom: 14
-    })
+      mapRef.current.fitBounds(bbox(line), {
+        bearing: 0,
+        linear: false,
+        padding: 150,
+        pitch: 0
+      });
     }
   };
 
@@ -140,8 +140,8 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
         : null
       }
       <GeocoderControl
-        ref={geocoderControlRef}
-        mapboxAccessToken={MAPBOX_TOKEN} position="top-left"
+        mapboxAccessToken={MAPBOX_TOKEN}
+        position="top-left"
         flyTo={false}
         onResult={onGeocoderResult}
       />

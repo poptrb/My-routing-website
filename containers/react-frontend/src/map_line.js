@@ -2,6 +2,8 @@ import * as polyline from '@mapbox/polyline'
 import {useCallback, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
 import {circle} from '@turf/circle'
+import {privateRoute} from './api/backend'
+import useBackend from './hooks/useBackend'
 
 const lineLayerStyle = {
   id: "route",
@@ -53,7 +55,7 @@ const buildExcludedPolygonsFromGeoJSON = (excludePoints, radius) => {
 }
 
 
-export const getRouteGeoJSON = async(pointList, excludePoints) => {
+export const getRouteGeoJSON = async(backend, pointList, excludePoints) => {
   if (pointList.length < 2) {
     return null
   }
@@ -65,20 +67,22 @@ export const getRouteGeoJSON = async(pointList, excludePoints) => {
     };
   });
 
-  const route_response = await fetch("http://localhost:8002/optimized_route?json=", {
-    method: 'POST',
-    body: JSON.stringify({
-      locations: locations,
-      exclude_polygons: buildExcludedPolygonsFromGeoJSON(excludePoints, 30),
-      costing: 'auto',
-      direction_options: {
-        units: 'kilometres'
-      }
-    })
-  });
+  let response_data = null;
+  await backend.post("/geo/optimized_route?json=", {
+    locations: locations,
+    exclude_polygons: buildExcludedPolygonsFromGeoJSON(excludePoints, 30),
+    costing: 'auto',
+    direction_options: {
+      units: 'kilometres'
+    }
+  }).then((response) => {
+    console.log(response)
+    response_data = response.data
+  }).catch((err) => {
+    console.error(err)
+  })
 
-  const data = await route_response.json()
-  return data
+  return response_data;
 }
 
 
@@ -107,15 +111,16 @@ export function MapLine({pointList, excludePoints}) {
 
   const [routeGeoJSON, setRouteGeoJSON] = useState();
   const [locationGeoJSON, setLocationGeoJSON]= useState();
+  const backend = useBackend()
 
   const showRoute = useCallback(async() => {
-    const data = await getRouteGeoJSON(pointList, excludePoints);
+    const data = await getRouteGeoJSON(backend, pointList, excludePoints);
     const geoJSON = decodeRouteGeoJSON(data);
     console.log(data)
     if (geoJSON) {
       setRouteGeoJSON(geoJSON);
     };
-  }, [pointList, excludePoints]);
+  }, [pointList, excludePoints, backend]);
 
   useEffect(() => {
     showRoute();
