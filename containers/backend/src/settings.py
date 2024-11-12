@@ -11,6 +11,8 @@ class Settings(BaseSettings):
         + f"{os.getenv("POSTGIS_HOST")}:{os.getenv("POSTGIS_PORT")}/"
         + f"{os.getenv("POSTGIS_DB")}"
     )
+    env: str = os.getenv("APP_ENV")
+    domain: str = os.getenv("DOMAIN")
     jwt_algorithm: str = os.getenv("JWT_ALGORITHM")
     jwt_expire: int = os.getenv("JWT_EXPIRE")
     jwt_secret: str = os.getenv("JWT_SECRET")

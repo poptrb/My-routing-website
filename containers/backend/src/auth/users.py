@@ -13,20 +13,18 @@ from fastapi_users import (
 
 from fastapi_users.authentication import (
     AuthenticationBackend,
+    CookieTransport,
     BearerTransport,
     JWTStrategy,
 )
 from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import SessionDep, get_async_session, async_session_maker
+from database import get_async_session, async_session_maker
 from database.models import User
 from database.schemas import UserRead, UserCreate
-from database.operations import get_token, insert_token, invalidate_token
+from database.operations import get_token, invalidate_token
 from settings import settings
-
-SECRET = "SECRET"
-
 
 logger = getLogger()
 
@@ -93,15 +91,26 @@ async def get_user_manager(
 
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+cookie_transport = CookieTransport(
+    cookie_max_age=3600,
+    cookie_secure=False,
+    cookie_httponly=True,
+    cookie_samesite='strict',
+    cookie_domain=settings.domain
+)
 
 
 def get_jwt_strategy() -> JWTStrategy[models.UP, models.ID]:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+    return JWTStrategy(
+        secret=settings.jwt_secret,
+        algorithm=settings.jwt_algorithm,
+        lifetime_seconds=settings.jwt_expire
+    )
 
 
 auth_backend = AuthenticationBackend(
     name="jwt",
-    transport=bearer_transport,
+    transport=cookie_transport,
     get_strategy=get_jwt_strategy,
 )
 
