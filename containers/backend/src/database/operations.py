@@ -29,8 +29,7 @@ async def insert_token(db: AsyncSession, data: SignupTokenModel) -> None:
 
 async def invalidate_token(db: AsyncSession, token_id: int) -> None:
     token_result = await db.execute(
-        select(SignupToken).
-        where(SignupToken.id == token_id)
+        select(SignupToken).where(SignupToken.id == token_id)
     )
 
     token = token_result.scalars().all()[0]
@@ -54,8 +53,7 @@ async def get_token(db: AsyncSession, cleartext: str) -> SignupToken | None:
             return None
 
     result = await db.execute(
-        select(SignupToken).
-        filter(SignupToken.used_at == None)
+        select(SignupToken).filter(SignupToken.used_at == None)
     )
     logger.info(result.scalars())
 
@@ -63,7 +61,7 @@ async def get_token(db: AsyncSession, cleartext: str) -> SignupToken | None:
         if verify_token(token, cleartext):
             return token
 
-    raise HTTPException(401, 'Invalid token!')
+    raise HTTPException(401, "Invalid token!")
 
 
 async def insert_report(db: AsyncSession, data: dict) -> None:
