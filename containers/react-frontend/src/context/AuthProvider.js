@@ -1,12 +1,17 @@
-import {createContext, useContext, useCallback, useState} from "react";
+import {createContext, useContext, useState} from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
+  const [auth, setAuth] = useState(localStorage.getItem('auth') || {});
   //useState(localStorage.getItem("jwt_token"));
 
   const updateAuth = (newAuth) => {
+    for (const key in newAuth) {
+      localStorage.setItem(key, newAuth[key]);
+    }
+
+    localStorage.setItem('auth', auth)
     setAuth(newAuth)
   };
 
@@ -14,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         auth: auth,
-        setAuth: setAuth
+        setAuth: updateAuth
       }}
     >
       {children}

@@ -8,7 +8,7 @@ const PrivateRoutes = () => {
   // const jwt_token = localStorage.getItem('jwt_token');
 
   return (
-    auth?.user
+    auth?.accessToken
       ? <Outlet />
       : <Navigate
           to='/login'

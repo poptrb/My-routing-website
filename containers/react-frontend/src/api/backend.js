@@ -7,6 +7,9 @@ export default axios.create({
 
 export const privateRoute = axios.create({
     baseURL: BASE_URL,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json'
+    },
     withCredentials: true
 });
