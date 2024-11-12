@@ -1,13 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback, useMemo } from 'react';
 import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
 
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider.js'
 import {FlexboxComponent} from './map_controls_flexbox'
 import {MapLine} from './map_line'
 import {GeocoderControl} from './GeocoderControl'
-import {useBackend} from './hooks/useBackend'
 
-import {bbox, center, lineString, bboxPolygon} from '@turf/turf'
+import {bbox, lineString} from '@turf/turf'
 
 // import {getUserCoordinates, getUserLocation} from './location.js'
 
@@ -54,9 +53,12 @@ export function CustomMap() {
 
 export function MapView({clickedPoints, setClickedPoints, routeStops, updateRouteStops}) {
 
-  const mapRef = useRef()
-  const geoControlRef = useRef()
-  const externalContext = useExternalContext()
+  const mapRef = useRef();
+  const geoControlRef = useRef();
+  const externalContext = useExternalContext();
+
+  const [userLocation, setUserLocation] = useState();
+  const [destinationLocation, setDestinationLocation] = useState();
 
    const [viewState, setViewState] = useState({
      longitude: 26.1025,
@@ -65,44 +67,41 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
   });
 
 
-  const onMapLoad = (evt) => {
+  const onMapLoad = useCallback((evt) => {
     geoControlRef.current.trigger()
-  }
+  }, [])
 
-  const onMapClick = (evt) => {
+  const onMapClick = useCallback((evt) => {
     setClickedPoints([...clickedPoints, {
       longitude: evt.lngLat.lng,
       latitude: evt.lngLat.lat
     }]);
-  };
+  }, [clickedPoints, setClickedPoints]);
 
-  const onMapMove = (evt) => {
+  const onMapMove = useCallback((evt) => {
     setViewState(evt.viewState);
+  }, []);
 
-  };
 
 
-  const userLocationRef = useRef()
-  const destinationRef = useRef()
-
-  const onGeolocate = (evt) => {
-    userLocationRef.current = {
+  const onGeolocate = useCallback((evt) => {
+    setUserLocation({
       longitude: evt.coords.longitude,
       latitude: evt.coords.latitude
-    }
-  };
+    })
+  }, []);
 
-  const onGeocoderResult = (evt) => {
-    destinationRef.current =  {
+  const onGeocoderResult = useCallback((evt) => {
+    setDestinationLocation({
       longitude: evt.result.center[0],
       latitude: evt.result.center[1]
-    }
+    });
 
-    if (userLocationRef.current) {
+    if (userLocation) {
 
       const line = lineString([
-        [destinationRef.current.longitude, destinationRef.current.latitude],
-        [userLocationRef.current.longitude, userLocationRef.current.latitude]
+        [userLocation.longitude, userLocation.latitude]
+        [destinationLocation.longitude, destinationLocation.latitude],
       ])
 
       mapRef.current.fitBounds(bbox(line), {
@@ -112,7 +111,11 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
         pitch: 0
       });
     }
-  };
+  }, [destinationLocation, userLocation]);
+
+  const pointList = useMemo(() =>
+    [userLocation, destinationLocation]
+  , [userLocation, destinationLocation])
 
 
   return (
@@ -152,9 +155,9 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
         showUserHeading={true}
       />
       {
-        destinationRef.current && userLocationRef.current
+        destinationLocation && userLocation
         ? <MapLine
-            pointList={[userLocationRef.current, destinationRef.current]}
+            pointList={pointList}
             excludePoints={externalContext}
           />
         : null

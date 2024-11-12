@@ -2,7 +2,6 @@ import {Route, Routes} from 'react-router-dom';
 
 import PrivateRoutes from './PrivateRoutes';
 import {CustomMap} from './Map.js'
-import {ExternalProvider} from './context/ReportsProvider'
 import {Login} from './screens/Login';
 import {Register} from './screens/Register';
 

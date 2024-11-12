@@ -9,7 +9,7 @@ export const ExternalProvider = ({ children }) => {
 
   const data = useRef([])
   const fetchReports = useCallback(async () => {
-    const response = await backend.get("/reports_latest")
+    await backend.get("/reports_latest")
       .then((response) => {
         data.current = response.data
       })

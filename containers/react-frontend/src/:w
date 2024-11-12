@@ -2,6 +2,7 @@ import * as polyline from '@mapbox/polyline'
 import {useCallback, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
 import {circle} from '@turf/circle'
+import {privateRoute} from './api/backend'
 import useBackend from './hooks/useBackend'
 
 const lineLayerStyle = {
@@ -66,7 +67,6 @@ export const getRouteGeoJSON = async(backend, pointList, excludePoints) => {
     };
   });
 
-  let response_data = null;
   await backend.post("/geo/optimized_route?json=", {
     locations: locations,
     exclude_polygons: buildExcludedPolygonsFromGeoJSON(excludePoints, 30),
@@ -76,12 +76,10 @@ export const getRouteGeoJSON = async(backend, pointList, excludePoints) => {
     }
   }).then((response) => {
     console.log(response)
-    response_data = response.data
+    return response
   }).catch((err) => {
     console.error(err)
   })
-
-  return response_data;
 }
 
 
@@ -113,15 +111,13 @@ export function MapLine({pointList, excludePoints}) {
   const backend = useBackend()
 
   const showRoute = useCallback(async() => {
-
     const data = await getRouteGeoJSON(backend, pointList, excludePoints);
     const geoJSON = decodeRouteGeoJSON(data);
-
+    console.log(data)
     if (geoJSON) {
       setRouteGeoJSON(geoJSON);
     };
-  }, [pointList, excludePoints, backend]);
-
+  }, [pointList, excludePoints]);
 
   useEffect(() => {
     showRoute();
@@ -148,37 +144,17 @@ export function MapLine({pointList, excludePoints}) {
 
   return(
     <>
-    {
-      routeGeoJSON
-        ? <Source
-            key="route-source"
-            id="route-source"
-            type="geojson"
-            data={routeGeoJSON}
-          >
-            <Layer
-              {...lineLayerStyle}
-              id="route-layer"
-              source="route-source"
-            />
-          </Source>
-        : null
+    { routeGeoJSON
+      ? <Source key="route-source" id="route-source" type="geojson" data={routeGeoJSON}>
+          <Layer {...lineLayerStyle} id="route-layer" source="route-source"/>
+        </Source>
+      : null
     }
-    {
-      locationGeoJSON
-        ? <Source
-            key="location-source"
-            id="location-source"
-            type="geojson"
-            data={locationGeoJSON}
-          >
-            <Layer
-              {...locationLayerStyle}
-              id="location-layer"
-              source="location-source"
-            />
-          </Source>
-        : null
+    { locationGeoJSON
+      ? <Source key="location-source" id="location-source" type="geojson" data={locationGeoJSON}>
+          <Layer {...locationLayerStyle} id="location-layer" source="location-source"/>
+        </Source>
+      : null
     }
     </>
   );
