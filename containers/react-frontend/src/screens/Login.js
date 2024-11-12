@@ -51,16 +51,16 @@ const Login = () => {
         {
           headers: {
             'Content-Type': 'multipart/form-data'
-          }
+          },
+          withCredentials: true
         });
 
         console.log(JSON.stringify(response?.data));
         //console.log(JSON.stringify(response));
 
-        const accessToken = response?.data?.accessToken;
-        const roles = response?.data?.roles;
+        const accessToken = response?.data?.access_token
 
-        auth.setAuth({ user, pwd, roles, accessToken });
+        auth.setAuth({ user, accessToken });
         console.log(auth.auth)
         setUser('');
         setPwd('');
