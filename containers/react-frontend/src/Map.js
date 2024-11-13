@@ -8,8 +8,6 @@ import {GeocoderControl} from './GeocoderControl'
 
 import {bbox, lineString} from '@turf/turf'
 
-// import {getUserCoordinates, getUserLocation} from './location.js'
-
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
 
 const pointLayerStyle = {
@@ -91,16 +89,16 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
     })
   }, []);
 
-  const onGeocoderResult = useCallback((evt) => {
+  const onGeocoderResult = (evt) => {
     setDestinationLocation({
       longitude: evt.result.center[0],
       latitude: evt.result.center[1]
     });
 
-    if (userLocation) {
+    if (userLocation?.longitude) {
 
       const line = lineString([
-        [userLocation.longitude, userLocation.latitude]
+        [userLocation.longitude, userLocation.latitude],
         [destinationLocation.longitude, destinationLocation.latitude],
       ])
 
@@ -111,7 +109,7 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
         pitch: 0
       });
     }
-  }, [destinationLocation, userLocation]);
+  }
 
   const pointList = useMemo(() =>
     [userLocation, destinationLocation]

@@ -1,19 +1,20 @@
-import { privateRoute } from "../api/backend";
 import { useEffect } from "react";
-// import useRefreshToken from "./useRefreshToken";
+import { useNavigate } from 'react-router-dom';
+import { privateRoute } from "../api/backend";
 import useAuth from "../context/AuthProvider";
+
+// import useRefreshToken from "./useRefreshToken";
 
 const useBackend = () => {
     // const refresh = useRefreshToken();
   const { auth } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
 
     const requestIntercept = privateRoute.interceptors.request.use(
       config => {
-        console.log('Intercepted request')
         if (!config.headers['Authorization']) {
-          console.log(`setting Authorization header for request`);
           config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
         }
 
@@ -24,21 +25,17 @@ const useBackend = () => {
     const responseIntercept = privateRoute.interceptors.response.use(
       response => response,
       async (error) => {
-        const prevRequest = error?.config;
-        // assert JWT token is out of date because of 403
         console.log(error)
-        if (error?.response?.status === 401 && !prevRequest?.sent) {
-          prevRequest.sent = true;
+        if (error?.response?.status === 401) {
           //const newAccessToken = await refresh();
-          prevRequest.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
-          return privateRoute(prevRequest);
+          navigate('/login', { replace: true})
         }
         return Promise.reject(error);
       }
     );
 
       return () => {
-          privateRoute.interceptors.request.eject(requestIntercept);
+          // privateRoute.interceptors.request.eject(requestIntercept);
           privateRoute.interceptors.response.eject(responseIntercept);
       }
   }, [auth]) //refresh])

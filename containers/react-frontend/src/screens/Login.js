@@ -2,9 +2,7 @@ import {useRef, useState, useEffect} from 'react';
 import useAuthContext from '../context/AuthProvider';
 import {Link, useNavigate, useLocation} from 'react-router-dom';
 
-import axios from '../api/backend';
-
-const LOGIN_URL = 'http://localhost:8001/auth/jwt/login';
+import privateRoute from '../api/backend';
 
 const Login = () => {
     const auth = useAuthContext();
@@ -44,7 +42,7 @@ const Login = () => {
           loginFormData.append(key, loginData[key]);
         }
 
-        const response = await axios.post(LOGIN_URL, {
+        const response = await privateRoute.post('/auth/jwt/login', {
           username: user,
           password: pwd
         },
@@ -52,7 +50,6 @@ const Login = () => {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
-          withCredentials: true
         });
 
         console.log(JSON.stringify(response?.data));
@@ -60,8 +57,7 @@ const Login = () => {
 
         const accessToken = response?.data?.access_token
 
-        auth.setAuth({ user, accessToken });
-        console.log(auth.auth)
+        auth.setAuth({ user });
         setUser('');
         setPwd('');
 

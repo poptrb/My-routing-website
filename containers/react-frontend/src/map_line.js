@@ -2,7 +2,8 @@ import * as polyline from '@mapbox/polyline'
 import {useCallback, useEffect, useState} from 'react';
 import {Layer, Source} from 'react-map-gl';
 import {circle} from '@turf/circle'
-import useBackend from './hooks/useBackend'
+import privateRoute from './api/backend'
+import useBackend from './hooks/useBackend';
 
 const lineLayerStyle = {
   id: "route",
@@ -75,7 +76,6 @@ export const getRouteGeoJSON = async(backend, pointList, excludePoints) => {
       units: 'kilometres'
     }
   }).then((response) => {
-    console.log(response)
     response_data = response.data
   }).catch((err) => {
     console.error(err)
@@ -110,7 +110,7 @@ export function MapLine({pointList, excludePoints}) {
 
   const [routeGeoJSON, setRouteGeoJSON] = useState();
   const [locationGeoJSON, setLocationGeoJSON]= useState();
-  const backend = useBackend()
+  const backend = useBackend();
 
   const showRoute = useCallback(async() => {
 
@@ -120,7 +120,7 @@ export function MapLine({pointList, excludePoints}) {
     if (geoJSON) {
       setRouteGeoJSON(geoJSON);
     };
-  }, [pointList, excludePoints, backend]);
+  }, [pointList, excludePoints, privateRoute]);
 
 
   useEffect(() => {

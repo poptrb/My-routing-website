@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 import useBackend from '../hooks/useBackend'
+import privateRoute from '../api/backend'
+
 const ExternalContext = createContext();
 
 export const ExternalProvider = ({ children }) => {
