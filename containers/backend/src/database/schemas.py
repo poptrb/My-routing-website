@@ -81,6 +81,15 @@ class ReportData(BaseModel):
     pubMillis: int
 
 
+class ReportBbox(BaseModel):
+    top: float
+    right: float
+    left: float
+    bottom: float
+    env: str
+    types: str
+
+
 class Bbox(BaseModel):
     lat_min: float
     lat_max: float

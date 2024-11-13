@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+from datetime import datetime
 
 from aiohttp import ClientSession
 from aiohttp import ClientResponseError
@@ -20,11 +21,13 @@ from database.operations import (
 )
 
 from database.schemas import (
+    ReportBbox,
     SignupTokenModel,
     SignupTokenModelRead,
     ReportBase,
     UserRead,
     UserCreate,
+    UserUpdate,
     GetReportsRequest,
 )
 
@@ -40,27 +43,56 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
+brasov_report_bbox = ReportBbox(
+    top=45.763,
+    bottom=45.561,
+    left=25.363,
+    right=25.839,
+    env="row",
+    types="alerts"
+)
+
+bucuresti_report_bbox = ReportBbox(
+    top=44.539,
+    bottom=44.311,
+    left=25.847,
+    right=26.302,
+    env="row",
+    types="alerts"
+)
+
+
 def run_scheduler():
     logging.getLogger("apscheduler").setLevel(logging.DEBUG)
     scheduler = AsyncIOScheduler()
+
     scheduler.add_job(
         refresh_reports,
         "interval",
         seconds=60 * 60,
-        # next_run_time=(datetime.now())
+        args=[bucuresti_report_bbox],
+        next_run_time=(datetime.now())
+    )
+
+    scheduler.add_job(
+        refresh_reports,
+        "interval",
+        seconds=60 * 60,
+        args=[brasov_report_bbox],
+        next_run_time=(datetime.now())
     )
 
     scheduler.start()
 
 
-app = FastAPI()
+app = FastAPI(root_path='/api')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "localhost:8000"],
+    allow_origins=["https://localhost", "localhost"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "HEAD", "OPTIONS", "PUT", "PATCH"],
+    allow_headers=["Content-Type"]
 )
 
 
@@ -84,6 +116,11 @@ app.include_router(
     tags=["auth"],
 )
 
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+)
 
 app.include_router(
     fastapi_users.get_reset_password_router(),
@@ -157,4 +194,4 @@ async def create_token(request: SignupTokenModel, db_session: SessionDep):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("API_PORT", 80)))
+    uvicorn.run(app, host="localhost", port=int(os.getenv("API_PORT", 80)))

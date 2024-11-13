@@ -92,11 +92,10 @@ async def get_user_manager(
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 cookie_transport = CookieTransport(
-    cookie_max_age=3600 * 3,
-    cookie_secure=False,
-    cookie_httponly=False,
+    cookie_max_age=settings.jwt_expire,
+    cookie_secure=True,
+    cookie_httponly=True,
     cookie_samesite="none",
-    cookie_domain="localhost",
 )
 
 
@@ -110,7 +109,7 @@ def get_jwt_strategy() -> JWTStrategy[models.UP, models.ID]:
 
 auth_backend = AuthenticationBackend(
     name="jwt",
-    transport=bearer_transport,
+    transport=cookie_transport,
     get_strategy=get_jwt_strategy,
 )
 

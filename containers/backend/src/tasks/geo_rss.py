@@ -10,6 +10,7 @@ from aiohttp import ClientSession
 
 from database import async_session_maker
 from database.operations import insert_report
+from database.schemas import ReportBbox
 from logger.alerts import log_police_alert
 
 urllib3_logger = logging.getLogger("urllib3")
@@ -128,26 +129,17 @@ async def geo_rss_get(session: ClientSession, params: dict) -> Optional[dict]:
             return None
 
 
-async def refresh_reports():
-
-    params = {
-        "top": 44.539,
-        "bottom": 44.311,
-        "left": 25.847,
-        "right": 26.302,
-        "env": "row",
-        "types": "alerts",
-    }
+async def refresh_reports(report_bbox: ReportBbox):
 
     alert_queue = Queue()
 
     async with ClientSession() as session:
         await scan_rectangle(
             session,
-            params["top"],
-            params["right"],
-            params["bottom"],
-            params["left"],
+            report_bbox.top,
+            report_bbox.right,
+            report_bbox.bottom,
+            report_bbox.left,
             alert_queue=alert_queue,
         )
 
