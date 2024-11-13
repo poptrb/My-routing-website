@@ -4,21 +4,12 @@ volumes:
   osm-valhalla:
 
 networks:
+  internal:
   db:
-  external:
-    driver:
-      bridge
+  traefik:
+    name: traefik
 
 services:
-  osm-setup:
-    build:
-      context: ./containers/osm-setup/
-      dockerfile: Dockerfile
-    entrypoint:
-      - /usr/bin/bash
-      - /app/entrypoint.sh
-    volumes:
-      - osm:/data/osm
 
   valhalla:
     tty: true
@@ -29,40 +20,35 @@ services:
       tile_urls: "https://download.geofabrik.de/europe/romania-latest.osm.pbf"
       server_threads: 4
     networks:
-      - external
-    ports:
-      - 8002:8002
+      - internal
     volumes:
       - osm-valhalla:/custom_files
-  osrm:
-    depends_on:
-      osm-setup:
-        condition: service_completed_successfully
-    entrypoint: /data/entrypoint.sh
-    image: osrm/osrm-backend
-    restart: unless-stopped
-    ports:
-      - 5000:5000
-    volumes:
-      - osm:/data
-      - ./containers/osrm/entrypoint.sh:/data/entrypoint.sh
 
   frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend-secure.entrypoints=https"
+      - "traefik.http.middlewares.frontend-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader2.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.frontend.middlewares=frontend-https-redirect"
+      - "traefik.http.routers.frontend-secure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend-secure.tls=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     tty: true
     stdin_open: true
-    environment:
-      - TZ=${TZ}
     build:
       context: ./containers/react-frontend/
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - 8000:3000
+    networks:
+      - traefik
     volumes:
       - ./containers/react-frontend/src:/app/src
+      - /etc/localtime:/etc/localtime
 
   postgis:
-    container_name: geo-db
     env_file:
       - .env
     environment:
@@ -79,13 +65,23 @@ services:
     image: postgis/postgis:16-3.4-alpine
     networks:
       - db
-    ports:
-      - 127.0.0.1:5432:5432
     restart: always
     volumes:
       - postgis:/var/lib/postgresql/data
 
   backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.middlewares.backend-rewrite.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend-secure.entrypoints=https"
+      - "traefik.http.middlewares.backend-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader2.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.backend.middlewares=backend-rewrite,backend-https-redirect"
+      - "traefik.http.routers.backend-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-secure.tls=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=80"
     build:
       context: ./containers/backend/
       dockerfile: Dockerfile
@@ -97,13 +93,45 @@ services:
       - .env
     networks:
       - db
-      - external
-    ports:
-      - 127.0.0.1:8001:80
+      - internal
+      - traefik
     restart: unless-stopped
     command: uvicorn api:app --reload --host 0.0.0.0 --port 80
     volumes:
       # Read-only volume with source code
       - ./containers/backend/src:/app/:rw
+      - /etc/localtime:/etc/localtime
+
+  traefik:
+    environment:
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+    image: traefik:v3.2
+    networks:
+      - traefik
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./containers/traefik/traefik.yml:/traefik.yml:ro
+      - ./containers/traefik/tls.yml:/tls.yml:ro
+      - ./containers/traefik/self_signed:/self_signed:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && PathPrefix(`/dashboard`)"
+      - "traefik.http.middlewares.traefik-rewrite.stripprefix.prefixes=/dashboard"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-rewrite"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
 
 

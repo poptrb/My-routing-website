@@ -1,0 +1,7 @@
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /self_signed/srinotformexyz-local.crt
+        keyFile: /self_signed/srinotformexyz-local.key

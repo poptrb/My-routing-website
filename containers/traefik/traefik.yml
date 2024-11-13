@@ -1,0 +1,38 @@
+log:
+  level: DEBUG
+
+api:
+  dashboard: true
+  debug: true
+entryPoints:
+  http:
+    address: ":80"
+    transport:
+      respondingTimeouts:
+         readTimeout: 3600
+         writeTimeout: 3600
+
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+    transport:
+      respondingTimeouts:
+         readTimeout: 3600
+         writeTimeout: 3600
+
+serversTransport:
+  insecureSkipVerify: true
+
+tcpServersTransport:
+  dialTimeout: 3600s
+
+providers:
+  file:
+    filename: /tls.yml
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
