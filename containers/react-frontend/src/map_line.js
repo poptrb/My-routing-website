@@ -1,8 +1,7 @@
 import * as polyline from '@mapbox/polyline'
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState, memo} from 'react';
 import {Layer, Source} from 'react-map-gl';
 import {circle} from '@turf/circle'
-import privateRoute from './api/backend'
 import useBackend from './hooks/useBackend';
 
 const lineLayerStyle = {
@@ -120,7 +119,7 @@ export function MapLine({pointList, excludePoints}) {
     if (geoJSON) {
       setRouteGeoJSON(geoJSON);
     };
-  }, [pointList, excludePoints, privateRoute]);
+  }, [pointList, excludePoints, backend]);
 
 
   useEffect(() => {
@@ -183,3 +182,5 @@ export function MapLine({pointList, excludePoints}) {
     </>
   );
 };
+
+export const MapLineMemo = memo(MapLine)

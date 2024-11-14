@@ -1,4 +1,4 @@
-import {useEffect, useCallback, useState, useRef} from 'react'
+import {useEffect, useCallback, useRef} from 'react'
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 
 import axios from './api/backend';
@@ -8,7 +8,6 @@ const PrivateRoutes = () => {
   const { auth } = useAuth();
   const location = useLocation();
 
-  const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = useRef(false);
 
   const getOwnUser = useCallback(() => {
@@ -24,10 +23,10 @@ const PrivateRoutes = () => {
 
   useEffect(() => {
     getOwnUser()
-  }, []);
+  }, [getOwnUser]);
 
   return (
-    auth?.user
+    auth?.user || loggedInUser
       ? <Outlet />
       : <Navigate
           to='/login'

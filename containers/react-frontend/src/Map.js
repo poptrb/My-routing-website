@@ -83,6 +83,7 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
 
 
   const onGeolocate = useCallback((evt) => {
+    console.log(`Geolocation result`, evt)
     setUserLocation({
       longitude: evt.coords.longitude,
       latitude: evt.coords.latitude
@@ -90,18 +91,21 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
   }, []);
 
   const onGeocoderResult = (evt) => {
+    console.log(`Geocoder result`,  evt)
     setDestinationLocation({
       longitude: evt.result.center[0],
       latitude: evt.result.center[1]
     });
 
-    if (userLocation?.longitude) {
+    if (userLocation) {
 
+      console.log(userLocation)
       const line = lineString([
-        [userLocation.longitude, userLocation.latitude],
-        [destinationLocation.longitude, destinationLocation.latitude],
+        [userLocation.coords.longitude, userLocation.coords.latitude],
+        [destinationLocation.coords.longitude, destinationLocation.coords.latitude],
       ])
 
+      console.log(line)
       mapRef.current.fitBounds(bbox(line), {
         bearing: 0,
         linear: false,
