@@ -1,9 +1,9 @@
-from typing import AsyncGenerator, Any, Annotated, AsyncIterator
+from datetime import datetime
+from typing import AsyncGenerator, Any, Annotated
 from logging import getLogger
 
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import Depends
-from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -17,22 +17,62 @@ from settings import settings
 logger = getLogger(__name__)
 
 
+class ReportBase(DeclarativeBase):
+    id: str
+    __name__: str
+
+    async def save(self, db: AsyncSession):
+        try:
+            db.add(self)
+            return await db.commit()
+        except IntegrityError as e:
+            if not isinstance(e.orig.__cause__, UniqueViolationError):
+                logger.debug(f"Duplicate record: {e.orig.__cause__}")
+                pass
+
+            logger.debug(f"Updating record {self.id}")
+            update = {
+              "lastSeenDate": datetime.now()
+            }
+            await self.update(db, **update)
+        except SQLAlchemyError as ex:
+            logger.exception("Save to DB failed! Rolling back...", exc_info=ex)
+            await db.rollback()
+
+    async def update(self, db: AsyncSession, **kwargs):
+        try:
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+            return await db.commit()
+        except SQLAlchemyError as ex:
+            logger.exception("Update on DB failed!", exc_info=ex)
+            await db.rollback()
+
+    async def delete(self, db: AsyncSession):
+        try:
+            await db.delete(self)
+            await db.commit()
+            return True
+        except SQLAlchemyError as ex:
+            await db.rollback()
+            logger.exception("Update on DB failed!", exc_info=ex)
+
+
 class Base(DeclarativeBase):
     id: Any
     __name__: str
 
-    async def save(self, db_session: AsyncSession):
+    async def save(self, db: AsyncSession):
         try:
-            db_session.add(self)
-            return await db_session.commit()
-        except IntegrityError as e:
+            db.add(self)
+            return await db.commit()
+        except IntegrityError as ex:
             # if isinstance(e.orig.exc_type, UniqueViolationError):
-            exc = e.orig
-            logger.debug(f"Duplicate record: {exc}")
-            await db_session.rollback()
-        except UniqueViolationError:
-            await db_session.rollback()
+            logger.debug(f"Duplicate record: {ex.orig.__cause__}")
+            await db.rollback()
+            raise ex
         except SQLAlchemyError as ex:
+            await db.rollback()
             logger.exception("Save to DB failed!", exc_info=ex)
             raise ex
 
@@ -74,22 +114,5 @@ async def create_db_and_tables():
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
-
-
-# async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-#     yield SQLAlchemyUserDatabase(session, User)
-
-# try:
-#     session = async_session_maker().session()
-#     if session is None:
-#         raise Exception('DBSessionManager not initalized')
-
-#     yield session
-# except SQLAlchemyError as e:
-#     logger.exception(e)
-#     await session.rollback()
-# finally:
-#     session.close()
-
 
 SessionDep = Annotated[AsyncSession, Depends(get_async_session)]

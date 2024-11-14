@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import time
@@ -6,10 +7,13 @@ from asyncio import Queue, sleep
 from itertools import chain, groupby
 from typing import Optional, List
 
+from asyncpg.exceptions import UniqueViolationError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from aiohttp import ClientSession
 
 from database import async_session_maker
-from database.operations import insert_report
+from database.operations import insert_report, update_report
 from database.schemas import ReportBbox
 from logger.alerts import log_police_alert
 
@@ -19,9 +23,23 @@ urllib3_logger.setLevel(logging.CRITICAL)
 logger = logging.getLogger(__name__)
 
 
-async def process_alerts(
-    alert_queue: Queue,
-):
+async def handle_report_conflict(db_session: AsyncSession, ex: IntegrityError, id: str):
+    if not isinstance(ex.orig.__cause__, UniqueViolationError):
+        logger.debug(f"Duplicate record: {ex.orig.__cause__}")
+        raise ex
+
+    logger.debug(f"Updating Report {id} with last seen: {datetime.now()}")
+    update = {
+      "lastSeenDate": datetime.now()
+    }
+
+    try:
+        await update_report(db_session, id, **update)
+    except SQLAlchemyError as ex:
+        logger.exception(f"Save to DB failed for {id}", exc_info=ex)
+
+
+async def process_alerts(alert_queue: Queue):
 
     async with async_session_maker() as db_session:
         alerts = []
@@ -38,13 +56,11 @@ async def process_alerts(
             )
         )
 
-        from asyncpg.exceptions import UniqueViolationError
-
         for u in unique_alerts:
             try:
                 await insert_report(db_session, u)
-            except UniqueViolationError:
-                pass
+            except IntegrityError as ex:
+                await handle_report_conflict(db_session, ex, u['id'])
 
         log_police_alert(alerts, unique_alerts)
 

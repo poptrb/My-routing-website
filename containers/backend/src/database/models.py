@@ -19,7 +19,7 @@ from fastapi_users.db import (
     SQLAlchemyBaseUserTableUUID,
 )
 
-from database import Base
+from database import Base, ReportBase
 
 
 class SignupToken(Base):
@@ -60,3 +60,5 @@ class Report(Base):
     wazeData: Mapped[str] = mapped_column(String)
     location: Mapped[str] = mapped_column(Geometry("POINT", srid=4326))
     pubDate: Mapped[datetime] = mapped_column(DateTime)
+    firstSeenDate: Mapped[datetime] = mapped_column(DateTime)
+    lastSeenDate: Mapped[datetime] = mapped_column(DateTime)

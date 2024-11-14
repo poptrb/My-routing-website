@@ -28,6 +28,9 @@ class ReportBase(BaseModel):
     wazeData: str | None
     location: LatLng
     pubDate: datetime
+    firstSeenDate: datetime
+    lastSeenDate: datetime
+
 
     @field_validator("location", mode="before")
     @classmethod

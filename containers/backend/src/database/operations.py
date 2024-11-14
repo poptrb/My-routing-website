@@ -64,6 +64,16 @@ async def get_token(db: AsyncSession, cleartext: str) -> SignupToken | None:
     raise HTTPException(401, "Invalid token!")
 
 
+async def update_report(db: AsyncSession, id: str, **data) -> None:
+    await db.execute(
+        update(Report)
+        .where(Report.id == id)
+        .values(
+            lastSeenDate=datetime.now()
+        )
+    )
+
+
 async def insert_report(db: AsyncSession, data: dict) -> None:
     report = Report(
         id=data["id"],
@@ -75,6 +85,8 @@ async def insert_report(db: AsyncSession, data: dict) -> None:
         wazeData=data["wazeData"],
         location=f"POINT({data['location']['x']} {data['location']['y']})",
         pubDate=datetime.fromtimestamp(data["pubMillis"] // 1000),
+        firstSeenDate=datetime.now(),
+        lastSeenDate=datetime.now()
     )
 
     await report.save(db)
