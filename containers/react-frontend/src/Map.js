@@ -2,8 +2,8 @@ import React, { useRef, useState, useCallback, useMemo } from 'react';
 import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
 
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider.js'
-import {FlexboxComponent} from './map_controls_flexbox'
-import {MapLine} from './map_line'
+//import {FlexboxComponent} from './map_controls_flexbox'
+import {RouteLineLayer} from './map_line'
 import {GeocoderControl} from './GeocoderControl'
 
 import {bbox, lineString} from '@turf/turf'
@@ -33,12 +33,12 @@ export function CustomMap() {
   }
 
 
+    // <FlexboxComponent
+    //   clickedPoints={clickedPoints}
+    //   updateClickedPoints={updateClickedPoints}
+    // />
   return(
     <ExternalProvider>
-      <FlexboxComponent
-        clickedPoints={clickedPoints}
-        updateClickedPoints={updateClickedPoints}
-      />
       <MapView
         clickedPoints={clickedPoints}
         setClickedPoints={updateClickedPoints}
@@ -115,6 +115,7 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
     }
   }
 
+  // using react query, create a
   const pointList = useMemo(() =>
     [userLocation, destinationLocation]
   , [userLocation, destinationLocation])
@@ -158,9 +159,9 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
       />
       {
         destinationLocation && userLocation
-        ? <MapLine
-            pointList={pointList}
-            excludePoints={externalContext}
+        ? <RouteLineLayer
+            locations={pointList}
+            excludeLocations={externalContext}
           />
         : null
       }
