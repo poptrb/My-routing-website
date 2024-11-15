@@ -1,10 +1,11 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useCallback, useMemo, forwardRef } from 'react';
 import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
 
-import {ExternalProvider, useExternalContext} from './context/ReportsProvider.js'
+import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
+import {MenuSheet} from './components/MenuSheet'
 //import {FlexboxComponent} from './map_controls_flexbox'
 import {RouteLineLayer} from './map_line'
-import {GeocoderControl} from './GeocoderControl'
+import {GeocoderControlMemo} from './GeocoderControl'
 
 import {bbox, lineString} from '@turf/turf'
 
@@ -20,9 +21,21 @@ const pointLayerStyle = {
 };
 
 export function CustomMap() {
+  return(
+    <>
+      <ExternalProvider>
+        <MenuSheet />
+        <MapView />
+      </ExternalProvider>
+    </>
+  );
+};
+
+export const MapView = forwardRef((props, geocoderElementRef) => {
 
   const [clickedPoints, setClickedPoints] = useState([]);
   const [routeStops, setRouteStops] = useState([])
+  const geoControlRef = useRef();
 
   const updateClickedPoints = (value) => {
     setClickedPoints(value)
@@ -32,27 +45,7 @@ export function CustomMap() {
     setRouteStops(value)
   }
 
-
-    // <FlexboxComponent
-    //   clickedPoints={clickedPoints}
-    //   updateClickedPoints={updateClickedPoints}
-    // />
-  return(
-    <ExternalProvider>
-      <MapView
-        clickedPoints={clickedPoints}
-        setClickedPoints={updateClickedPoints}
-        routeStops={routeStops}
-        updateRouteStops={updateRouteStops}
-      />
-    </ExternalProvider>
-  );
-};
-
-export function MapView({clickedPoints, setClickedPoints, routeStops, updateRouteStops}) {
-
   const mapRef = useRef();
-  const geoControlRef = useRef();
   const externalContext = useExternalContext();
 
   const [userLocation, setUserLocation] = useState();
@@ -116,6 +109,15 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
   }
 
   // using react query, create a
+  const geocoderControlProps = useMemo(() => {
+    return {
+      mapboxAccessToken: MAPBOX_TOKEN,
+      //position: 'top-left',
+      flyTo: false,
+      onResult: onGeocoderResult,
+      addTo: "#geocoder-container"
+    }
+  }, [onGeocoderResult])
   const pointList = useMemo(() =>
     [userLocation, destinationLocation]
   , [userLocation, destinationLocation])
@@ -145,11 +147,12 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
         </Source>
         : null
       }
-      <GeocoderControl
+      <GeocoderControlMemo
         mapboxAccessToken={MAPBOX_TOKEN}
         position="top-left"
         flyTo={false}
         onResult={onGeocoderResult}
+        addTo={"#geocoder-container"}
       />
       <GeolocateControl
         ref={geoControlRef}
@@ -167,4 +170,4 @@ export function MapView({clickedPoints, setClickedPoints, routeStops, updateRout
       }
       </Map>
   );
-}
+});

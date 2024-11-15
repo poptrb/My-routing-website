@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useState, forwardRef, memo} from 'react';
 import {useControl, Marker} from 'react-map-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 
-export function GeocoderControl(props) {
+export const GeocoderControl = (props) => {
   const [marker, setMarker] = useState(null);
 
   const geocoder = useControl(
@@ -14,22 +14,31 @@ export function GeocoderControl(props) {
         marker: false,
         accessToken: props.mapboxAccessToken
       });
+
+
       ctrl.on('loading', props.onLoading);
+      ctrl.on('error', props.onError);
       ctrl.on('results', props.onResults);
+
       ctrl.on('result', evt => {
         props.onResult(evt);
-
         const {result} = evt;
         const location =
           result &&
-          (result.center || (result.geometry?.type === 'Point' && result.geometry.coordinates));
+          (result.center ||
+            (result.geometry?.type === 'Point' && result.geometry.coordinates));
         if (location && props.marker) {
-          setMarker(<Marker {...props.marker} longitude={location[0]} latitude={location[1]} />);
+          setMarker(
+            <Marker
+              {...props.marker}
+              longitude={location[0]}
+              latitude={location[1]}
+            />);
         } else {
           setMarker(null);
         }
       });
-      ctrl.on('error', props.onError);
+
       return ctrl;
     },
     {
@@ -37,7 +46,14 @@ export function GeocoderControl(props) {
     }
   );
 
+
   if (geocoder._map) {
+    if (props.addTo) {
+      if (geocoder.container?.parentElement.className !== "geocoder") {
+        geocoder.addTo(props.addTo);
+        console.log(geocoder)
+      }
+    }
     if (geocoder.getProximity() !== props.proximity && props.proximity !== undefined) {
       geocoder.setProximity(props.proximity);
     }
@@ -89,7 +105,7 @@ export function GeocoderControl(props) {
     // }
   }
   return marker;
-}
+};
 
 const noop = () => {};
 
@@ -100,3 +116,5 @@ GeocoderControl.defaultProps = {
   onResult: noop,
   onError: noop
 };
+
+export const GeocoderControlMemo = memo(GeocoderControl)
