@@ -89,7 +89,7 @@ export const useOptimizedRouteQuery = (state) => {
 
   const backend = useBackend();
   const query = useQuery({
-    queryKey: ['browse-reports', state.excludeLocations, state.locations],
+    queryKey: ['route', state.excludeLocations, state.locations],
     queryFn: () => fetchOptimizedRoute(backend, state.locations, state.excludeLocations),
     throwOnError: true,
     select: useCallback((data) =>
