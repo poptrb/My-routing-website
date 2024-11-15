@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from '../api/backend';
 import { Link } from "react-router-dom";
 
-const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}\@[A-z0-9-_]{1,30}\.[A-z]{2,10}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}@[A-z0-9-_]{1,30}\.[A-z]{2,10}$/;
+// const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = 'http://localhost:8001/auth/register';
 
 const Register = () => {
@@ -61,7 +61,7 @@ const Register = () => {
               {
                 email: user,
                 password: pwd,
-                token_cleartext: inviteCode
+                token_hash: inviteCode
               },
               {
                 headers: {

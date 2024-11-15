@@ -12,15 +12,15 @@ const useBackend = () => {
 
   useEffect(() => {
 
-    const requestIntercept = privateRoute.interceptors.request.use(
-      config => {
-        if (!config.headers['Authorization']) {
-          config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
-        }
+    // const requestIntercept = privateRoute.interceptors.request.use(
+    //   config => {
+    //     if (!config.headers['Authorization']) {
+    //       config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
+    //     }
 
-        return config;
-      }, (error) => Promise.reject(error)
-    );
+    //     return config;
+    //   }, (error) => Promise.reject(error)
+    // );
 
     const responseIntercept = privateRoute.interceptors.response.use(
       response => response,
@@ -38,7 +38,7 @@ const useBackend = () => {
           // privateRoute.interceptors.request.eject(requestIntercept);
           privateRoute.interceptors.response.eject(responseIntercept);
       }
-  }, [auth]) //refresh])
+  }, [auth, navigate]) //refresh])
 
   return privateRoute;
 }

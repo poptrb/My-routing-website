@@ -1,11 +1,12 @@
 import * as React from 'react';
-import {useState, forwardRef, memo} from 'react';
-import {useControl, Marker} from 'react-map-gl';
+import {useState,  memo} from 'react';
+import {useControl, Marker, useMap} from 'react-map-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 
 export const GeocoderControl = (props) => {
   const [marker, setMarker] = useState(null);
+  const {onlyMap} = useMap();
 
   const geocoder = useControl(
     () => {
@@ -51,7 +52,12 @@ export const GeocoderControl = (props) => {
     if (props.addTo) {
       if (geocoder.container?.parentElement.className !== "geocoder") {
         geocoder.addTo(props.addTo);
-        console.log(geocoder)
+        console.log(onlyMap)
+        const geocoderControl = onlyMap.getMap()._controls.filter((item) => {
+          return item._container?.parentElement?.className === 'geocoder'
+        })[0]
+
+        //onlyMap.getMap().removeControl(onlyMap.getMap()._controls[2])
       }
     }
     if (geocoder.getProximity() !== props.proximity && props.proximity !== undefined) {

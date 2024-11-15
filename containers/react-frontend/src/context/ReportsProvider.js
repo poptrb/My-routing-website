@@ -4,6 +4,8 @@ import useBackend from '../hooks/useBackend'
 
 const ExternalContext = createContext();
 
+// Modify this component to use React Query and wrap the backend.get call with that
+//
 export const ExternalProvider = ({ children }) => {
   const [reportGeoJSON, setReportGeoJSON] = useState([]);
   const backend = useBackend();

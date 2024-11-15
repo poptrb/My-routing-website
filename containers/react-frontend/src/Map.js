@@ -1,13 +1,15 @@
-import React, { useRef, useState, useCallback, useMemo, forwardRef } from 'react';
-import Map, {GeolocateControl, Source, Layer} from 'react-map-gl';
+import React, { useRef, useState, useCallback, useMemo} from 'react';
+import Map, {GeolocateControl, Source, Layer, MapProvider} from 'react-map-gl';
+
+import {bbox, lineString} from '@turf/turf'
 
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
 import {MenuSheet} from './components/MenuSheet'
 //import {FlexboxComponent} from './map_controls_flexbox'
 import {RouteLineLayer} from './map_line'
 import {GeocoderControlMemo} from './GeocoderControl'
+import {useMapInfo, MapInfoProvider} from './context/UserLocationProvider'
 
-import {bbox, lineString} from '@turf/turf'
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
 
@@ -24,32 +26,25 @@ export function CustomMap() {
   return(
     <>
       <ExternalProvider>
-        <MenuSheet />
-        <MapView />
+        <MapProvider >
+          <MapInfoProvider>
+            <MapView />
+            <MenuSheet />
+          </MapInfoProvider>
+        </MapProvider>
       </ExternalProvider>
     </>
   );
 };
 
-export const MapView = forwardRef((props, geocoderElementRef) => {
+export const MapView = () => {
 
-  const [clickedPoints, setClickedPoints] = useState([]);
-  const [routeStops, setRouteStops] = useState([])
   const geoControlRef = useRef();
-
-  const updateClickedPoints = (value) => {
-    setClickedPoints(value)
-  }
-
-  const updateRouteStops = (value) => {
-    setRouteStops(value)
-  }
-
   const mapRef = useRef();
   const externalContext = useExternalContext();
+  const mapInfo = useMapInfo();
 
-  const [userLocation, setUserLocation] = useState();
-  const [destinationLocation, setDestinationLocation] = useState();
+  //const [userLocation, setUserLocation] = useState();
 
    const [viewState, setViewState] = useState({
      longitude: 26.1025,
@@ -62,40 +57,26 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
     geoControlRef.current.trigger()
   }, [])
 
-  const onMapClick = useCallback((evt) => {
-    setClickedPoints([...clickedPoints, {
-      longitude: evt.lngLat.lng,
-      latitude: evt.lngLat.lat
-    }]);
-  }, [clickedPoints, setClickedPoints]);
 
   const onMapMove = useCallback((evt) => {
     setViewState(evt.viewState);
   }, []);
 
-
-
-  const onGeolocate = useCallback((evt) => {
+  const onGeolocate = (evt) => {
     console.log(`Geolocation result`, evt)
-    setUserLocation({
-      longitude: evt.coords.longitude,
-      latitude: evt.coords.latitude
-    })
-  }, []);
+    mapInfo.setUserLocation(evt);
+  };
 
-  const onGeocoderResult = (evt) => {
+  const onGeocoderResult = useCallback((evt) => {
     console.log(`Geocoder result`,  evt)
-    setDestinationLocation({
-      longitude: evt.result.center[0],
-      latitude: evt.result.center[1]
-    });
+    mapInfo.setDestinationLocation(evt)
 
-    if (userLocation) {
+    if (mapInfo.userLocation) {
 
-      console.log(userLocation)
+      console.log(mapInfo.userLocation)
       const line = lineString([
-        [userLocation.coords.longitude, userLocation.coords.latitude],
-        [destinationLocation.coords.longitude, destinationLocation.coords.latitude],
+        [mapInfo.userLocation.coords.longitude, mapInfo.userLocation.coords.latitude],
+        [mapInfo.destinationLocation.result.center[0], mapInfo.destinationLocation.result.center[1]],
       ])
 
       console.log(line)
@@ -106,7 +87,7 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
         pitch: 0
       });
     }
-  }
+  }, [mapInfo])
 
   // using react query, create a
   const geocoderControlProps = useMemo(() => {
@@ -118,9 +99,10 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
       addTo: "#geocoder-container"
     }
   }, [onGeocoderResult])
+
   const pointList = useMemo(() =>
-    [userLocation, destinationLocation]
-  , [userLocation, destinationLocation])
+    [mapInfo.userLocation, mapInfo.destinationLocation]
+  , [mapInfo])
 
 
   return (
@@ -128,11 +110,10 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
       {...viewState}
       ref={mapRef}
       reuseMaps={true}
-      id="report-map"
+      id="onlyMap"
       style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/navigation-night-v1"
       mapboxAccessToken={MAPBOX_TOKEN}
-      onClick={onMapClick}
       onLoad={onMapLoad}
       onMove={onMapMove}>
 
@@ -147,12 +128,7 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
         </Source>
         : null
       }
-      <GeocoderControlMemo
-        mapboxAccessToken={MAPBOX_TOKEN}
-        position="top-left"
-        flyTo={false}
-        onResult={onGeocoderResult}
-        addTo={"#geocoder-container"}
+      <GeocoderControlMemo {...geocoderControlProps}
       />
       <GeolocateControl
         ref={geoControlRef}
@@ -161,13 +137,22 @@ export const MapView = forwardRef((props, geocoderElementRef) => {
         showUserHeading={true}
       />
       {
-        destinationLocation && userLocation
+        mapInfo.userLocation && mapInfo.destinationLocation
         ? <RouteLineLayer
-            locations={pointList}
+            locations={[
+              {
+                longitude: mapInfo.userLocation.coords.longitude,
+                latitude: mapInfo.userLocation.coords.latitude,
+              },
+              {
+                longitude: mapInfo.destinationLocation.result.center[0],
+                latitude: mapInfo.destinationLocation.result.center[1],
+              }
+            ]}
             excludeLocations={externalContext}
           />
         : null
       }
       </Map>
   );
-});
+};

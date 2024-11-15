@@ -1,7 +1,7 @@
 import * as polyline from '@mapbox/polyline'
 import {circle} from '@turf/circle'
 import {useMemo, useCallback} from 'react'
-import {useQuery, useQueryClient} from 'react-query'
+import {useQuery} from 'react-query'
 
 import useBackend from '../hooks/useBackend'
 
