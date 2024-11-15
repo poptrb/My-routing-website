@@ -95,6 +95,7 @@ export const useOptimizedRouteQuery = (state) => {
     select: useCallback((data) =>
       data.data
     , []),
+    staleTime: 60 * 1000,
     // initialData: () => {
     //   const initialRoute = queryClient.getQueryData([
     //     'browse-reports', null, null
