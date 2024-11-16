@@ -67,24 +67,7 @@ export const MapView = () => {
   }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
-    if (mapInfo.userLocation && mapInfo.destinationLocation) {
-
-      console.log([
-        'From linestring calc:',
-        [mapInfo.userLocation.coords.longitude, mapInfo.userLocation.coords.latitude],
-        [mapInfo.destinationLocation.result.center[0], mapInfo.destinationLocation.result.center[1]],
-      ])
-      const line = lineString([
-        [mapInfo.userLocation.coords.longitude, mapInfo.userLocation.coords.latitude],
-        [mapInfo.destinationLocation.result.center[0], mapInfo.destinationLocation.result.center[1]],
-      ])
-      mapRef.current.fitBounds(bbox(line), {
-        bearing: 0,
-        linear: false,
-        padding: 150,
-        pitch: 0
-      });
-    }
+    console.log(evt);
   }, [mapInfo]);
 
   const onGeocoderResult = useCallback((evt) => {

@@ -6,10 +6,13 @@ export const TripInfo = () => {
     const [tripState, setTripState] = useState();
     const mapInfo = useMapInfo();
 
+    useEffect(() => {
+      setTripState(mapInfo.trip)
+    }, [mapInfo]);
     return(
       <>
         {
-          (mapInfo.trip?.legs)
+          (tripState)
           ?
             <div className='trip-header'>
               test

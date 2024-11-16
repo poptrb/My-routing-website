@@ -1,33 +1,8 @@
-import * as polyline from '@mapbox/polyline'
 import {circle} from '@turf/circle'
 import {useMemo, useCallback} from 'react'
 import {useQuery} from 'react-query'
 
 import useBackend from '../hooks/useBackend'
-
-
-export const decodeRouteGeoJSON = (data) => {
-  // Decodes polyline6 route data to GeoJSON FeatureCollection
-
-  if (!data) {
-    return
-  };
-
-  if (data.trip && data.trip.legs) {
-    const routeFeatures = data.trip.legs.map((leg) => {
-      return ({
-        type: 'Feature',
-        geometry: polyline.toGeoJSON(leg.shape, 6)
-      })
-    });
-
-    return ({
-      type: 'FeatureCollection',
-      features: routeFeatures
-    });
-  }
-  // return
-};
 
 
 const buildExcludedPolygonsFromGeoJSON = (excludeLocations, radius) => {
@@ -85,16 +60,6 @@ const fetchOptimizedRoute = async(backend, locations, excludeLocations) => {
 }
 
 
-const replacePolylineGeoJSON = (data) => {
-  if (data?.trip.legs) {
-    const decoded = decodeRouteGeoJSON(data)
-    console.log('Decode GeoJSON for route', decoded);
-    data.trip.geoJSONshape = decoded
-  }
-  return data
-}
-
-
 export const useOptimizedRouteQuery = (state) => {
 
   const backend = useBackend();
@@ -118,7 +83,7 @@ export const useOptimizedRouteQuery = (state) => {
   return {
     ...query,
     routeData: useMemo(
-      () => replacePolylineGeoJSON(query.data),
+      () => query.data,
       [query.data]
     ),
   };

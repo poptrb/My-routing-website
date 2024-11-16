@@ -54,6 +54,7 @@ export const MenuSheet = (props) => {
           <Sheet.Header />
           <Sheet.Content
             style={{ paddingBottom: ref.current?.y }}
+            disableDrag={true}
           >
             <Sheet.Scroller
               draggableAt='both'

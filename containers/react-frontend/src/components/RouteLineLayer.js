@@ -1,6 +1,7 @@
+import {bbox} from '@turf/turf'
 import * as polyline from '@mapbox/polyline'
-import {useState, useEffect, useCallback,  memo} from 'react';
-import {Layer, Source} from 'react-map-gl';
+import {useState, useEffect, useCallback,  memo, forwardRef} from 'react';
+import {Layer, Source, useMap} from 'react-map-gl';
 
 import {useOptimizedRouteQuery} from '../hooks/useOptimizedRouteQuery'
 import {useMapInfo} from '../context/UserLocationProvider'
@@ -11,7 +12,7 @@ const lineLayerStyle = {
   type: "line",
   paint: {
     'line-color': '#00b300',
-    'line-width': 10
+    'line-width': 5
   },
   layout: {
     'line-cap': 'round',
@@ -72,7 +73,7 @@ export const latLngToGeoJSON = (points, setLocationGeoJSON) => {
 }
 
 
-export function RouteLineLayer({locations, excludeLocations}) {
+export const RouteLineLayer = forwardRef(({locations, excludeLocations}) => {
 
   const [locationGeoJSON, setLocationGeoJSON]= useState();
   const [routeFeatures, setRouteFeatures] = useState();
@@ -85,11 +86,15 @@ export function RouteLineLayer({locations, excludeLocations}) {
     excludeLocations: excludeLocations
   });
 
+  const {onlyMap} = useMap();
+
   useEffect(() => {
     if (routeData?.trip && routeData.trip.legs) {
-      setGeoJSONShape(decodeRouteGeoJSON(routeData))
+      const decoded = decodeRouteGeoJSON(routeData)
+      setGeoJSONShape(decoded)
+      onlyMap.fitBounds(bbox(decoded))
     }
-  }, [routeData]);
+  }, [onlyMap, routeData]);
 
   return(
     <>
@@ -127,6 +132,6 @@ export function RouteLineLayer({locations, excludeLocations}) {
     }
     </>
   );
-};
+});
 
 export const RouteLineLayerMemo = memo(RouteLineLayer)
