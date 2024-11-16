@@ -12,7 +12,7 @@ const lineLayerStyle = {
   type: "line",
   paint: {
     'line-color': '#00b300',
-    'line-width': 5
+    'line-width': 4
   },
   layout: {
     'line-cap': 'round',
@@ -91,10 +91,15 @@ export const RouteLineLayer = forwardRef(({locations, excludeLocations}) => {
   useEffect(() => {
     if (routeData?.trip && routeData.trip.legs) {
       const decoded = decodeRouteGeoJSON(routeData)
-      setGeoJSONShape(decoded)
-      onlyMap.fitBounds(bbox(decoded))
+      setGeoJSONShape(decoded);
+      mapInfo.setTrip(routeData.trip);
+
+      onlyMap.fitBounds(bbox(decoded), {
+        padding: 105
+
+      })
     }
-  }, [onlyMap, routeData]);
+  }, [onlyMap, routeData, mapInfo]);
 
   return(
     <>

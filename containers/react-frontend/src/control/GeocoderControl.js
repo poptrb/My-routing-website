@@ -51,13 +51,11 @@ export const GeocoderControl = (props) => {
   if (geocoder._map) {
     if (props.addTo) {
       if (geocoder.container?.parentElement.className !== "geocoder") {
-        geocoder.addTo(props.addTo);
-        console.log(onlyMap)
-        const geocoderControl = onlyMap.getMap()._controls.filter((item) => {
-          return item._container?.parentElement?.className === 'geocoder'
-        })[0]
 
-        //onlyMap.getMap().removeControl(onlyMap.getMap()._controls[2])
+        //geocoder.addTo(props.addTo);
+        //const geocoderControl = onlyMap.getMap()._controls.filter((item) => {
+        //  return item._container?.parentElement?.className === 'geocoder'
+        //})[0]
       }
     }
     if (geocoder.getProximity() !== props.proximity && props.proximity !== undefined) {

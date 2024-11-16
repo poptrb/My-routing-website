@@ -16,12 +16,12 @@ export const MenuSheet = (props) => {
 
   const snapTo = (i) => ref.current?.snapTo(i);
 
-  const mapOperation = useCallback(() => {
+  const startDriving = useCallback(() => {
 
     onlyMap.flyTo({
       zoom: 15,
       curve: 1,
-      speed: 0.9,
+      speed: 1.5,
       center: [
         mapInfo.userLocation?.coords.longitude,
         mapInfo.userLocation?.coords.latitude]
@@ -32,9 +32,15 @@ export const MenuSheet = (props) => {
     }, 3000);
 
     // mapInfo.
+    snapTo(1);
     setCurrentState('driving')
 
   },[onlyMap, mapInfo]);
+
+  const stopDriving = useCallback(() => {
+    setCurrentState('browsing');
+    mapInfo.setDestinationLocation();
+  }, [mapInfo]);
 
   return (
     <>
@@ -44,20 +50,18 @@ export const MenuSheet = (props) => {
         ref={ref}
         isOpen={isOpen}
         onClose={() => null}
-        snapPoints={[350,0.12]}
-        initialSnap={0}
+        snapPoints={[0.35,0.15]}
+        initialSnap={1}
         onSnap={(snapIndex) =>
           console.log('> Current snap point index:', snapIndex)
         }
       >
         <Sheet.Container>
-          <Sheet.Header />
+          <Sheet.Header disableDrag={true}/>
           <Sheet.Content
             style={{ paddingBottom: ref.current?.y }}
-            disableDrag={true}
           >
-            <Sheet.Scroller
-              draggableAt='both'
+            <Sheet.Scroller draggableAt={"top"}
             >
               {
                 currentState === 'browsing'
@@ -67,11 +71,11 @@ export const MenuSheet = (props) => {
                       className="geocoder"
                       id="geocoder-container"
                       style={{
-                        width: "90%"
+                        width: "100%"
                       }}
                     />
                     <button
-                      onClick={() => mapOperation()}
+                      onClick={() => startDriving()}
                     >
                       Start driving
                     </button>
@@ -79,9 +83,21 @@ export const MenuSheet = (props) => {
                   </>
                 :
                   <>
-                    <button onClick={() => null}>Stop driving</button>
-                    <div>
-                    </div>
+                    <button
+                      onClick={
+                        () => stopDriving()
+                      }
+                    >
+                    Stop driving
+                    </button>
+                    <div
+                      className="geocoder"
+                      id="geocoder-container"
+                      display="none"
+                      style={{
+                        width: "100%"
+                      }}
+                    />
                 </>
               }
             </Sheet.Scroller>
@@ -90,5 +106,12 @@ export const MenuSheet = (props) => {
       </Sheet>
     </>
   );
+                      // mapInfo?.trip?.map((leg) => {
+                      //   <ul>
+                      //     leg.maneuvers.map((m) => {
+                      //     <li id={>
+                      //     }
+                      //   leg.maneuvera.time()
+                      // }
 };
 
