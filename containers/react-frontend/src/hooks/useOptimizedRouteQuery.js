@@ -89,7 +89,7 @@ const replacePolylineGeoJSON = (data) => {
   if (data?.trip.legs) {
     const decoded = decodeRouteGeoJSON(data)
     console.log('Decode GeoJSON for route', decoded);
-    data.trip.legs[0].shape = decoded
+    data.trip.geoJSONshape = decoded
   }
   return data
 }

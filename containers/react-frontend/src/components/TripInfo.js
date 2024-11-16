@@ -1,5 +1,4 @@
-import { useMap } from 'react-map-gl'
-import { useState, useCallback, useRef, useMemo, useEffect} from 'react';
+import { useState, useCallback, useEffect} from 'react';
 import { useMapInfo } from '../context/UserLocationProvider'
 
 export const TripInfo = () => {
@@ -7,23 +6,13 @@ export const TripInfo = () => {
     const [tripState, setTripState] = useState();
     const mapInfo = useMapInfo();
 
-    const readTrip = useCallback(() => {
-      if (mapInfo.trip) {
-        console.log(mapInfo.trip)
-        setTripState(mapInfo.trip)
-      };
-    }, [mapInfo])
-
-    useEffect(() => {
-      readTrip()
-    }, [mapInfo, readTrip])
-
     return(
       <>
         {
-          (tripState?.data)
+          (mapInfo.trip?.legs)
           ?
             <div className='trip-header'>
+              test
             </div>
           : null
         }
