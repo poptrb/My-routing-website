@@ -78,12 +78,12 @@ export const MapView = () => {
   const geocoderControlProps = useMemo(() => {
     return {
       mapboxAccessToken: MAPBOX_TOKEN,
-      position: 'bottom-left',
-      flyTo: false,
+      position: 'top',
+      flyTo: true,
       onResult: onGeocoderResult,
       addTo: "#geocoder-container",
       setPlaceholder: "Start typing to see destinations",
-      language: 'ro-RO',
+      language: 'en-EN',
     }
   }, [onGeocoderResult])
 
@@ -98,7 +98,7 @@ export const MapView = () => {
       ref={mapRef}
       reuseMaps={true}
       id="onlyMap"
-      style={{height: "100vh"}}
+      style={{height: "88.5vh"}}
       mapStyle="mapbox://styles/mapbox/navigation-night-v1"
       mapboxAccessToken={MAPBOX_TOKEN}
       onLoad={onMapLoad}
@@ -121,9 +121,11 @@ export const MapView = () => {
       />
       <GeolocateControl
         ref={geoControlRef}
+        position={"bottom-left"}
         onGeolocate={onGeolocate}
         trackUserLocation={true}
         showUserHeading={true}
+        enableHighAccuracy={true}
       />
       {
         mapInfo.userLocation && mapInfo.destinationLocation
