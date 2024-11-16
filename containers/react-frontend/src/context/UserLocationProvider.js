@@ -1,18 +1,23 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useCallback, useContext, useState} from "react";
 
 const MapInfoContext = createContext();
 
 export const MapInfoProvider = ({ children }) => {
   const [userLocation, setUserLocation] = useState()
   const [destinationLocation, setDestinationLocation] = useState();
+  const [trip, setTrip] = useState();
 
-  const updateUserLocation = (userLocation) => {
+  const updateUserLocation = useCallback((userLocation) => {
     setUserLocation(userLocation)
-  };
+  }, []);
 
-  const updateDestinationLocation = (destinationLocation) => {
+  const updateDestinationLocation = useCallback((destinationLocation) => {
     setDestinationLocation(destinationLocation)
-  };
+  }, []);
+
+  const updateTrip = useCallback((trip) => {
+    setTrip(trip)
+  }, []);
 
   return (
     <MapInfoContext.Provider
@@ -21,6 +26,8 @@ export const MapInfoProvider = ({ children }) => {
         setUserLocation: updateUserLocation,
         destinationLocation: destinationLocation,
         setDestinationLocation: updateDestinationLocation,
+        trip: trip,
+        setTrip: updateTrip,
       }}
     >
       {children}

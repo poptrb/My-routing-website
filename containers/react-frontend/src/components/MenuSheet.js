@@ -1,21 +1,22 @@
 import { Sheet } from 'react-modal-sheet';
 import { useMap } from 'react-map-gl'
-import { useState, useCallback, useRef} from 'react';
+import { useState, useCallback, useRef, useMemo} from 'react';
 
 import { useMapInfo } from '../context/UserLocationProvider'
+import { TripInfo} from './TripInfo'
 
 export const MenuSheet = (props) => {
 
+  const [currentState, setCurrentState] = useState('browsing');
   const [isOpen, setOpen] = useState(true);
+
   const ref = useRef();
   const {onlyMap} = useMap();
   const mapInfo = useMapInfo();
 
   const snapTo = (i) => ref.current?.snapTo(i);
-  //const setViewPort
 
   const mapOperation = useCallback(() => {
-    console.log(onlyMap)
 
     onlyMap.flyTo({
       zoom: 15,
@@ -28,13 +29,12 @@ export const MenuSheet = (props) => {
 
     setTimeout(() => {
       onlyMap.setPitch(80);
-    }, 2000);
+    }, 3000);
+
+    // mapInfo.
+    setCurrentState('driving')
 
   },[onlyMap, mapInfo]);
-
-  const [isDriving, setIsDriving] = useState(false);
-  const [lastAction, setLastAction]  = useState();
-  const [currentState, setCurrentState] = useState('browsing');
 
   return (
     <>
@@ -43,26 +43,47 @@ export const MenuSheet = (props) => {
       <Sheet
         ref={ref}
         isOpen={isOpen}
-        onClose={() => setOpen(false)}
-        snapPoints={[0.4, 0.15]}
+        onClose={() => null}
+        snapPoints={[350,0.12]}
         initialSnap={0}
-        detent={"content-height"}
         onSnap={(snapIndex) =>
           console.log('> Current snap point index:', snapIndex)
         }
       >
         <Sheet.Container>
           <Sheet.Header />
-          <Sheet.Content>
-            <button onClick={() => snapTo(0)}>Snap to index 0</button>
-            <button onClick={() => snapTo(1)}>Snap to index 1</button>
-            <button onClick={() => mapOperation()}>Start driving</button>
-            <div
-              className="geocoder"
-              id="geocoder-container"
-              style={{height: 500}}
+          <Sheet.Content
+            style={{ paddingBottom: ref.current?.y }}
+          >
+            <Sheet.Scroller
+              draggableAt='both'
             >
-            </div>
+              {
+                currentState === 'browsing'
+                ?
+                  <>
+                    <div
+                      className="geocoder"
+                      id="geocoder-container"
+                      style={{
+                        width: "90%"
+                      }}
+                    />
+                    <button
+                      onClick={() => mapOperation()}
+                    >
+                      Start driving
+                    </button>
+                    <TripInfo />
+                  </>
+                :
+                  <>
+                    <button onClick={() => null}>Stop driving</button>
+                    <div>
+                    </div>
+                </>
+              }
+            </Sheet.Scroller>
           </Sheet.Content>
         </Sheet.Container>
       </Sheet>

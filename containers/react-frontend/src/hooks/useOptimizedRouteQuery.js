@@ -85,6 +85,16 @@ const fetchOptimizedRoute = async(backend, locations, excludeLocations) => {
 }
 
 
+const replacePolylineGeoJSON = (data) => {
+  if (data?.trip.legs) {
+    const decoded = decodeRouteGeoJSON(data)
+    console.log('Decode GeoJSON for route', decoded);
+    data.trip.legs[0].shape = decoded
+  }
+  return data
+}
+
+
 export const useOptimizedRouteQuery = (state) => {
 
   const backend = useBackend();
@@ -103,11 +113,12 @@ export const useOptimizedRouteQuery = (state) => {
     // },
   })
 
-  console.log(query)
+  // BUG: this re-renders infintely
+  // console.log(query)
   return {
     ...query,
-    data: useMemo(
-      () => decodeRouteGeoJSON(query.data),
+    routeData: useMemo(
+      () => replacePolylineGeoJSON(query.data),
       [query.data]
     ),
   };

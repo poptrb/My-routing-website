@@ -1,6 +1,7 @@
-import {useState, memo} from 'react';
+import {useState, useEffect, useCallback,  memo} from 'react';
 import {Layer, Source} from 'react-map-gl';
-import {useOptimizedRouteQuery} from './hooks/useOptimizedRouteQuery'
+import {useOptimizedRouteQuery} from '../hooks/useOptimizedRouteQuery'
+import {useMapInfo} from '../context/UserLocationProvider'
 
 
 const lineLayerStyle = {
@@ -8,7 +9,7 @@ const lineLayerStyle = {
   type: "line",
   paint: {
     'line-color': '#00b300',
-    'line-width': 6
+    'line-width': 4
   },
   layout: {
     'line-cap': 'round',
@@ -47,22 +48,38 @@ export const latLngToGeoJSON = (points, setLocationGeoJSON) => {
 
 export function RouteLineLayer({locations, excludeLocations}) {
 
+  const [trip, setTrip] = useState();
+  const [tripShape, setTripShape] = useState();
   const [locationGeoJSON, setLocationGeoJSON]= useState();
-  const { data, isError, isPending }  = useOptimizedRouteQuery({
+  const mapInfo = useMapInfo();
+
+  const { routeData, isError, isPending }  = useOptimizedRouteQuery({
     locations: locations,
     excludeLocations: excludeLocations
   });
+
+  const getTripShape = useCallback(() => {
+    if (routeData?.trip.legs) {
+      setTripShape(routeData.trip.legs[0].shape)
+      mapInfo.setTrip(routeData.trip);
+      console.log('From RouteLineLayer: ', routeData.trip);
+    };
+  }, [mapInfo, routeData]);
+
+  useEffect(() => {
+    getTripShape()
+  }, [getTripShape])
 
 
   return(
     <>
     {
-      ! isError || ! isPending
+      (! isError || ! isPending)
         ? <Source
             key="route-source"
             id="route-source"
             type="geojson"
-            data={data}
+            data={tripShape}
           >
             <Layer
               {...lineLayerStyle}

@@ -5,10 +5,9 @@ import {bbox, lineString} from '@turf/turf'
 
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
 import {MenuSheet} from './components/MenuSheet'
-//import {FlexboxComponent} from './map_controls_flexbox'
-import {RouteLineLayer} from './map_line'
-import {GeocoderControlMemo} from './GeocoderControl'
+import {RouteLineLayer} from './components/RouteLineLayer'
 import {useMapInfo, MapInfoProvider} from './context/UserLocationProvider'
+import {GeocoderControlMemo} from './control/GeocoderControl'
 
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
@@ -54,7 +53,7 @@ export const MapView = () => {
 
 
   const onMapLoad = useCallback((evt) => {
-    geoControlRef.current.trigger()
+    geoControlRef.current && geoControlRef.current.trigger()
   }, [])
 
 
@@ -62,24 +61,23 @@ export const MapView = () => {
     setViewState(evt.viewState);
   }, []);
 
-  const onGeolocate = (evt) => {
+  const onGeolocate = useCallback((evt) => {
     console.log(`Geolocation result`, evt)
     mapInfo.setUserLocation(evt);
-  };
+  }, [mapInfo]);
 
-  const onGeocoderResult = useCallback((evt) => {
-    console.log(`Geocoder result`,  evt)
-    mapInfo.setDestinationLocation(evt)
+  const onMapIdle = useCallback((evt) => {
+    if (mapInfo.userLocation && mapInfo.destinationLocation) {
 
-    if (mapInfo.userLocation) {
-
-      console.log(mapInfo.userLocation)
+      console.log([
+        'From linestring calc:',
+        [mapInfo.userLocation.coords.longitude, mapInfo.userLocation.coords.latitude],
+        [mapInfo.destinationLocation.result.center[0], mapInfo.destinationLocation.result.center[1]],
+      ])
       const line = lineString([
         [mapInfo.userLocation.coords.longitude, mapInfo.userLocation.coords.latitude],
         [mapInfo.destinationLocation.result.center[0], mapInfo.destinationLocation.result.center[1]],
       ])
-
-      console.log(line)
       mapRef.current.fitBounds(bbox(line), {
         bearing: 0,
         linear: false,
@@ -87,16 +85,22 @@ export const MapView = () => {
         pitch: 0
       });
     }
+  }, [mapInfo]);
+
+  const onGeocoderResult = useCallback((evt) => {
+    mapInfo.setDestinationLocation(evt)
   }, [mapInfo])
 
   // using react query, create a
   const geocoderControlProps = useMemo(() => {
     return {
       mapboxAccessToken: MAPBOX_TOKEN,
-      //position: 'top-left',
+      position: 'bottom-left',
       flyTo: false,
       onResult: onGeocoderResult,
-      addTo: "#geocoder-container"
+      addTo: "#geocoder-container",
+      setPlaceholder: "Start typing to see destinations",
+      language: 'ro-RO',
     }
   }, [onGeocoderResult])
 
@@ -115,7 +119,9 @@ export const MapView = () => {
       mapStyle="mapbox://styles/mapbox/navigation-night-v1"
       mapboxAccessToken={MAPBOX_TOKEN}
       onLoad={onMapLoad}
-      onMove={onMapMove}>
+      onMove={onMapMove}
+      onIdle={onMapIdle}
+    >
 
       { externalContext
         ?
