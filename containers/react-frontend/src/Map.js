@@ -68,7 +68,7 @@ export const MapView = () => {
 
   const onMapIdle = useCallback((evt) => {
     console.log(evt);
-  }, [mapInfo]);
+  }, []);
 
   const onGeocoderResult = useCallback((evt) => {
     mapInfo.setDestinationLocation(evt)

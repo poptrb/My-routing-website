@@ -79,39 +79,58 @@ const Login = () => {
     }
 
     return (
-      <section>
-        <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-        <h1>Sign In</h1>
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username:</label>
-            <input
-                type="text"
-                id="username"
-                ref={userRef}
-                autoComplete="off"
-                onChange={(e) => setUser(e.target.value)}
-                value={user}
-                required
-            />
+        <div className="user-actions-container">
+        <div className="login-container">
+          <h2 className="form-title">Sign In</h2>
+          <p className="separator">
+          </p>
+          <form
+            onSubmit={handleSubmit}
+            className="login-form">
+              <div className="input-wrapper">
+                <input
+                  type="email"
+                  id="username"
+                  ref={userRef}
+                  autoComplete="on"
+                  onChange={(e) => setUser(e.target.value)}
+                  value={user}
+                  placeholder="email@something.com"
+                  required
+                />
+                <i
+                  className="material-symbols-outlined">
+                  contact_mail
+                </i>
+              </div>
 
-            <label htmlFor="password">Password:</label>
-            <input
-                type="password"
-                id="password"
-                onChange={(e) => setPwd(e.target.value)}
-                value={pwd}
-                required
-            />
-            <button>Sign In</button>
+              <div className="input-wrapper">
+                <input
+                    type="password"
+                    id="password"
+                    autoComplete="on"
+                    onChange={(e) => setPwd(e.target.value)}
+                    value={pwd}
+                    required/>
+                <i
+                  className="material-symbols-outlined">
+                  password
+                </i>
+              </div>
+                <button>
+                  Sign in
+                </button>
         </form>
-        <p>
-            Don't have an account?
+
+        <p className="signup-text">
+            Create an account instead:
             <br />
             <span className="line">
               <Link to="/register">Sign Up</Link>
             </span>
-        </p>
-      </section>
+          </p>
+      </div>
+     </div>
     )
 }
 

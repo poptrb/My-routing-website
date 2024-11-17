@@ -1,6 +1,6 @@
 import { Sheet } from 'react-modal-sheet';
 import { useMap } from 'react-map-gl'
-import { useState, useCallback, useRef, useMemo} from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo} from 'react';
 
 import { useMapInfo } from '../context/UserLocationProvider'
 import { TripInfo} from './TripInfo'
@@ -9,6 +9,7 @@ export const MenuSheet = (props) => {
 
   const [currentState, setCurrentState] = useState('browsing');
   const [isOpen, setOpen] = useState(true);
+  const [tripInfo, setTripInfo] = useState({});
 
   const ref = useRef();
   const {onlyMap} = useMap();
@@ -36,6 +37,9 @@ export const MenuSheet = (props) => {
     setCurrentState('driving')
 
   },[onlyMap, mapInfo]);
+
+
+
 
   const stopDriving = useCallback(() => {
     setCurrentState('browsing');
@@ -67,13 +71,6 @@ export const MenuSheet = (props) => {
                 currentState === 'browsing'
                 ?
                   <>
-                    <div
-                      className="geocoder"
-                      id="geocoder-container"
-                      style={{
-                        width: "100%"
-                      }}
-                    />
                     <button
                       onClick={() => startDriving()}
                     >
@@ -89,15 +86,12 @@ export const MenuSheet = (props) => {
                       }
                     >
                     Stop driving
+                    <div>
+                      {
+                        tripInfo?.totalTime && `${tripInfo}`
+                      }
+                    </div>
                     </button>
-                    <div
-                      className="geocoder"
-                      id="geocoder-container"
-                      display="none"
-                      style={{
-                        width: "100%"
-                      }}
-                    />
                 </>
               }
             </Sheet.Scroller>
