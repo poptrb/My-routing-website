@@ -1,8 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo} from 'react';
 import Map, {GeolocateControl, Source, Layer, MapProvider} from 'react-map-gl';
 
-import {bbox, lineString} from '@turf/turf'
-
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
 import {MenuSheet} from './components/MenuSheet'
 import {RouteLineLayer} from './components/RouteLineLayer'
@@ -87,9 +85,9 @@ export const MapView = () => {
     }
   }, [onGeocoderResult])
 
-  const pointList = useMemo(() =>
-    [mapInfo.userLocation, mapInfo.destinationLocation]
-  , [mapInfo])
+  // const pointList = useMemo(() =>
+  //   [mapInfo.userLocation, mapInfo.destinationLocation]
+  // , [mapInfo])
 
 
   return (

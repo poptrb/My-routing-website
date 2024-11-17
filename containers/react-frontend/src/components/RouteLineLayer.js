@@ -1,8 +1,10 @@
 import {bbox} from '@turf/turf'
 import * as polyline from '@mapbox/polyline'
-import {useState, useEffect, useCallback,  memo, forwardRef} from 'react';
+import {useState, useEffect, memo} from 'react';
 import {Layer, Source, useMap} from 'react-map-gl';
 
+import {RouteReportLayer} from './RouteReportLayer'
+import {useReportsInBboxQuery} from '../hooks/useReportsInBboxQuery'
 import {useOptimizedRouteQuery} from '../hooks/useOptimizedRouteQuery'
 import {useMapInfo} from '../context/UserLocationProvider'
 
@@ -28,6 +30,23 @@ const locationLayerStyle = {
     'circle-color': '#ffff66'
   }
 };
+
+const buildGeoJSON = (data) => {
+    if (data) {
+     const features = data.map((item) => ({
+       type: 'Feature',
+       geometry: {
+         type: 'Point',
+         coordinates: [item.location.lat, item.location.long]
+       }
+     }));
+
+     return({
+       type: 'FeatureCollection',
+       features: features
+   })
+  }
+}
 
 export const decodeRouteGeoJSON = (data) => {
   // Decodes polyline6 route data to GeoJSON FeatureCollection
@@ -73,20 +92,31 @@ export const latLngToGeoJSON = (points, setLocationGeoJSON) => {
 }
 
 
-export const RouteLineLayer = forwardRef(({locations, excludeLocations}) => {
+export const RouteLineLayer = ({locations, excludeLocations}) => {
 
   const [locationGeoJSON, setLocationGeoJSON]= useState();
   const [routeFeatures, setRouteFeatures] = useState();
+  const [routeReportGeoJSON, setRouteReportGeoJSON] = useState();
   const [geoJSONShape, setGeoJSONShape] = useState();
 
   const mapInfo = useMapInfo();
+  const {onlyMap} = useMap();
 
   const { routeData, isError, isPending }  = useOptimizedRouteQuery({
     locations: locations,
     excludeLocations: excludeLocations
   });
 
-  const {onlyMap} = useMap();
+  const { routeReportData, isRouteReportError, isRouteReportPending }  = useReportsInBboxQuery({
+    userCoords: mapInfo.userLocation?.coords
+  });
+
+  useEffect(() => {
+    if (routeReportData) {
+      setRouteReportGeoJSON(buildGeoJSON(routeReportData))
+    }
+  }, [routeReportData]);
+
 
   useEffect(() => {
     if (routeData?.trip && routeData.trip.legs) {
@@ -120,6 +150,11 @@ export const RouteLineLayer = forwardRef(({locations, excludeLocations}) => {
         : null
     }
     {
+      (! isRouteReportError && ! isRouteReportPending) || routeReportGeoJSON
+        ? <RouteReportLayer routeReportGeoJSON={routeReportGeoJSON}/>
+        : null
+    }
+    {
       locationGeoJSON
         ? <Source
             key="location-source"
@@ -137,6 +172,6 @@ export const RouteLineLayer = forwardRef(({locations, excludeLocations}) => {
     }
     </>
   );
-});
+};
 
 export const RouteLineLayerMemo = memo(RouteLineLayer)
