@@ -1,7 +1,7 @@
 import os
 import logging
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiohttp import ClientSession
 from aiohttp import ClientResponseError
@@ -13,13 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from tasks.geo_rss import refresh_reports
 from database import create_db_and_tables, SessionDep
+from database.spatial import create_absolute_bbox
 from database.operations import (
     get_reports,
-    get_reports_two,
+    get_reports_by_bbox,
     insert_token,
     get_token,
 )
-
 from database.schemas import (
     ReportBbox,
     SignupTokenModel,
@@ -29,6 +29,7 @@ from database.schemas import (
     UserCreate,
     UserUpdate,
     GetReportsRequest,
+    GetAbsoluteBboxReportsRequest,
 )
 
 from database.models import User
@@ -49,7 +50,7 @@ brasov_report_bbox = ReportBbox(
     left=25.363,
     right=25.839,
     env="row",
-    types="alerts"
+    types="alerts",
 )
 
 bucuresti_report_bbox = ReportBbox(
@@ -58,7 +59,7 @@ bucuresti_report_bbox = ReportBbox(
     left=25.847,
     right=26.302,
     env="row",
-    types="alerts"
+    types="alerts",
 )
 
 
@@ -71,7 +72,7 @@ def run_scheduler():
         "interval",
         seconds=60 * 60,
         args=[bucuresti_report_bbox],
-        next_run_time=(datetime.now())
+        next_run_time=(datetime.now() + timedelta(minutes=3)),
     )
 
     scheduler.add_job(
@@ -79,20 +80,20 @@ def run_scheduler():
         "interval",
         seconds=60 * 60,
         args=[brasov_report_bbox],
-        next_run_time=(datetime.now())
+        next_run_time=(datetime.now() + timedelta(minutes=2)),
     )
 
     scheduler.start()
 
 
-app = FastAPI(root_path='/api')
+app = FastAPI(root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://localhost", "localhost"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "HEAD", "OPTIONS", "PUT", "PATCH"],
-    allow_headers=["Content-Type"]
+    allow_headers=["Content-Type"],
 )
 
 
@@ -135,15 +136,9 @@ app.include_router(
 )
 
 
-@app.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
-    return {"message": f"Hello {user.email}!"}
-
-
 @app.get("/reports_latest", response_model=list[ReportBase])
 async def get_top_reports(
-    db_session: SessionDep,
-    user: User = Depends(current_active_user)
+    db_session: SessionDep, user: User = Depends(current_active_user)
 ):
     result = await get_reports(db_session)
     return result
@@ -160,31 +155,37 @@ async def proxy_valhalla(
     async with ClientSession() as session:
         body = await request.json()
         async with session.post(url, json=body) as r:
-            try:
-                body = await r.json()
-                response.status_code = status.HTTP_200_OK
-                return body
-            except ClientResponseError as e:
-                response.status_code = e.status
-                response.header = e.headers
-                return e.message
+            if r.status != 200:
+                response.status_code = r.status
+
+            body = await r.json()
+            return body
 
 
 @app.post(
-    "/reports",
+    "/reports_absolute_bbox",
     response_model=list[ReportBase],
 )
-async def get_reports_by_bbox(
-    request: GetReportsRequest,
+async def get_reports_by_absolut_bbox(
     db_session: SessionDep,
+    request: GetAbsoluteBboxReportsRequest,
     user: User = Depends(current_active_user),
 ):
-    result = await get_reports_two(db_session, request)
+
+    bbox = create_absolute_bbox(request.user_coords.long, request.user_coords.lat, 5)
+    result = await get_reports_by_bbox(db_session, bbox, request)
     return result
 
 
-@app.post("/create_token", response_model=SignupTokenModelRead)
-async def create_token(request: SignupTokenModel, db_session: SessionDep):
+@app.post(
+    "/create_token",
+    response_model=SignupTokenModelRead,
+)
+async def create_token(
+    request: SignupTokenModel,
+    db_session: SessionDep,
+    user: User = Depends(current_active_user),
+):
     await insert_token(db_session, request)
 
     result = await get_token(db_session, request.token_hash)

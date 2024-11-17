@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from logging import getLogger
 from uuid import UUID
+from typing import List
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
@@ -11,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, update, or_, and_
 
 from .models import Report, User, SignupToken
-from .schemas import GetReportsRequest, SignupTokenModel
+from .schemas import GetAbsoluteBboxReportsRequest, SignupTokenModel
 from . import get_async_session
 
 
@@ -68,9 +69,7 @@ async def update_report(db: AsyncSession, id: str, **data) -> None:
     await db.execute(
         update(Report)
         .where(Report.id == id)
-        .values(
-            lastSeenDate=datetime.now()
-        )
+        .values(lastSeenDate=datetime.now())
     )
 
 
@@ -86,7 +85,7 @@ async def insert_report(db: AsyncSession, data: dict) -> None:
         location=f"POINT({data['location']['x']} {data['location']['y']})",
         pubDate=datetime.fromtimestamp(data["pubMillis"] // 1000),
         firstSeenDate=datetime.now(),
-        lastSeenDate=datetime.now()
+        lastSeenDate=datetime.now(),
     )
 
     await report.save(db)
@@ -99,24 +98,40 @@ async def get_reports(db: AsyncSession, top: int | None = 50):
     return result.scalars()
 
 
-async def get_reports_two(db: AsyncSession, data: GetReportsRequest):
+async def get_reports_by_bbox(
+    db: AsyncSession,
+    bbox: List[List[float]],
+    data: GetAbsoluteBboxReportsRequest,
+):
 
-    limit_date: datetime = datetime.now() - timedelta(minutes=60 * 5)
+    limit_date: datetime = datetime.now() - timedelta(minutes=20)
 
     result = await db.execute(
         select(Report)
         .filter(
             Report.location.ST_Within(
                 func.ST_MakeEnvelope(
-                    data.bbox.lon_min,
-                    data.bbox.lon_max,
-                    data.bbox.lat_min,
-                    data.bbox.lat_max,
+                    bbox.lon_min,
+                    bbox.lon_max,
+                    bbox.lat_min,
+                    bbox.lat_max,
                     4326,
                 )
             )
         )
-        .filter(Report.pubDate > limit_date)
+        .filter(Report.lastSeenDate > limit_date)
+        .order_by(
+            func.ST_Distance(
+                Report.location,
+                func.ST_SetSRID(
+                    func.ST_MakePoint(
+                        data.user_coords.lat, data.user_coords.long
+                    ),
+                    4326,
+                ),
+            )
+        )
+        .limit(15)
     )
 
     return result.scalars()

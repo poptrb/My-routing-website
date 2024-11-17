@@ -31,9 +31,7 @@ class ReportBase(DeclarativeBase):
                 pass
 
             logger.debug(f"Updating record {self.id}")
-            update = {
-              "lastSeenDate": datetime.now()
-            }
+            update = {"lastSeenDate": datetime.now()}
             await self.update(db, **update)
         except SQLAlchemyError as ex:
             logger.exception("Save to DB failed! Rolling back...", exc_info=ex)
@@ -114,5 +112,6 @@ async def create_db_and_tables():
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
+
 
 SessionDep = Annotated[AsyncSession, Depends(get_async_session)]

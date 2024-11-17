@@ -31,7 +31,6 @@ class ReportBase(BaseModel):
     firstSeenDate: datetime
     lastSeenDate: datetime
 
-
     @field_validator("location", mode="before")
     @classmethod
     def transform(cls, raw: WKBElement) -> LatLng:
@@ -100,10 +99,17 @@ class Bbox(BaseModel):
     lon_max: float
 
 
+class GetAbsoluteBboxReportsRequest(BaseModel):
+    top: int | None = 50
+    user_coords: LatLng
+    newer_than: datetime | None
+
+
 class GetReportsRequest(BaseModel):
     bbox: Bbox
     top: int | None
-    since: datetime | None
+    user_coords: LatLng
+    newer_than: datetime | None
 
 
 class SignupTokenModel(BaseModel):
