@@ -104,17 +104,6 @@ export const MapView = () => {
       onIdle={onMapIdle}
     >
 
-      { externalContext
-        ?
-        <Source
-          key="report-source"
-          id="report-source"
-          type="geojson"
-          data={externalContext}>
-          <Layer {...pointLayerStyle} id="report-layer"/>
-        </Source>
-        : null
-      }
       <GeocoderControlMemo {...geocoderControlProps}
       />
       <GeolocateControl
@@ -144,4 +133,15 @@ export const MapView = () => {
       }
       </Map>
   );
+      // { externalContext
+      //   ?
+      //   <Source
+      //     key="report-source"
+      //     id="report-source"
+      //     type="geojson"
+      //     data={externalContext}>
+      //     <Layer {...pointLayerStyle} id="report-layer"/>
+      //   </Source>
+      //   : null
+      // }
 };

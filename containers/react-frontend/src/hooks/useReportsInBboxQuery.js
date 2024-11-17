@@ -39,7 +39,6 @@ export const useReportsInBboxQuery = (state) => {
       return response;
     },
     throwOnError: true,
-    staleTime: 120 * 1000,
     select: useCallback((data) => data.data, []),
   });
 

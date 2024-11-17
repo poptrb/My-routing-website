@@ -102,23 +102,27 @@ export const RouteLineLayer = ({locations, excludeLocations}) => {
   const mapInfo = useMapInfo();
   const {onlyMap} = useMap();
 
-  const { routeData, isError, isPending }  = useOptimizedRouteQuery({
-    locations: locations,
-    excludeLocations: excludeLocations
-  });
-
   const { routeReportData, isRouteReportError, isRouteReportPending }  = useReportsInBboxQuery({
     userCoords: mapInfo.userLocation?.coords
   });
 
   useEffect(() => {
-    if (routeReportData) {
-      setRouteReportGeoJSON(buildGeoJSON(routeReportData))
-    }
+    setRouteReportGeoJSON(buildGeoJSON(routeReportData))
   }, [routeReportData]);
+
+  const { routeData, isError, isPending }  = useOptimizedRouteQuery({
+    locations: locations,
+    excludeLocations: routeReportGeoJSON,
+    enabled: (!routeReportGeoJSON  ? false : true),
+  });
+
 
 
   useEffect(() => {
+    if (routeReportData) {
+      console.log(routeReportData)
+      console.log(buildGeoJSON(routeReportData))
+    }
     if (routeData?.trip && routeData.trip.legs) {
       const decoded = decodeRouteGeoJSON(routeData)
       setGeoJSONShape(decoded);
@@ -129,7 +133,7 @@ export const RouteLineLayer = ({locations, excludeLocations}) => {
 
       })
     }
-  }, [onlyMap, routeData, mapInfo]);
+  }, [onlyMap, routeData, mapInfo, routeReportData]);
 
   return(
     <>
@@ -154,24 +158,24 @@ export const RouteLineLayer = ({locations, excludeLocations}) => {
         ? <RouteReportLayer routeReportGeoJSON={routeReportGeoJSON}/>
         : null
     }
-    {
-      locationGeoJSON
-        ? <Source
-            key="location-source"
-            id="location-source"
-            type="geojson"
-            data={locationGeoJSON}
-          >
-            <Layer
-              {...locationLayerStyle}
-              id="location-layer"
-              source="location-source"
-            />
-          </Source>
-        : null
-    }
     </>
   );
 };
 
+    // {
+    //   locationGeoJSON
+    //     ? <Source
+    //         key="location-source"
+    //         id="location-source"
+    //         type="geojson"
+    //         data={locationGeoJSON}
+    //       >
+    //         <Layer
+    //           {...locationLayerStyle}
+    //           id="location-layer"
+    //           source="location-source"
+    //         />
+    //       </Source>
+    //     : null
+    // }
 export const RouteLineLayerMemo = memo(RouteLineLayer)

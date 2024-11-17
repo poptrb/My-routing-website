@@ -1,4 +1,4 @@
-import {circle} from '@turf/circle'
+import {circle, bbox} from '@turf/turf'
 import {useMemo, useCallback} from 'react'
 import {useQuery} from 'react-query'
 
@@ -9,6 +9,10 @@ const buildExcludedPolygonsFromGeoJSON = (excludeLocations, radius) => {
   // Returns an array of arrays of [lon,lat] pairs
   // for each GeoJSON point around radius
 
+  console.log(excludeLocations)
+  if (!excludeLocations.features) {
+    return
+  };
   const options = {
     steps: 12,
     units: "metres"
@@ -70,6 +74,7 @@ export const useOptimizedRouteQuery = (state) => {
     select: useCallback((data) =>
       data.data
     , []),
+    enabled: state.enabled,
     staleTime: 60 * 1000,
     // initialData: () => {
     //   const initialRoute = queryClient.getQueryData([
