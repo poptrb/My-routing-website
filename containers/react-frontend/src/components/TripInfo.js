@@ -28,16 +28,16 @@ export const TripInfo = () => {
           <>
             <div className='trip-container' key='trip-container'>
               <div className='trip-header' key='trip-header'>
-                {`${mapInfo.trip.legs[0].summary.length} KM`}
+                {`${mapInfo?.trip.legs[0].summary.length} KM`}
                 <br/>
                 {
                   `${Math.floor(mapInfo.trip.legs[0].summary.time / 60)} min`
                 }
               </div>
               <div className='trip-instructions'>
-                {`${mapInfo.trip.legs[0].maneuvers[0].street_names[0]}`}
+                {`${mapInfo?.trip.legs[0].maneuvers[0].street_names[0]}`}
                 <br/>
-                {`${mapInfo.trip.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
+                {`${mapInfo?.trip.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
                 {getTripData()}
               </div>
             </div>
