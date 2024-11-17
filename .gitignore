@@ -16,6 +16,7 @@ eggs/
 .eggs/
 lib/
 lib64/
+lib64/*
 parts/
 sdist/
 var/
@@ -164,7 +165,8 @@ cython_debug/
 pki/
 include/
 bin/
-lib64/
 pyvenv.cfg
 requirements.txt
 containers/traefik/self_signed/
+
+containers/backend/src/alembic_scripts/versions
