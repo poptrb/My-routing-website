@@ -23,15 +23,15 @@ urllib3_logger.setLevel(logging.CRITICAL)
 logger = logging.getLogger(__name__)
 
 
-async def handle_report_conflict(db_session: AsyncSession, ex: IntegrityError, id: str):
+async def handle_report_conflict(
+    db_session: AsyncSession, ex: IntegrityError, id: str
+):
     if not isinstance(ex.orig.__cause__, UniqueViolationError):
         logger.debug(f"Duplicate record: {ex.orig.__cause__}")
         raise ex
 
     logger.debug(f"Updating Report {id} with last seen: {datetime.now()}")
-    update = {
-      "lastSeenDate": datetime.now()
-    }
+    update = {"lastSeenDate": datetime.now()}
 
     try:
         await update_report(db_session, id, **update)
@@ -60,7 +60,7 @@ async def process_alerts(alert_queue: Queue):
             try:
                 await insert_report(db_session, u)
             except IntegrityError as ex:
-                await handle_report_conflict(db_session, ex, u['id'])
+                await handle_report_conflict(db_session, ex, u["id"])
 
         log_police_alert(alerts, unique_alerts)
 
