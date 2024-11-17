@@ -69,8 +69,8 @@ export const MapView = () => {
       position: 'top',
       flyTo: true,
       onResult: onGeocoderResult,
-      addTo: "#geocoder-container",
-      setPlaceholder: "Start typing to see destinations",
+      //addTo: "#geocoder-container",
+      placeholder: "Where to?",
       language: 'en-EN',
     }
   }, [onGeocoderResult])
@@ -94,8 +94,13 @@ export const MapView = () => {
       onIdle={onMapIdle}
     >
 
-      <GeocoderControlMemo {...geocoderControlProps}
-      />
+    {
+      mapInfo.tripMenu.state === 'browsing'
+      ? <
+          GeocoderControlMemo {...geocoderControlProps}
+        />
+      : null
+    }
       <GeolocateControl
         ref={geoControlRef}
         position={"bottom-left"}
@@ -117,7 +122,6 @@ export const MapView = () => {
                 latitude: mapInfo.destinationLocation.result.center[1],
               }
             ]}
-            excludeLocations={externalContext}
           />
         : null
       }

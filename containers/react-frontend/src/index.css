@@ -105,13 +105,13 @@ code {
 }
 
 .mapboxgl-ctrl-geocoder {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 24px;
   font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
   position: relative;
   background-color: #fff;
-  width: 90%;
-  min-width: 240px;
+  width: 100%;
+  min-width: 340px;
   z-index: 1;
   border-radius: 4px;
   transition: width .25s, min-width .25s;
@@ -292,10 +292,10 @@ code {
   }
 
   .mapboxgl-ctrl-geocoder {
-    width: 33.3333%;
+    width: 66.6%;
     font-size: 15px;
     line-height: 20px;
-    max-width: 360px;
+    max-width: 560px;
   }
   .mapboxgl-ctrl-geocoder .suggestions {
     font-size: 13px;
@@ -319,7 +319,7 @@ code {
   }
 
   .mapboxgl-ctrl-geocoder--input {
-    height: 36px;
+    height: 50px;
     padding: 6px 35px;
   }
 

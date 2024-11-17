@@ -10,11 +10,11 @@ export const TripInfo = () => {
 
     const getTripData = useCallback(() => {
       const legTimes = mapInfo.trip?.legs.map((leg) => {
-        const mTime = leg.maneuvers.reduce((a,b) => a + b.length, 0);
+        const mTime = leg?.maneuvers.reduce((a,b) => a + b.length, 0);
         return mTime;
       });
 
-      const totalTime = legTimes.reduce((a,b) => a+b, 0);
+      const totalTime = legTimes?.reduce((a,b) => a+b, 0);
     console.log(totalTime)
   }, [mapInfo.trip]);
 
@@ -32,18 +32,16 @@ export const TripInfo = () => {
           mapInfo.userLocation?.coords.longitude,
           mapInfo.userLocation?.coords.latitude]
       });
+      // console.log(onlyMap.getMap()._controls[2])
+      // onlyMap.getMap()?._controls[2].geolocation.getCurrentPosition();
+      mapInfo.setTripMenu({state: 'driving'})
 
-      setTimeout(() => {
-        onlyMap.setPitch(80);
-      }, 3000);
+    },[onlyMap, mapInfo]);
 
-    // mapInfo.
-    mapInfo.setTripMenu({state: 'driving'})
-
-  },[onlyMap, mapInfo]);
     const stopDriving = useCallback(() => {
       mapInfo.setTripMenu({state: 'browsing'})
       mapInfo.setDestinationLocation();
+      mapInfo.setTrip();
     }, [mapInfo]);
 
     return(
@@ -76,16 +74,16 @@ export const TripInfo = () => {
                   }
               </div>
               <div className='trip-header' key='trip-header'>
-                {`${mapInfo?.trip.legs[0].summary.length} KM`}
+                {`${Math.floor(mapInfo?.trip?.legs[0].summary.length)} KM`}
                 <br/>
                 {
-                  `${Math.floor(mapInfo.trip.legs[0].summary.time / 60)} min`
+                  `${Math.floor(mapInfo?.trip?.legs[0].summary.time / 60)} min`
                 }
               </div>
               <div className='trip-instructions'>
-                {`${mapInfo?.trip.legs[0].maneuvers[0].street_names[0]}`}
+                {`${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`}
                 <br/>
-                {`${mapInfo?.trip.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
+                {`${mapInfo?.trip?.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
                 {getTripData()}
               </div>
             </div>

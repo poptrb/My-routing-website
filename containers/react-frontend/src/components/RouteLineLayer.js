@@ -85,7 +85,7 @@ export const latLngToGeoJSON = (points, setLocationGeoJSON) => {
 }
 
 
-export const RouteLineLayer = ({locations, excludeLocations}) => {
+export const RouteLineLayer = ({locations}) => {
 
   const [routeReportGeoJSON, setRouteReportGeoJSON] = useState();
   const [geoJSONShape, setGeoJSONShape] = useState();
@@ -116,15 +116,17 @@ export const RouteLineLayer = ({locations, excludeLocations}) => {
       console.log(routeReportData)
       console.log(buildGeoJSON(routeReportData))
     }
-    if (routeData?.trip && routeData.trip.legs) {
+    if (routeData?.trip && routeData.trip.legs ) {
       const decoded = decodeRouteGeoJSON(routeData)
       setGeoJSONShape(decoded);
       mapInfo.setTrip(routeData.trip);
 
-      onlyMap.fitBounds(bbox(decoded), {
-        padding: 105
-
-      })
+      if (mapInfo.tripMenu.state === 'browsing') {
+        onlyMap.fitBounds(bbox(decoded), {
+          padding: 105
+        });
+      };
+      console.log(onlyMap.getMap())
     }
   }, [onlyMap, routeData, mapInfo, routeReportData]);
 

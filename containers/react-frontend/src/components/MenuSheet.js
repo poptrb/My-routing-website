@@ -5,15 +5,10 @@ import { TripInfo} from './TripInfo'
 
 export const MenuSheet = (props) => {
 
-
   const ref = useRef();
-
   // const snapTo = (i) => ref.current?.snapTo(i);
-
   return (
     <>
-
-      {/* Opens to 400 since initial index is 1 */}
       <Sheet
         ref={ref}
         isOpen={true}
@@ -42,12 +37,5 @@ export const MenuSheet = (props) => {
       </Sheet>
     </>
   );
-                      // mapInfo?.trip?.map((leg) => {
-                      //   <ul>
-                      //     leg.maneuvers.map((m) => {
-                      //     <li id={>
-                      //     }
-                      //   leg.maneuvera.time()
-                      // }
 };
 
