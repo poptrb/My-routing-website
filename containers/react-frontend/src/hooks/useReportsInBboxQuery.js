@@ -26,14 +26,18 @@ const buildBoundingBox = (center, diameter) => {
 export const useReportsInBboxQuery = (state) => {
   const backend = useBackend();
 
+  const userCoords = state.userCoords.map((x) => {
+    return {
+      lat: (x?.latitude? x.latitude : (x?.[1] ? x[1] : null)),
+      long: (x?.longitude? x.longitude : (x?.[0] ? x[0] : null))
+    }
+  });
+
   const query = useQuery({
     queryKey: ['reports', state.userCoords],
     queryFn: async () => {
       const response = await backend.post('/reports_absolute_bbox', {
-        user_coords: {
-          long: state.userCoords.longitude,
-          lat: state.userCoords.latitude
-        },
+        user_coords: userCoords,
         newer_than: new Date().toISOString(),
       });
       return response;

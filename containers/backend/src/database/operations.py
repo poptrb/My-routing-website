@@ -100,38 +100,41 @@ async def get_reports(db: AsyncSession, top: int | None = 50):
 
 async def get_reports_by_bbox(
     db: AsyncSession,
-    bbox: List[List[float]],
+    bboxes: List[List[List[float]]],  # yes, a list of bbox
     data: GetAbsoluteBboxReportsRequest,
 ):
 
     limit_date: datetime = datetime.now() - timedelta(minutes=20)
 
+    bbox_conditions = [
+        func.ST_Within(
+            Report.location,
+            func.ST_MakeEnvelope(
+                bbox.lon_min,
+                bbox.lon_max,
+                bbox.lat_min,
+                bbox.lat_max,
+                4326,
+            ),
+        )
+        for bbox in bboxes
+    ]
+
     result = await db.execute(
         select(Report)
-        .filter(
-            Report.location.ST_Within(
-                func.ST_MakeEnvelope(
-                    bbox.lon_min,
-                    bbox.lon_max,
-                    bbox.lat_min,
-                    bbox.lat_max,
-                    4326,
-                )
-            )
-        )
-        .filter(Report.lastSeenDate > limit_date)
+        .filter(or_(*bbox_conditions), Report.lastSeenDate > limit_date)
         .order_by(
             func.ST_Distance(
                 Report.location,
                 func.ST_SetSRID(
                     func.ST_MakePoint(
-                        data.user_coords.lat, data.user_coords.long
+                        data.user_coords[0].lat, data.user_coords[1].long
                     ),
                     4326,
                 ),
             )
         )
-        .limit(15)
+        .limit(25)
     )
 
     return result.scalars()

@@ -65,14 +65,13 @@ export const MapView = () => {
   }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
-    console.log(evt);
   }, []);
 
   const onGeocoderResult = useCallback((evt) => {
     mapInfo.setDestinationLocation(evt)
+    console.log(`Geocoder result`, evt)
   }, [mapInfo])
 
-  // using react query, create a
   const geocoderControlProps = useMemo(() => {
     return {
       mapboxAccessToken: MAPBOX_TOKEN,

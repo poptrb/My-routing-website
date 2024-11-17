@@ -101,7 +101,7 @@ class Bbox(BaseModel):
 
 class GetAbsoluteBboxReportsRequest(BaseModel):
     top: int | None = 50
-    user_coords: LatLng
+    user_coords: List[LatLng]
     newer_than: datetime | None
 
 

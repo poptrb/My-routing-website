@@ -32,6 +32,7 @@ const locationLayerStyle = {
 };
 
 const buildGeoJSON = (data) => {
+    console.log('GeoJSON builder data: ', data);
     if (data) {
      const features = data.map((item) => ({
        type: 'Feature',
@@ -103,7 +104,9 @@ export const RouteLineLayer = ({locations, excludeLocations}) => {
   const {onlyMap} = useMap();
 
   const { routeReportData, isRouteReportError, isRouteReportPending }  = useReportsInBboxQuery({
-    userCoords: mapInfo.userLocation?.coords
+    userCoords: [
+      mapInfo.userLocation?.coords,
+      mapInfo.destinationLocation?.result?.center]
   });
 
   useEffect(() => {
