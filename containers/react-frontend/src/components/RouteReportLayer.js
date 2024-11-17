@@ -1,10 +1,5 @@
-import {bbox} from '@turf/turf'
-import * as polyline from '@mapbox/polyline'
-import {useState, useEffect, useCallback,  memo, forwardRef} from 'react';
-import {Layer, Source, useMap} from 'react-map-gl';
+import {Layer, Source} from 'react-map-gl';
 
-import {useReportsInBboxQuery} from '../hooks/useReportsInBboxQuery'
-import {useMapInfo} from '../context/UserLocationProvider'
 
 const pointLayerStyle = {
   id: 'point',
@@ -14,23 +9,6 @@ const pointLayerStyle = {
     'circle-color': ' #3333ff'
   }
 };
-
-const buildGeoJSON = (data) => {
-    if (data) {
-     const features = data.map((item) => ({
-       type: 'Feature',
-       geometry: {
-         type: 'Point',
-         coordinates: [item.location.lat, item.location.long]
-       }
-     }));
-
-     return({
-       type: 'FeatureCollection',
-       features: features
-   })
-  }
-}
 
 export const RouteReportLayer = ({routeReportGeoJSON}) => {
   return (

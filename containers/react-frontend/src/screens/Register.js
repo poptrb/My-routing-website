@@ -17,7 +17,6 @@ const Register = () => {
     const [userFocus, setUserFocus] = useState(false);
 
     const [pwd, setPwd] = useState('');
-    const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
 
     const [matchPwd, setMatchPwd] = useState('');
@@ -25,7 +24,6 @@ const Register = () => {
     const [matchFocus, setMatchFocus] = useState(false);
 
     const [inviteCode, setInviteCode] = useState('');
-    const [inviteCodeFocus, setInviteCodeFocus] = useState(false)
 
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
@@ -39,7 +37,6 @@ const Register = () => {
     }, [user])
 
     useEffect(() => {
-        // setValidPwd(PWD_REGEX.test(pwd));
         setValidMatch(pwd === matchPwd && pwd !== '');
     }, [pwd, matchPwd])
 
@@ -113,8 +110,6 @@ const Register = () => {
                             value={inviteCode}
                             required
                             aria-describedby="uinvitecodenote"
-                            onFocus={() => setInviteCodeFocus(true)}
-                            onBlur={() => setInviteCodeFocus(false)}
                         />
                         <p id="uinvitecodenote">
                             <FontAwesomeIcon icon={faInfoCircle} />
@@ -148,8 +143,8 @@ const Register = () => {
 
                         <label htmlFor="password">
                             Password:
-                            <FontAwesomeIcon icon={faCheck} className={validPwd ? "valid" : "hide"} />
-                            <FontAwesomeIcon icon={faTimes} className={validPwd || !pwd ? "hide" : "invalid"} />
+                            <FontAwesomeIcon icon={faCheck} />
+                            <FontAwesomeIcon icon={faTimes}/>
                         </label>
                         <input
                             type="password"
@@ -157,7 +152,6 @@ const Register = () => {
                             onChange={(e) => setPwd(e.target.value)}
                             value={pwd}
                             required
-                            aria-invalid={validPwd ? "false" : "true"}
                             aria-describedby="pwdnote"
                             onFocus={() => setPwdFocus(true)}
                             onBlur={() => setPwdFocus(false)}

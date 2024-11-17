@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {useState,  memo} from 'react';
-import {useControl, Marker, useMap} from 'react-map-gl';
+import {useControl, Marker} from 'react-map-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 
 export const GeocoderControl = (props) => {
   const [marker, setMarker] = useState(null);
-  const {onlyMap} = useMap();
 
   const geocoder = useControl(
     () => {

@@ -3,7 +3,6 @@ import {BrowserRouter} from 'react-router-dom'
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
 } from 'react-query'
 
 import {Router} from './Router';

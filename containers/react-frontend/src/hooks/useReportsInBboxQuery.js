@@ -1,4 +1,3 @@
-import {circle} from '@turf/turf';
 import {useMemo, useCallback} from 'react';
 import {useQuery} from 'react-query';
 import useBackend from '../hooks/useBackend';
@@ -10,12 +9,12 @@ import useBackend from '../hooks/useBackend';
  * @returns {Array<Array<number>>} Bounding box as [[lon0, lat0], [lon1, lat1], [lon2, lat2], [lon3, lat3]].
  */
 
-const buildBoundingBox = (center, diameter) => {
-  const radius = diameter / 2; // Convert diameter to radius
-  const options = {steps: 4, units: 'kilometers'}; // Use 4 steps for a square approximation
-  const boundingCircle = circle(center, radius, options);
-  return boundingCircle.geometry.coordinates[0];
-};
+// const buildBoundingBox = (center, diameter) => {
+//   const radius = diameter / 2; // Convert diameter to radius
+//   const options = {steps: 4, units: 'kilometers'}; // Use 4 steps for a square approximation
+//   const boundingCircle = circle(center, radius, options);
+//   return boundingCircle.geometry.coordinates[0];
+// };
 
 /**
  * Fetches reports within a bounding box using the backend.

@@ -1,4 +1,4 @@
-import {circle, bbox} from '@turf/turf'
+import {circle} from '@turf/turf'
 import {useMemo, useCallback} from 'react'
 import {useQuery} from 'react-query'
 

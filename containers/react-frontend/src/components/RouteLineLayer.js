@@ -22,14 +22,6 @@ const lineLayerStyle = {
   }
 }
 
-const locationLayerStyle = {
-  id: 'point',
-  type: 'circle',
-  paint: {
-    'circle-radius': 10,
-    'circle-color': '#ffff66'
-  }
-};
 
 const buildGeoJSON = (data) => {
     console.log('GeoJSON builder data: ', data);
@@ -95,8 +87,6 @@ export const latLngToGeoJSON = (points, setLocationGeoJSON) => {
 
 export const RouteLineLayer = ({locations, excludeLocations}) => {
 
-  const [locationGeoJSON, setLocationGeoJSON]= useState();
-  const [routeFeatures, setRouteFeatures] = useState();
   const [routeReportGeoJSON, setRouteReportGeoJSON] = useState();
   const [geoJSONShape, setGeoJSONShape] = useState();
 

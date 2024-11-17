@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useMemo} from 'react';
-import Map, {GeolocateControl, Source, Layer, MapProvider} from 'react-map-gl';
+import Map, {GeolocateControl, MapProvider} from 'react-map-gl';
 
 import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
 import {MenuSheet} from './components/MenuSheet'
@@ -9,15 +9,6 @@ import {GeocoderControlMemo} from './control/GeocoderControl'
 
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
-
-const pointLayerStyle = {
-  id: 'point',
-  type: 'circle',
-  paint: {
-    'circle-radius': 10,
-    'circle-color': '#007cbf'
-  }
-};
 
 export function CustomMap() {
   return(

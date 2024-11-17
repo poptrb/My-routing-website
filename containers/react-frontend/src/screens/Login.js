@@ -83,6 +83,7 @@ const Login = () => {
         <div className="login-container">
           <h2 className="form-title">Sign In</h2>
           <p className="separator">
+          { errMsg ? errMsg : null }
           </p>
           <form
             onSubmit={handleSubmit}
