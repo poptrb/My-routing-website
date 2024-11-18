@@ -112,10 +112,6 @@ export const RouteLineLayer = ({locations}) => {
 
 
   useEffect(() => {
-    if (routeReportData) {
-      console.log(routeReportData)
-      console.log(buildGeoJSON(routeReportData))
-    }
     if (routeData?.trip && routeData.trip.legs ) {
       const decoded = decodeRouteGeoJSON(routeData)
       setGeoJSONShape(decoded);
@@ -126,7 +122,9 @@ export const RouteLineLayer = ({locations}) => {
           padding: 105
         });
       };
-      console.log(onlyMap.getMap())
+
+      mapInfo.tripMenu.state === 'browsing' &&
+        mapInfo.setTripMenu({state: 'previewing-route'})
     }
   }, [onlyMap, routeData, mapInfo, routeReportData]);
 

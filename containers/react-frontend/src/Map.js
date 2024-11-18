@@ -1,7 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo} from 'react';
 import Map, {GeolocateControl, MapProvider} from 'react-map-gl';
 
-import {ExternalProvider, useExternalContext} from './context/ReportsProvider'
 import {MenuSheet} from './components/MenuSheet'
 import {RouteLineLayer} from './components/RouteLineLayer'
 import {useMapInfo, MapInfoProvider} from './context/UserLocationProvider'
@@ -13,14 +12,12 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmp
 export function CustomMap() {
   return(
     <>
-      <ExternalProvider>
-        <MapProvider >
-          <MapInfoProvider>
-            <MapView />
-            <MenuSheet />
-          </MapInfoProvider>
-        </MapProvider>
-      </ExternalProvider>
+      <MapProvider >
+        <MapInfoProvider>
+          <MapView />
+          <MenuSheet />
+        </MapInfoProvider>
+      </MapProvider>
     </>
   );
 };
@@ -29,7 +26,6 @@ export const MapView = () => {
 
   const geoControlRef = useRef();
   const mapRef = useRef();
-  const externalContext = useExternalContext();
   const mapInfo = useMapInfo();
 
   //const [userLocation, setUserLocation] = useState();
@@ -50,13 +46,22 @@ export const MapView = () => {
     setViewState(evt.viewState);
   }, []);
 
+  const onMapDragStart = useCallback((evt) => {
+  },[]);
+
+  const onMapDragEnd = useCallback((evt) => {
+  },[]);
+
   const onGeolocate = useCallback((evt) => {
     console.log(`Geolocation result`, evt)
     mapInfo.setUserLocation(evt);
   }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
-  }, []);
+    if (mapInfo.tripMenu.state === 'previewing-route') {
+
+    };
+  }, [mapInfo.tripMenu]);
 
   const onGeocoderResult = useCallback((evt) => {
     mapInfo.setDestinationLocation(evt)
@@ -87,7 +92,7 @@ export const MapView = () => {
       reuseMaps={true}
       id="onlyMap"
       style={{height: "88.5vh"}}
-      mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+      mapStyle="mapbox://styles/mapbox/streets-v12"
       mapboxAccessToken={MAPBOX_TOKEN}
       onLoad={onMapLoad}
       onMove={onMapMove}
@@ -95,7 +100,7 @@ export const MapView = () => {
     >
 
     {
-      mapInfo.tripMenu.state === 'browsing'
+      mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route'
       ? <
           GeocoderControlMemo {...geocoderControlProps}
         />
@@ -108,6 +113,7 @@ export const MapView = () => {
         trackUserLocation={true}
         showUserHeading={true}
         enableHighAccuracy={true}
+        marker={false}
       />
       {
         mapInfo.userLocation && mapInfo.destinationLocation

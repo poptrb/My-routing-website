@@ -13,18 +13,18 @@ export const MenuSheet = (props) => {
         ref={ref}
         isOpen={true}
         onClose={() => null}
-        snapPoints={[0.35,0.15]}
-        initialSnap={1}
+        snapPoints={[0.25,0.15]}
+        initialSnap={0}
         onSnap={(snapIndex) =>
           console.log('> Current snap point index:', snapIndex)
         }
       >
         <Sheet.Container>
-          <Sheet.Header disableDrag={true}/>
+          <Sheet.Header disableDrag={false}/>
           <Sheet.Content className="sheet-content"
             style={{ paddingBottom: ref.current?.y }}
           >
-            <Sheet.Scroller draggableAt={"top"}
+            <Sheet.Scroller draggableAt={"both"}
             >
               {
                   <>

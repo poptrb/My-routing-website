@@ -53,7 +53,9 @@ export const TripInfo = () => {
             <div className='trip-container' key='trip-container'>
               <div className='trip-controls' key='trip-controls'>
                   {
-                    (mapInfo.userLocation?.coords && mapInfo.destinationLocation?.result?.center && mapInfo.tripMenu?.state === 'browsing')
+                    (mapInfo.userLocation?.coords &&
+                      mapInfo.destinationLocation?.result?.center &&
+                      mapInfo.tripMenu?.state === 'previewing-route')
                     ? <button
                         onClick={() => startDriving()}
                       >
@@ -74,17 +76,28 @@ export const TripInfo = () => {
                   }
               </div>
               <div className='trip-header' key='trip-header'>
-                {`${Math.floor(mapInfo?.trip?.legs[0].summary.length)} KM`}
-                <br/>
                 {
-                  `${Math.floor(mapInfo?.trip?.legs[0].summary.time / 60)} min`
+                  mapInfo?.trip?.legs && mapInfo.trip.legs[0]
+                    ? <>
+                      {
+                        `${Math.floor(mapInfo?.trip?.legs[0].summary.length)} KM`
+                      }
+                      <br/>
+                      {
+                        `${Math.floor(mapInfo?.trip?.legs[0].summary.time / 60)} min`
+                      }
+                      </>
+                    : null
                 }
               </div>
               <div className='trip-instructions'>
-                {`${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`}
+                {
+                  mapInfo?.trip?.legs && mapInfo.trip.legs[0]
+                    ? `${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`
+                    : null
+                }
                 <br/>
                 {`${mapInfo?.trip?.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
-                {getTripData()}
               </div>
             </div>
           </>
