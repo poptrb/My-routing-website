@@ -24,18 +24,11 @@ export const TripInfo = () => {
 
     const startDriving = useCallback(() => {
 
-      onlyMap.flyTo({
-        zoom: 15,
-        curve: 1,
-        speed: 1.5,
-        center: [
-          mapInfo.userLocation?.coords.longitude,
-          mapInfo.userLocation?.coords.latitude]
+      onlyMap.flyTo(mapInfo.userLocation.coords)
+      mapInfo.setTripMenu({
+        state: 'driving',
+        event: 'trigger-geolocate'
       });
-      // console.log(onlyMap.getMap()._controls[2])
-      // onlyMap.getMap()?._controls[2].geolocation.getCurrentPosition();
-      mapInfo.setTripMenu({state: 'driving'})
-
     },[onlyMap, mapInfo]);
 
     const stopDriving = useCallback(() => {
@@ -47,7 +40,7 @@ export const TripInfo = () => {
     return(
       <>
         {
-          (tripState)
+          (mapInfo.trip)
           ?
           <>
             <div className='trip-container' key='trip-container'>
@@ -92,12 +85,19 @@ export const TripInfo = () => {
               </div>
               <div className='trip-instructions'>
                 {
-                  mapInfo?.trip?.legs && mapInfo.trip.legs[0]
-                    ? `${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`
+                  mapInfo.trip?.legs && mapInfo.trip.legs[0]
+                    ?
+                      <>
+                      {
+                        `${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`
+                      }
+                      <br/>
+                      {
+                        `${mapInfo?.trip?.legs[0].maneuvers[0].verbal_pre_transition_instruction}`
+                      }
+                      </>
                     : null
                 }
-                <br/>
-                {`${mapInfo?.trip?.legs[0].maneuvers[0].verbal_pre_transition_instruction}`}
               </div>
             </div>
           </>

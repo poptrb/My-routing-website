@@ -124,7 +124,7 @@ export const RouteLineLayer = ({locations}) => {
       };
 
       mapInfo.tripMenu.state === 'browsing' &&
-        mapInfo.setTripMenu({state: 'previewing-route'})
+        mapInfo.setTripMenu({state: 'previewing-route'});
     }
   }, [onlyMap, routeData, mapInfo, routeReportData]);
 

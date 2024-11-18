@@ -58,10 +58,12 @@ export const MapView = () => {
   }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
-    if (mapInfo.tripMenu.state === 'previewing-route') {
-
+    if (mapInfo.tripMenu.event === 'trigger-geolocate') {
+      console.log('onMapIdle with trigger-geolocate')
+      mapInfo.setTripMenu({event: null, state: 'driving'})
+      geoControlRef.current?.trigger()
     };
-  }, [mapInfo.tripMenu]);
+  }, [mapInfo]);
 
   const onGeocoderResult = useCallback((evt) => {
     mapInfo.setDestinationLocation(evt)
