@@ -122,7 +122,12 @@ async def get_reports_by_bbox(
 
     result = await db.execute(
         select(Report)
-        .filter(or_(*bbox_conditions), Report.lastSeenDate > limit_date)
+        .filter(
+            and_(
+                Report.lastSeenDate > limit_date,
+                or_(*bbox_conditions),
+            )
+        )
         .order_by(
             func.ST_Distance(
                 Report.location,
@@ -134,7 +139,7 @@ async def get_reports_by_bbox(
                 ),
             )
         )
-        .limit(25)
+        .limit(250)
     )
 
     return result.scalars()

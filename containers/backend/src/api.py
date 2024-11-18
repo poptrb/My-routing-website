@@ -174,7 +174,7 @@ async def get_reports_by_absolut_bbox(
 
     logger.info(request.user_coords)
     bboxes = map(
-        lambda x: create_absolute_bbox(x.long, x.lat, 5), request.user_coords
+        lambda x: create_absolute_bbox(x.long, x.lat, 25), request.user_coords
     )
 
     result = await get_reports_by_bbox(db_session, bboxes, request)

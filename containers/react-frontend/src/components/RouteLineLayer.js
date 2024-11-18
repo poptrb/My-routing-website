@@ -117,7 +117,7 @@ export const RouteLineLayer = ({locations}) => {
       setGeoJSONShape(decoded);
       mapInfo.setTrip(routeData.trip);
 
-      if (mapInfo.tripMenu.state === 'browsing') {
+      if (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route') {
         onlyMap.fitBounds(bbox(decoded), {
           padding: 105
         });
