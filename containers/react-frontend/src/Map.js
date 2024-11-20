@@ -5,9 +5,8 @@ import {MenuSheet} from './components/MenuSheet'
 import {RouteLineLayer} from './components/RouteLineLayer'
 import {useMapInfo, MapInfoProvider} from './context/UserLocationProvider'
 import {GeocoderControlMemo} from './control/GeocoderControl'
+import {useReverseGeocoderQuery} from './hooks/useReverseGeocoderQuery'
 
-
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTJheWNnamUwa2NkMmpzZnUxaGxmczUxIn0.B5l5tnryyuACvaCdQ_tGdQ'; // Set your mapbox token here
 
 export function CustomMap() {
   return(
@@ -27,6 +26,7 @@ export const MapView = () => {
   const geoControlRef = useRef();
   const mapRef = useRef();
   const mapInfo = useMapInfo();
+  const [userMarker, setUserMarker] = useState();
 
   //const [userLocation, setUserLocation] = useState();
 
@@ -37,10 +37,19 @@ export const MapView = () => {
   });
 
 
+  const reverseGeocoderQuery = useReverseGeocoderQuery({
+    enabled: userMarker ? true : false,
+    evt: userMarker ? userMarker : null
+  });
+
   const onMapLoad = useCallback((evt) => {
     geoControlRef.current && geoControlRef.current.trigger()
   }, [])
 
+
+  const onMapClick = useCallback((evt) => {
+    setUserMarker(evt)
+  }, []);
 
   const onMapMove = useCallback((evt) => {
     setViewState(evt.viewState);
@@ -72,7 +81,7 @@ export const MapView = () => {
 
   const geocoderControlProps = useMemo(() => {
     return {
-      mapboxAccessToken: MAPBOX_TOKEN,
+      mapboxAccessToken: process.env.REACT_APP_MAPBOX_TOKEN,
       position: 'top',
       flyTo: true,
       onResult: onGeocoderResult,
@@ -94,15 +103,17 @@ export const MapView = () => {
       reuseMaps={true}
       id="onlyMap"
       style={{height: "88.5vh"}}
-      mapStyle="mapbox://styles/mapbox/streets-v12"
-      mapboxAccessToken={MAPBOX_TOKEN}
+      mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+      mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onLoad={onMapLoad}
       onMove={onMapMove}
       onIdle={onMapIdle}
+      onClick={onMapClick}
     >
 
     {
-      mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route'
+      (mapInfo.tripMenu.state === 'browsing' ||
+        mapInfo.tripMenu.state === 'previewing-route')
       ? <
           GeocoderControlMemo {...geocoderControlProps}
         />

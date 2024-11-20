@@ -67,7 +67,7 @@ const Login = () => {
               setErrMsg('No error response');
               console.log(err)
           } else if (err.response?.status === 400) {
-              setErrMsg('Bad credentials');
+              setErrMsg('Invalid credentials!');
           } else if (err.response?.status === 401) {
               setErrMsg('Credentials do not match any account');
           } else {
@@ -83,7 +83,9 @@ const Login = () => {
         <div className="login-container">
           <h2 className="form-title">Sign In</h2>
           <p className="separator">
-          { errMsg ? errMsg : null }
+            <span ref={errRef}>
+              { errMsg ? errMsg : null }
+            </span>
           </p>
           <form
             onSubmit={handleSubmit}

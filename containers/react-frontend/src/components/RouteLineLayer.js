@@ -31,7 +31,17 @@ const buildGeoJSON = (data) => {
        geometry: {
          type: 'Point',
          coordinates: [item.location.lat, item.location.long]
-       }
+       },
+       properties: {
+         id: item.uuid,
+         type: item.d_type,
+         nThumbsUp: item.nThumbsUp,
+         reportRating: item.reportRating,
+         reliability: item.reliability,
+         street: item.street ? item.street : '' ,
+         firstSeenDate: item.firstSeenDate,
+         lastSeenDate: item.lastSeenDate,
+       },
      }));
 
      return({
@@ -96,12 +106,19 @@ export const RouteLineLayer = ({locations}) => {
   const { routeReportData, isRouteReportError, isRouteReportPending }  = useReportsInBboxQuery({
     userCoords: [
       mapInfo.userLocation?.coords,
-      mapInfo.destinationLocation?.result?.center]
+      mapInfo.destinationLocation?.result?.center
+    ]
   });
 
   useEffect(() => {
+    console.log({
+      userCoords: [
+        mapInfo.userLocation?.coords,
+        mapInfo.destinationLocation?.result?.center
+      ]
+    });
     setRouteReportGeoJSON(buildGeoJSON(routeReportData))
-  }, [routeReportData]);
+  }, [routeReportData, mapInfo.userLocation, mapInfo.destinationLocation]);
 
   const { routeData, isError, isPending }  = useOptimizedRouteQuery({
     locations: locations,
@@ -148,7 +165,8 @@ export const RouteLineLayer = ({locations}) => {
     }
     {
       (! isRouteReportError && ! isRouteReportPending) || routeReportGeoJSON
-        ? <RouteReportLayer routeReportGeoJSON={routeReportGeoJSON}/>
+        ? <RouteReportLayer
+            routeReportGeoJSON={routeReportGeoJSON}/>
         : null
     }
     </>

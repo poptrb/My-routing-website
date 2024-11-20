@@ -89,11 +89,11 @@ export const TripInfo = () => {
                     ?
                       <>
                       {
-                        `${mapInfo?.trip?.legs[0].maneuvers[0].street_names[0]}`
+                        `${mapInfo?.trip?.legs[0]?.maneuvers[0].street_names[0]}`
                       }
                       <br/>
                       {
-                        `${mapInfo?.trip?.legs[0].maneuvers[0].verbal_pre_transition_instruction}`
+                        `${mapInfo?.trip?.legs[0]?.maneuvers[0].verbal_pre_transition_instruction}`
                       }
                       </>
                     : null
