@@ -62,26 +62,30 @@ bucuresti_report_bbox = ReportBbox(
     types="alerts",
 )
 
+ploiesti_report_bbox = ReportBbox(
+    top=45.038623,
+    bottom=44.8441595,
+    left=25.9105605,
+    right=26.1298563,
+    env="row",
+    types="alerts",
+)
+
 
 def run_scheduler():
     logging.getLogger("apscheduler").setLevel(logging.DEBUG)
     scheduler = AsyncIOScheduler()
 
-    scheduler.add_job(
-        refresh_reports,
-        "interval",
-        seconds=60 * 60,
-        args=[bucuresti_report_bbox],
-        next_run_time=(datetime.now() + timedelta(minutes=3)),
-    )
-
-    scheduler.add_job(
-        refresh_reports,
-        "interval",
-        seconds=60 * 60,
-        args=[brasov_report_bbox],
-        next_run_time=(datetime.now() + timedelta(minutes=2)),
-    )
+    for idx, bbox in enumerate(
+        [bucuresti_report_bbox, brasov_report_bbox, ploiesti_report_bbox]
+    ):
+        scheduler.add_job(
+            refresh_reports,
+            "interval",
+            seconds=5 * 60,
+            args=[bbox],
+            next_run_time=(datetime.now() + timedelta(seconds=30 + idx * 10)),
+        )
 
     scheduler.start()
 
@@ -151,10 +155,14 @@ async def proxy_valhalla(
     response: JSONResponse,
     user: User = Depends(current_active_user),
 ):
-    url = f"http://valhalla:8002/{full_path}?json="
+    url = (
+        f"http://valhalla:8002/{full_path}?json="
+        if full_path.startswith("optimized_route")
+        else f"http://valhalla:8002/{full_path}"
+    )
     async with ClientSession() as session:
         body = await request.json()
-        async with session.post(url, json=body) as r:
+        async with session.post(url, json=body, allow_redirects=True) as r:
             if r.status != 200:
                 response.status_code = r.status
 
@@ -174,7 +182,7 @@ async def get_reports_by_absolut_bbox(
 
     logger.info(request.user_coords)
     bboxes = map(
-        lambda x: create_absolute_bbox(x.long, x.lat, 25), request.user_coords
+        lambda x: create_absolute_bbox(x.long, x.lat, 3.5), request.user_coords
     )
 
     result = await get_reports_by_bbox(db_session, bboxes, request)
