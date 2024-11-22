@@ -2,6 +2,7 @@ import {bbox} from '@turf/turf'
 import * as polyline from '@mapbox/polyline'
 import {useState, useEffect, memo} from 'react';
 import {Layer, Source, useMap} from 'react-map-gl';
+import toast from 'react-hot-toast';
 
 import {RouteReportLayer} from './RouteReportLayer'
 import {useReportsInBboxQuery} from '../hooks/useReportsInBboxQuery'
@@ -111,12 +112,10 @@ export const RouteLineLayer = ({locations}) => {
   });
 
   useEffect(() => {
-    console.log({
-      userCoords: [
-        mapInfo.userLocation?.coords,
-        mapInfo.destinationLocation?.result?.center
-      ]
-    });
+    console.log(routeReportData);
+    if (routeReportData?.length > 0) {
+      toast.success(`Found ${routeReportData.length} reports`)
+    }
     setRouteReportGeoJSON(buildGeoJSON(routeReportData))
   }, [routeReportData, mapInfo.userLocation, mapInfo.destinationLocation]);
 

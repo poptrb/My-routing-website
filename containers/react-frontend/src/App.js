@@ -12,6 +12,7 @@ const queryClient = new QueryClient()
 
 export default function App() {
   return (
+  <>
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
@@ -19,5 +20,6 @@ export default function App() {
         </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>
+  </>
   )
 }

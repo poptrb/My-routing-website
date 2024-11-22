@@ -1,6 +1,5 @@
 import {useEffect, useState, useMemo, useCallback} from 'react';
 import {Layer, Source, Popup, Marker} from 'react-map-gl';
-import { v4 as uuidv4 } from 'uuid';
 
 const pointLayerStyle = {
   id: 'point',
@@ -12,14 +11,24 @@ const pointLayerStyle = {
   }
 };
 
-function toTitleCase(str) {
+async function digestMessage(message) {
+  const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return hashHex;
+}
+
+const toTitleCase = (str) => {
   return str.replace(
     /\w\S*/g,
     text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
   );
 }
 
-function formatDateTime(dateTime) {
+const formatDateTime = (dateTime) => {
     let datetime = new Date(dateTime);
     console.log(dateTime);
     const options = { hour: 'numeric', minute: 'numeric', hour12: false };
@@ -36,20 +45,30 @@ function formatDateTime(dateTime) {
     }
 }
 
- // Example usage
- const dateTime = new Date(); // Your JavaScript datetime object
- console.log(formatDateTime(dateTime));
-
 export const RouteReportLayer = ({routeReportGeoJSON}) => {
 
+  const [popupState, setPopupState] = useState([]);
+  const [latLngSha, setLatLngSha] = useState('');
 
-  const [popupState, setPopupState] = useState([])
+  const updateLatLngSha = useCallback(async () => {
+    if (routeReportGeoJSON?.features?.length > 0) {
+      const elems = routeReportGeoJSON?.features?.map((x) =>{
+        return x.geometry.coordinates[1] + x.geometry.coordinates[0]
+      });
+
+      const hashHex = digestMessage(JSON.stringify(elems));
+
+      setLatLngSha(hashHex);
+    }
+  }, [routeReportGeoJSON]);
 
   useEffect(() => {
     setPopupState(
       routeReportGeoJSON?.features?.map(() => {return false})
     );
-  } ,[routeReportGeoJSON])
+    updateLatLngSha();
+
+  }, [routeReportGeoJSON, updateLatLngSha])
 
   const popup = useMemo(() => {
       if ( popupState && popupState.indexOf(true) !== -1) {
@@ -93,11 +112,11 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
       <Marker
         longitude={x.geometry.coordinates[0]}
         latitude={x.geometry.coordinates[1]}
-        key={`marker-${x.properties.id}`}
+        id={`marker-${i}`}
+        key={`marker-${i}`}
         offset={[0.1,0.1]}
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          console.log(popupState?.map((v, p_i) => i === p_i));
           setPopupState(popupState?.map((v, p_i) => i === p_i));
         }}
         >
@@ -106,7 +125,8 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
   }, [routeReportGeoJSON, popupState]);
 
   useEffect(() => {
-    if (routeReportGeoJSON) {
+    if (routeReportGeoJSON && routeReportGeoJSON.features?.length > 0) {
+
       console.log(routeReportGeoJSON);
     };
   }, [routeReportGeoJSON, markers]);
@@ -114,11 +134,11 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
   return (
     <>
     {
-      routeReportGeoJSON?.features
+      routeReportGeoJSON?.features?.length > 0
       ? <>
           <Source
-            key="report-source"
-            id="report-source"
+            key={`report-source-${latLngSha}`}
+            id={`report-source-${latLngSha}`}
             type="geojson"
             data={routeReportGeoJSON}>
             <Layer

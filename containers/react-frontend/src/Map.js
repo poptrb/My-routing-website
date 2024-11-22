@@ -1,5 +1,6 @@
-import React, { useRef, useState, useCallback, useMemo} from 'react';
+import React, { useRef, useState, useCallback, useMemo, useEffect} from 'react';
 import Map, {GeolocateControl, MapProvider} from 'react-map-gl';
+import toast, {Toaster} from 'react-hot-toast';
 
 import {MenuSheet} from './components/MenuSheet'
 import {RouteLineLayer} from './components/RouteLineLayer'
@@ -46,8 +47,14 @@ export const MapView = () => {
     geoControlRef.current && geoControlRef.current.trigger()
   }, [])
 
+  useEffect(() => {
+    if (reverseGeocoderQuery && reverseGeocoderQuery.data?.features && reverseGeocoderQuery.data.features.length > 0) {
+      console.log(reverseGeocoderQuery.data.features[0].properties.full_address)
+    }
+  }, [reverseGeocoderQuery]);
 
   const onMapClick = useCallback((evt) => {
+    console.log(evt);
     setUserMarker(evt)
   }, []);
 
@@ -97,6 +104,12 @@ export const MapView = () => {
 
 
   return (
+    <>
+      <Toaster
+        position="top-center"
+        reverseOrder={true}
+        containerClassName="map-toaster"
+      />
       <Map
       {...viewState}
       ref={mapRef}
@@ -110,6 +123,9 @@ export const MapView = () => {
       onIdle={onMapIdle}
       onClick={onMapClick}
     >
+      <div
+        className="map-toaster"
+      />
 
     {
       (mapInfo.tripMenu.state === 'browsing' ||
@@ -145,6 +161,7 @@ export const MapView = () => {
         : null
       }
       </Map>
+    </>
   );
       // { externalContext
       //   ?

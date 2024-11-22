@@ -42,7 +42,7 @@ export const useReportsInBboxQuery = (state) => {
       return response;
     },
     throwOnError: true,
-    select: useCallback((data) => data.data, []),
+    select: useCallback((data) => data.data, [])
   });
 
   return {

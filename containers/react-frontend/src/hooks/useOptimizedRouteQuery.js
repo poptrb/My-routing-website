@@ -19,14 +19,14 @@ const buildExcludedPolygonsFromGeoJSON = (excludeLocations, radius) => {
   }
   const excludePolygons = excludeLocations.features.map((f) => {
     const circleCenter = [
-      f.geometry.coordinates[1],
-      f.geometry.coordinates[0]
+      f.geometry.coordinates[0],
+      f.geometry.coordinates[1]
     ];
     const circlePolygon = circle(circleCenter, radius, options)
     const circlePolygonVertices = circlePolygon.geometry.coordinates[0].map((x) => {
       return [
-        x[1],
-        x[0]
+        x[0],
+        x[1]
       ];
     });
     return circlePolygonVertices
