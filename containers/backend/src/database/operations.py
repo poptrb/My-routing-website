@@ -152,7 +152,7 @@ async def get_reports_by_bbox(
                 ),
             )
         )
-        .limit(20)
+        .limit(15)
     )
 
     result_near_destination = (

@@ -70,14 +70,14 @@ export const TripInfo = () => {
               </div>
               <div className='trip-header' key='trip-header'>
                 {
-                  mapInfo?.trip?.legs && mapInfo.trip.legs[0]
+                  mapInfo.trip?.legs?.length > 0
                     ? <>
                       {
-                        `${Math.floor(mapInfo?.trip?.legs[0].summary.length)} KM`
+                        `${Math.floor(mapInfo.trip.legs[0].summary.length)} KM`
                       }
                       <br/>
                       {
-                        `${Math.floor(mapInfo?.trip?.legs[0].summary.time / 60)} min`
+                        `${Math.floor(mapInfo.trip.legs[0].summary.time / 60)} min`
                       }
                       </>
                     : null
@@ -85,7 +85,7 @@ export const TripInfo = () => {
               </div>
               <div className='trip-instructions'>
                 {
-                  mapInfo.trip?.legs && mapInfo.trip.legs[0]
+                  mapInfo.trip?.legs?.length > 0 && mapInfo.tripMenu?.state && mapInfo.tripMenu.state === 'driving'
                     ?
                       <>
                       {

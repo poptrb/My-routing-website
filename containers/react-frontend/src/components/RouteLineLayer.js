@@ -142,7 +142,11 @@ export const RouteLineLayer = ({locations}) => {
       mapInfo.tripMenu.state === 'browsing' &&
         mapInfo.setTripMenu({state: 'previewing-route'});
     }
-  }, [onlyMap, routeData, mapInfo, routeReportData]);
+
+    if (isError) {
+      toast.error("Could not get route to your destination!")
+    }
+  }, [onlyMap, routeData, mapInfo, routeReportData, isError]);
 
   return(
     <>
