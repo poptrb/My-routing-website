@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from tasks.geo_rss import refresh_reports
 from database import create_db_and_tables, SessionDep
-from database.spatial import create_absolute_bbox
+from database.spatial import create_absolute_bbox, create_relative_bbox
 from database.operations import (
     get_reports,
     get_reports_by_bbox,
@@ -182,7 +182,7 @@ async def get_reports_by_absolut_bbox(
 
     logger.info(request.user_coords)
     bboxes = map(
-        lambda x: create_absolute_bbox(x.long, x.lat, 3.5), request.user_coords
+        lambda x: create_relative_bbox(x.long, x.lat, 0.5), request.user_coords
     )
 
     result = await get_reports_by_bbox(db_session, bboxes, request)
