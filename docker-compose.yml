@@ -2,6 +2,7 @@ volumes:
   osm:
   postgis:
   osm-valhalla:
+  traefik-certs:
 
 networks:
   internal:
@@ -14,7 +15,8 @@ services:
   valhalla:
     tty: true
     stdin_open: true
-    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    # Linux arm64 v3.5.1
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:3.5.1@sha256:77f4f2695b647892b493aa35af74edfba386fcf6a3cafd38b87f2f566639916c
       # entrypoint: /bin/bash
     environment:
       tile_urls: "https://download.geofabrik.de/europe/romania-latest.osm.pbf"
@@ -51,8 +53,6 @@ services:
       - /etc/localtime:/etc/localtime
 
   postgis:
-    env_file:
-      - .env
     environment:
       - POSTGRES_PASSWORD=${POSTGIS_PASSWORD}
       - POSTGRES_USER=${POSTGIS_USER}
@@ -64,7 +64,7 @@ services:
         ]
       timeout: 5s
       retries: 10
-    image: postgis/postgis:16-3.4-alpine
+    image: tobi312/rpi-postgresql-postgis:16-3.4-alpine-arm64
     networks:
       - db
     restart: always
@@ -107,7 +107,7 @@ services:
   traefik:
     environment:
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-    image: traefik:v3.2
+    image: arm64v8/traefik:latest
     networks:
       - traefik
     ports:
@@ -115,13 +115,12 @@ services:
       - 443:443
     restart: unless-stopped
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges=true
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+      - traefik-certs:/certs
       - ./containers/traefik/traefik.yml:/traefik.yml:ro
-      - ./containers/traefik/tls.yml:/tls.yml:ro
-      - ./containers/traefik/self_signed:/self_signed:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && PathPrefix(`/dashboard`)"
@@ -135,5 +134,3 @@ services:
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-
-

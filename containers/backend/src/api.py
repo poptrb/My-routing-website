@@ -12,13 +12,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 from tasks.geo_rss import refresh_reports
-from database import create_db_and_tables, SessionDep
+from database import async_session_maker, create_db_and_tables, SessionDep
 from database.spatial import create_absolute_bbox
 from database.operations import (
     get_reports,
     get_reports_by_bbox,
     insert_token,
     get_token,
+    check_and_create_admin_token
 )
 from database.schemas import (
     ReportBbox,
@@ -90,7 +91,12 @@ def run_scheduler():
     scheduler.start()
 
 
-app = FastAPI(root_path="/api")
+no_docs = {}
+if os.getenv('APP_ENV').lower() == 'prod':
+    no_docs = {"docs_url": None, "redoc_url" : None}
+
+
+app = FastAPI(root_path="/api", **no_docs)
 
 app.add_middleware(
     CORSMiddleware,
@@ -106,6 +112,8 @@ async def on_startup():
     logging.getLogger("database").setLevel(logging.DEBUG)
     logging.getLogger("tasks.geo_rss").setLevel(logging.DEBUG)
     await create_db_and_tables()
+    async with async_session_maker() as db:
+        await check_and_create_admin_token(db)
     run_scheduler()
 
 

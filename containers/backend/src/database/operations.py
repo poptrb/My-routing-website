@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from logging import getLogger
-from uuid import UUID
+from os import getenv, environ
 from typing import List
+from uuid import UUID
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
@@ -20,12 +21,27 @@ logger = getLogger()
 ph = PasswordHasher()
 
 
+
+
 async def insert_token(db: AsyncSession, data: SignupTokenModel) -> None:
     token = SignupToken(
         token_hash=ph.hash(data.token_hash), created_at=datetime.now()
     )
 
     await token.save(db)
+
+
+async def check_and_create_admin_token(db: AsyncSession) -> None:
+     result = await db.execute(select(func.count(SignupToken.id)))
+     count = result.scalar()
+
+     if count == 0:
+         # Create a new admin token
+         admin_token = environ["ADMIN_TOKEN"]
+         if admin_token:
+             await insert_token(db, SignupTokenModel(token_hash=admin_token))
+         else:
+             logger.error("Admin token environment variable not set.")
 
 
 async def invalidate_token(db: AsyncSession, token_id: int) -> None:

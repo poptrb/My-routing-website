@@ -1,5 +1,4 @@
-FROM node:22-bookworm-slim
-
+FROM arm64v8/node:22-slim
 
 WORKDIR /app
 
