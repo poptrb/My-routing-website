@@ -186,5 +186,14 @@ async def get_reports_by_bbox(
     return result.scalars()
 
 
+async def on_user_creation(db: AsyncSession, user_id: int) -> str:
+    if user_id == '1':
+        await db.execute(
+            update(User)
+            .where(User.id == '1')
+            .values(is_superuser=True)
+        )
+
+
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
     yield SQLAlchemyUserDatabase(session, User)

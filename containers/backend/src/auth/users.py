@@ -23,7 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session, async_session_maker
 from database.models import User
 from database.schemas import UserRead, UserCreate
-from database.operations import get_token, invalidate_token
+from database.operations import get_token, invalidate_token, on_user_creation
 from settings import settings
 
 logger = getLogger()
@@ -62,6 +62,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         async with async_session_maker() as db_session:
             await invalidate_token(db_session, User.token_id)
+            await on_user_creation(db_session, User.id)
 
         logger.info(f"User {user.id} has registered.")
 
