@@ -56,7 +56,7 @@ const Register = () => {
               {
                 email: user,
                 password: pwd,
-                token_hash: inviteCode
+                token_cleartext: inviteCode
               },
               {
                 headers: {
