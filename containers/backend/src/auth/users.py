@@ -49,11 +49,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             user_create.token_id = token.id
             user_create.is_active = True
             user_create.is_verified = True
+            user_create.is_superuser = 1 if token.id in (1, "1") else 0
             user_create.signup_date = datetime.now()
 
             del user_create.token_cleartext
 
-        created_user = await super().create(user_create, safe, request=request)
+        created_user = await super().create(
+            user_create, safe=False, request=request
+        )
         return created_user
 
     async def on_after_register(
@@ -62,7 +65,6 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         async with async_session_maker() as db_session:
             await invalidate_token(db_session, User.token_id)
-            await on_user_creation(db_session, User.id)
 
         logger.info(f"User {user.id} has registered.")
 
@@ -117,3 +119,4 @@ auth_backend = AuthenticationBackend(
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
+current_superuser = fastapi_users.current_user(active=True, superuser=True)

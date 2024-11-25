@@ -31,8 +31,16 @@ tcpServersTransport:
   dialTimeout: 3600s
 
 providers:
-  file:
-    filename: /tls.yml
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
+
+certificatesResolvers:
+  letencrypt:
+    acme:
+      email: poptrb1@gmail.com
+      storage: /certs/acme.json
+      # caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+      httpChallenge:
+        entryPoint: http

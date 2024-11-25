@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from logging import getLogger
-from uuid import UUID
+from os import getenv, environ
 from typing import List
+from uuid import UUID
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
@@ -26,6 +27,19 @@ async def insert_token(db: AsyncSession, data: SignupTokenModel) -> None:
     )
 
     await token.save(db)
+
+
+async def check_and_create_admin_token(db: AsyncSession) -> None:
+    result = await db.execute(select(func.count(SignupToken.id)))
+    count = result.scalar()
+
+    if count == 0:
+        # Create a new admin token
+        admin_token = environ["ADMIN_TOKEN"]
+        if admin_token:
+            await insert_token(db, SignupTokenModel(token_hash=admin_token))
+        else:
+            logger.error("Admin token environment variable not set.")
 
 
 async def invalidate_token(db: AsyncSession, token_id: int) -> None:
@@ -186,13 +200,16 @@ async def get_reports_by_bbox(
     return result.scalars()
 
 
-async def on_user_creation(db: AsyncSession, user_id: int) -> str:
-    if user_id == '1':
-        await db.execute(
-            update(User)
-            .where(User.id == '1')
-            .values(is_superuser=True)
-        )
+async def on_user_creation(db: AsyncSession, token_id: int) -> None:
+    if token_id != 1:
+        return
+
+    user_result = await db.execute(select(User).where(User.token_id == 1))
+
+    user = user_result.scalars().all()[0]
+
+    user.is_superuser = True
+    await token.save(db)
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
