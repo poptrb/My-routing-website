@@ -9,17 +9,18 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
 
 from tasks.geo_rss import refresh_reports
 from database import async_session_maker, create_db_and_tables, SessionDep
-from database.spatial import create_absolute_bbox
+from database.spatial import create_relative_bbox
 from database.operations import (
     get_reports,
     get_reports_by_bbox,
     insert_token,
     get_token,
-    check_and_create_admin_token
+    check_and_create_admin_token,
 )
 from database.schemas import (
     ReportBbox,
@@ -29,12 +30,15 @@ from database.schemas import (
     UserRead,
     UserCreate,
     UserUpdate,
-    GetReportsRequest,
     GetAbsoluteBboxReportsRequest,
 )
-
 from database.models import User
-from auth.users import auth_backend, current_active_user, fastapi_users
+from auth.users import (
+    auth_backend,
+    current_active_user,
+    current_superuser,
+    fastapi_users,
+)
 
 logging.basicConfig(
     format="%(levelname)s %(asctime)s %(module)s %(message)s",
@@ -85,15 +89,17 @@ def run_scheduler():
             "interval",
             seconds=5 * 60,
             args=[bbox],
-            next_run_time=(datetime.now() + timedelta(seconds=30 + idx * 10)),
+            next_run_time=(
+                datetime.now() + timedelta(seconds=60 * 10 + idx * 10)
+            ),
         )
 
     scheduler.start()
 
 
 no_docs = {}
-if os.getenv('APP_ENV').lower() == 'prod':
-    no_docs = {"docs_url": None, "redoc_url" : None}
+if os.getenv("APP_ENV").lower() == "prod":
+    no_docs = {"docs_url": None, "redoc_url": None, "openapi_url": None}
 
 
 app = FastAPI(root_path="/api", **no_docs)
@@ -190,7 +196,7 @@ async def get_reports_by_absolut_bbox(
 
     logger.info(request.user_coords)
     bboxes = map(
-        lambda x: create_absolute_bbox(x.long, x.lat, 3.5), request.user_coords
+        lambda x: create_relative_bbox(x.long, x.lat, 0.5), request.user_coords
     )
 
     result = await get_reports_by_bbox(db_session, bboxes, request)
@@ -204,12 +210,22 @@ async def get_reports_by_absolut_bbox(
 async def create_token(
     request: SignupTokenModel,
     db_session: SessionDep,
-    user: User = Depends(current_active_user),
+    user: User = Depends(current_superuser),
 ):
     await insert_token(db_session, request)
 
     result = await get_token(db_session, request.token_hash)
     return result
+
+
+@app.get("/docs")
+async def get_documentation(user: User = Depends(current_active_user)):
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
+
+
+@app.get("/openapi.json")
+async def openapi(user: User = Depends(current_active_user)):
+    return get_openapi(title="FastAPI", version="0.1.0", routes=app.routes)
 
 
 if __name__ == "__main__":

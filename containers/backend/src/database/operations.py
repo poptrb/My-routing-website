@@ -10,7 +10,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, update, or_, and_
+from sqlalchemy import func, select, update, or_, and_, union_all
 
 from .models import Report, User, SignupToken
 from .schemas import GetAbsoluteBboxReportsRequest, SignupTokenModel
@@ -32,16 +32,16 @@ async def insert_token(db: AsyncSession, data: SignupTokenModel) -> None:
 
 
 async def check_and_create_admin_token(db: AsyncSession) -> None:
-     result = await db.execute(select(func.count(SignupToken.id)))
-     count = result.scalar()
+    result = await db.execute(select(func.count(SignupToken.id)))
+    count = result.scalar()
 
-     if count == 0:
-         # Create a new admin token
-         admin_token = environ["ADMIN_TOKEN"]
-         if admin_token:
-             await insert_token(db, SignupTokenModel(token_hash=admin_token))
-         else:
-             logger.error("Admin token environment variable not set.")
+    if count == 0:
+        # Create a new admin token
+        admin_token = environ["ADMIN_TOKEN"]
+        if admin_token:
+            await insert_token(db, SignupTokenModel(token_hash=admin_token))
+        else:
+            logger.error("Admin token environment variable not set.")
 
 
 async def invalidate_token(db: AsyncSession, token_id: int) -> None:
@@ -120,7 +120,7 @@ async def get_reports_by_bbox(
     data: GetAbsoluteBboxReportsRequest,
 ):
 
-    limit_date: datetime = datetime.now() - timedelta(minutes=25)
+    limit_date: datetime = datetime.now() - timedelta(minutes=10)
 
     bbox_conditions = [
         func.ST_Within(
@@ -136,12 +136,25 @@ async def get_reports_by_bbox(
         for bbox in bboxes
     ]
 
-    result = await db.execute(
+    dwithin_conditions = [
+        func.ST_DWithin(
+            Report.location,
+            func.ST_SetSRID(
+                func.ST_MakePoint(user_coord.long, user_coord.lat),
+                4326,
+            ),
+            3000,
+        )
+        for user_coord in data.user_coords
+    ]
+
+    result_near_user = (
         select(Report)
         .filter(
             and_(
                 Report.lastSeenDate > limit_date,
-                or_(*bbox_conditions),
+                dwithin_conditions[0],
+                # bbox_conditions[0],
             )
         )
         .order_by(
@@ -158,8 +171,47 @@ async def get_reports_by_bbox(
         .limit(15)
     )
 
+    result_near_destination = (
+        select(Report)
+        .filter(
+            and_(
+                Report.lastSeenDate > limit_date,
+                dwithin_conditions[1],
+                # bbox_conditions[1],
+            )
+        )
+        .order_by(
+            func.ST_Distance(
+                Report.location,
+                func.ST_SetSRID(
+                    func.ST_MakePoint(
+                        data.user_coords[1].long, data.user_coords[1].lat
+                    ),
+                    4326,
+                ),
+            )
+        )
+        .limit(15)
+    )
+
+    result = await db.execute(
+        select(Report).from_statement(
+            union_all(result_near_user, result_near_destination)
+        )
+    )
     return result.scalars()
-    # return result.scalars().all()
+
+
+async def on_user_creation(db: AsyncSession, token_id: int) -> None:
+    if token_id != 1:
+        return
+
+    user_result = await db.execute(select(User).where(User.token_id == 1))
+
+    user = user_result.scalars().all()[0]
+
+    user.is_superuser = True
+    await token.save(db)
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

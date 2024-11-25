@@ -119,6 +119,9 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
           e.originalEvent.stopPropagation();
           setPopupState(popupState?.map((v, p_i) => i === p_i));
         }}
+        style={{
+          opacity: 0
+        }}
         >
       </Marker>
     );

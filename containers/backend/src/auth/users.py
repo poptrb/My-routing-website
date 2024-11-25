@@ -23,7 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session, async_session_maker
 from database.models import User
 from database.schemas import UserRead, UserCreate
-from database.operations import get_token, invalidate_token
+from database.operations import get_token, invalidate_token, on_user_creation
 from settings import settings
 
 logger = getLogger()
@@ -49,11 +49,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             user_create.token_id = token.id
             user_create.is_active = True
             user_create.is_verified = True
+            user_create.is_superuser = 1 if token.id in (1, "1") else 0
             user_create.signup_date = datetime.now()
 
             del user_create.token_cleartext
 
-        created_user = await super().create(user_create, safe, request=request)
+        created_user = await super().create(
+            user_create, safe=False, request=request
+        )
         return created_user
 
     async def on_after_register(
@@ -116,3 +119,4 @@ auth_backend = AuthenticationBackend(
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
+current_superuser = fastapi_users.current_user(active=True, superuser=True)
