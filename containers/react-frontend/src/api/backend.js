@@ -1,5 +1,6 @@
 import axios from 'axios';
-const BASE_URL = 'https://localhost/api';
+
+export const BASE_URL = 'https://beatlavolan.srinotforme.xyz/api/';
 
 export default axios.create({
     baseURL: BASE_URL

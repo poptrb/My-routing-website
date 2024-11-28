@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect } from "react";
-import axios from '../api/backend';
+import axios, { BASE_URL } from '../api/backend';
 import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}@[A-z0-9-_]{1,30}\.[A-z]{2,10}$/;
 // const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const REGISTER_URL = 'https://localhost/api/auth/register';
+const REGISTER_URL = BASE_URL + 'auth/register';
 
 const Register = () => {
     const userRef = useRef();

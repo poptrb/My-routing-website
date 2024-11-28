@@ -1,20 +1,28 @@
-FROM arm64v8/node:22-slim
+FROM arm64v8/node:22-slim AS base
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app
 
-COPY ./package.json package.json
 
-RUN corepack enable pnpm
+FROM base AS prod-deps
+COPY ./package.json /app
 
-RUN pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod 
 
 
-COPY ./public public/
-COPY ./src/ src/
-# COPY ./craco.config.js craco.config.js
-# RUN npm run build
+FROM base AS build
+COPY ./src ./package.json ./public /app
 
-EXPOSE 8002
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+COPY ./src ./src
+COPY ./public /public
+COPY ./package.json ./package.json
+RUN pnpm build
 
-# Start the application
-CMD [ "npm", "run", "start" ]
+
+FROM nginx:alpine
+
+COPY --from=build /app/build/ /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf

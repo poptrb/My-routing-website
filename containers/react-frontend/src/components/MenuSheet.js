@@ -1,19 +1,20 @@
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 import { Sheet } from 'react-modal-sheet';
 
 import { TripInfo} from './TripInfo'
 
 export const MenuSheet = (props) => {
 
+  const [open, setOpen] = useState(true);
   const ref = useRef();
-  // const snapTo = (i) => ref.current?.snapTo(i);
+  const snapTo = (i) => ref.current?.snapTo(i);
   return (
     <>
       <Sheet
         ref={ref}
-        isOpen={true}
-        onClose={() => null}
-        snapPoints={[0.20,0.15]}
+        isOpen={open}
+        onClose={() => snapTo(1)}
+        snapPoints={[0.25,0.05]}
         initialSnap={1}
         onSnap={(snapIndex) =>
           console.log('> Current snap point index:', snapIndex)

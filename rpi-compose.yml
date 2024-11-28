@@ -8,6 +8,7 @@ networks:
   internal:
   db:
   traefik:
+    enable_ipv6: true
     name: traefik
 
 services:
@@ -37,12 +38,16 @@ services:
       - "traefik.http.routers.frontend.middlewares=frontend-https-redirect"
       - "traefik.http.routers.frontend-secure.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.frontend-secure.tls=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend-secure.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.frontend-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    depends_on:
+      - traefik
     tty: true
     stdin_open: true
     build:
       context: ./containers/react-frontend/
-      dockerfile: Dockerfile
+      dockerfile: rpi.Dockerfile
     environment:
       REACT_APP_MAPBOX_TOKEN: ${REACT_APP_MAPBOX_TOKEN}
     restart: unless-stopped
@@ -83,11 +88,14 @@ services:
       - "traefik.http.routers.backend.middlewares=backend-rewrite,backend-https-redirect"
       - "traefik.http.routers.backend-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-secure.tls=true"
+      - "traefik.http.routers.backend-secure.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
     build:
       context: ./containers/backend/
-      dockerfile: Dockerfile
+      dockerfile: rpi.Dockerfile
     depends_on:
+      - traefik
+      - valhalla
       - postgis
     stdin_open: true
     tty: true

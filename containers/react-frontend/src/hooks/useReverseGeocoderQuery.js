@@ -2,6 +2,8 @@ import {useMemo, useCallback} from 'react';
 import {useQuery} from 'react-query';
 import axios from 'axios';
 
+const REACT_APP_MAPBOX_TOKEN='pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTQxb2hncmgwMHMzMmlyMDdld3Vkc3lhIn0.395Wc5mj_V4G3caZjlaSvw'
+
 export const useReverseGeocoderQuery = (state) => {
 
   const coords = {
@@ -12,7 +14,7 @@ export const useReverseGeocoderQuery = (state) => {
   const params = new URLSearchParams({
     longitude: coords.lon,
     latitude: coords.lat,
-    access_token: process.env.REACT_APP_MAPBOX_TOKEN,
+    access_token: REACT_APP_MAPBOX_TOKEN,
   }).toString();
 
   const url =
