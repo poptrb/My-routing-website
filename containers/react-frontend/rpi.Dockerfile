@@ -15,7 +15,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
 FROM base AS build
 COPY ./package.json ./package.json
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
-COPY ./public /public
+COPY ./public ./public
 COPY ./src ./src
 RUN pnpm build
 
