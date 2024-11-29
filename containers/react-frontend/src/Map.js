@@ -44,8 +44,11 @@ export const MapView = () => {
     evt: userMarker ? userMarker : null
   });
 
-  const onMapLoad = useCallback((evt) => {
-    geoControlRef.current && geoControlRef.current.trigger()
+  const onMapLoad = useCallback( async (evt) => {
+    await new Promise(r => setTimeout(r, 1200));
+    if (geoControlRef.current) {
+      geoControlRef.current.trigger()
+    }
   }, [])
 
   useEffect(() => {
@@ -64,14 +67,22 @@ export const MapView = () => {
   }, []);
 
   const onMapDragStart = useCallback((evt) => {
-  },[]);
+    if (mapInfo.tripMenu.state === 'driving') {
+      mapInfo.setTripMenu({state: 'driving-browsing'})
+    }
+  },[mapInfo]);
 
   const onMapDragEnd = useCallback((evt) => {
   },[]);
 
-  const onGeolocate = useCallback((evt) => {
+  const onGeolocate = useCallback( async (evt) => {
     console.log(`Geolocation result`, evt)
     mapInfo.setUserLocation(evt);
+    mapInfo.tripMenu.state === 'driving-browsing' && mapInfo.setTripMenu({state: 'driving'});
+    if (evt.target?._heading && mapInfo.tripMenu.state === 'driving') {
+      await new Promise(r => setTimeout(r, 300));
+      mapRef.current?.rotateTo(evt.target._heading)
+    };
   }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
@@ -123,6 +134,7 @@ export const MapView = () => {
       onMove={onMapMove}
       onIdle={onMapIdle}
       onClick={onMapClick}
+      onDragStart={onMapDragStart}
     >
       <div
         className="map-toaster"

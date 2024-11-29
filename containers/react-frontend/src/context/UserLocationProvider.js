@@ -21,7 +21,7 @@ export const MapInfoProvider = ({ children }) => {
   }, []);
 
   const updateTripMenu = useCallback((tripMenu, value) => {
-    setTripMenu({...tripMenu,...value})
+    setTripMenu({...value, ...tripMenu})
   }, []);
 
   return (
