@@ -59,12 +59,14 @@ export const decodeRouteGeoJSON = (data) => {
     return
   };
 
-  if (data.trip && data.trip.legs) {
-    const routeFeatures = data.trip.legs.map((leg) => {
-      return ({
-        type: 'Feature',
-        geometry: polyline.toGeoJSON(leg.shape, 6)
-      })
+  console.log(data);
+
+  if (data.routes.length > 0) {
+    const routeFeatures = data.routes.map((route) => {
+      return {
+	type: 'Feature',
+        geometry: polyline.toGeoJSON(route.geometry, 6)
+      }
     });
 
     return ({
@@ -112,10 +114,9 @@ export const RouteLineLayer = ({locations}) => {
   });
 
   useEffect(() => {
-    console.log(routeReportData);
-    if (routeReportData?.length > 0) {
-      toast.success(`Found ${routeReportData.length} reports`)
-    }
+    // if (routeReportData?.length > 0) {
+    //   toast.success(`Found ${routeReportData.length} reports`)
+    // }
     setRouteReportGeoJSON(buildGeoJSON(routeReportData))
   }, [routeReportData, mapInfo.userLocation, mapInfo.destinationLocation]);
 
@@ -128,10 +129,11 @@ export const RouteLineLayer = ({locations}) => {
 
 
   useEffect(() => {
-    if (routeData?.trip && routeData.trip.legs ) {
+    if (routeData?.routes?.length > 0) {
       const decoded = decodeRouteGeoJSON(routeData)
       setGeoJSONShape(decoded);
-      mapInfo.setTrip(routeData.trip);
+      mapInfo.setTrip(routeData.routes[0]);
+      console.log(routeData.routes[0]);
 
       if (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route') {
         onlyMap.fitBounds(bbox(decoded), {

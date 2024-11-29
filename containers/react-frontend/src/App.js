@@ -13,6 +13,9 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
   <>
+    <head>
+      <base href="/"/>
+    </head>
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>

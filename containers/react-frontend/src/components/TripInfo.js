@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect} from 'react';
+import { useState, useCallback, useEffect, useMemo} from 'react';
 import { useMapInfo } from '../context/UserLocationProvider'
 import {useMap} from 'react-map-gl'
+import {directionSvgs} from './directionSvg'
 
 export const TripInfo = () => {
 
@@ -37,6 +38,47 @@ export const TripInfo = () => {
       mapInfo.setTrip();
     }, [mapInfo]);
 
+    const renderBannerInstructions = useMemo(() => {
+      if (! mapInfo?.trip?.legs[0]?.steps[0]?.bannerInstructions[0]?.primary) {
+	return null
+      }
+
+      const bannerInstructions = mapInfo?.trip?.legs[0]?.steps[0]?.bannerInstructions[0]?.primary;
+      const maneuverInstructions = mapInfo?.trip?.legs[0]?.steps[0]?.maneuver.instruction;
+      const voiceInstructions = mapInfo?.trip?.legs[0]?.steps[0]?.voiceInstructions;
+      const distance = Math.floor((mapInfo?.trip?.legs[0]?.steps[0]?.distance / 10)) * 10;
+	
+
+      const maneuverSvg = bannerInstructions.modifier 
+        ? `${bannerInstructions.type.split(" ").join("_")}_${bannerInstructions.modifier.split(" ").join("_")}`
+	: `${bannerInstructions.type.split(" ").join("_")}`;
+
+      return(
+        <>
+	<div className={'trip-instructions-maneuvers'}>
+          {
+            `${voiceInstructions[0].announcement}`
+          }
+	</div>
+	<div className={'trip-instructions-symbol'}>
+	  <img
+	    src={directionSvgs.get(maneuverSvg)}
+	    style={{
+	      height: '75px',
+	      width: '75px'
+	    }}
+	    alt="maneuver"
+          />
+          {
+            distance < 1000 
+	      ? `${distance} m`
+	      : `${Math.round((distance / 1000) * 10) / 10} km`
+          }
+	</div>
+        </>
+      );
+    }, [mapInfo.trip])
+
     return(
       <>
         {
@@ -44,6 +86,8 @@ export const TripInfo = () => {
           ?
           <>
             <div className='trip-container' key='trip-container'>
+            <div className='trip-left-menu' key='trip-container'>
+	  
               <div className='trip-controls' key='trip-controls'>
                   {
                     (mapInfo.userLocation?.coords &&
@@ -57,7 +101,8 @@ export const TripInfo = () => {
                     : null
                   }
                   {
-                    (mapInfo.tripMenu?.state === 'driving')
+                    (mapInfo.tripMenu?.state === 'driving' || 
+		      mapInfo.tripMenu?.state === 'driving-browsing')
                     ? <button
                       onClick={
                         () => stopDriving()
@@ -73,32 +118,28 @@ export const TripInfo = () => {
                   mapInfo.trip?.legs?.length > 0
                     ? <>
                       {
-                        `${Math.floor(mapInfo.trip.legs[0].summary.length)} KM`
+                        `${Math.floor(mapInfo.trip.legs[0].distance / 1000)} KM`
                       }
-                      <br/>
+		       | 
                       {
-                        `${Math.floor(mapInfo.trip.legs[0].summary.time / 60)} min`
+                        `${Math.floor(mapInfo.trip.legs[0].duration / 60)} min`
                       }
                       </>
                     : null
                 }
               </div>
-              <div className='trip-instructions'>
-                {
-                  mapInfo.trip?.legs?.length > 0 && mapInfo.tripMenu?.state && mapInfo.tripMenu.state === 'driving'
-                    ?
-                      <>
-                      {
-                        `${mapInfo?.trip?.legs[0]?.maneuvers[0].street_names[0]}`
-                      }
-                      <br/>
-                      {
-                        `${mapInfo?.trip?.legs[0]?.maneuvers[0].verbal_pre_transition_instruction}`
-                      }
-                      </>
-                    : null
-                }
-              </div>
+	      </div>
+		<>
+		{
+                (mapInfo.trip.legs?.length > 0 && mapInfo.tripMenu?.state && 
+	          ( mapInfo.tripMenu.state === 'driving'  || 
+	            mapInfo.tripMenu.state === 'driving-browsing')) && (
+		  
+                  <div className='trip-instructions'>
+		    {renderBannerInstructions}
+                  </div> )
+		}
+		</>
             </div>
           </>
           : null

@@ -9,7 +9,6 @@ const buildExcludedPolygonsFromGeoJSON = (excludeLocations, radius) => {
   // Returns an array of arrays of [lon,lat] pairs
   // for each GeoJSON point around radius
 
-  console.log(excludeLocations)
   if (!excludeLocations.features) {
     return
   };
@@ -51,8 +50,15 @@ const fetchOptimizedRoute = async(backend, locations, excludeLocations) => {
 
   const response = await backend.post("/geo/optimized_route?json=", {
     costing: 'auto',
+    units: 'kilometres',
+    format: 'osrm',
+    banner_instructions: true,
+    voice_instructions: true,
     direction_options: {
-      units: 'kilometres'
+      units: 'kilometres',
+      format: 'osrm',
+      banner_instructions: true,
+      voice_instructions: true,
     },
     locations: parsedLocations,
     exclude_polygons: buildExcludedPolygonsFromGeoJSON(

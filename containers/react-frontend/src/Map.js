@@ -35,12 +35,13 @@ export const MapView = () => {
    const [viewState, setViewState] = useState({
      longitude: 26.1025,
      latitude: 44.4268,
-     zoom: 3
+     zoom: 1
   });
 
 
   const reverseGeocoderQuery = useReverseGeocoderQuery({
-    enabled: userMarker ? true : false,
+    // enabled: userMarker ? true : false,
+    enabled: false,
     evt: userMarker ? userMarker : null
   });
 
@@ -127,7 +128,7 @@ export const MapView = () => {
       ref={mapRef}
       reuseMaps={true}
       id="onlyMap"
-      style={{height: "88.5vh"}}
+      style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/navigation-night-v1"
       mapboxAccessToken={REACT_APP_MAPBOX_TOKEN}
       onLoad={onMapLoad}
