@@ -26,12 +26,19 @@ body {
   z-index: 9999;
 }
 
+.trip-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
 .trip-instructions {
   display: flex;
   align-items: center;
   flex-direction: row;
   justify-content: space-around;
- }
+}
 
 .trip-instructions-symbol {
   display: flex;

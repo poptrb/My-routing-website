@@ -117,13 +117,16 @@ export const TripInfo = () => {
                 {
                   mapInfo.trip?.legs?.length > 0
                     ? <>
+		      <div>
                       {
                         `${Math.floor(mapInfo.trip.legs[0].distance / 1000)} KM`
                       }
-		       | 
+		      </div>
+		      <div>
                       {
                         `${Math.floor(mapInfo.trip.legs[0].duration / 60)} min`
                       }
+		      </div>
                       </>
                     : null
                 }
