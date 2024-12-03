@@ -62,7 +62,7 @@ const fetchOptimizedRoute = async(backend, locations, excludeLocations) => {
     },
     locations: parsedLocations,
     exclude_polygons: buildExcludedPolygonsFromGeoJSON(
-        excludeLocations, 50
+        excludeLocations, 60
     ),
   });
 
