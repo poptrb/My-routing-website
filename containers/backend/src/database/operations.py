@@ -120,7 +120,7 @@ async def get_reports_by_bbox(
     data: GetAbsoluteBboxReportsRequest,
 ):
 
-    limit_date: datetime = datetime.now() - timedelta(minutes=10)
+    limit_date: datetime = datetime.now() - timedelta(minutes=5)
 
     bbox_conditions = [
         func.ST_Within(
@@ -143,7 +143,7 @@ async def get_reports_by_bbox(
                 func.ST_MakePoint(user_coord.long, user_coord.lat),
                 4326,
             ),
-            3000,
+            0.1,
         )
         for user_coord in data.user_coords
     ]
