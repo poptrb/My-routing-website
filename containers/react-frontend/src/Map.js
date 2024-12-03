@@ -9,7 +9,6 @@ import {GeocoderControlMemo} from './control/GeocoderControl'
 import {useReverseGeocoderQuery} from './hooks/useReverseGeocoderQuery'
 
 
-const REACT_APP_MAPBOX_TOKEN = 'pk.eyJ1IjoiaXVsaWFubWFwcGVycyIsImEiOiJjbTQxb2hncmgwMHMzMmlyMDdld3Vkc3lhIn0.395Wc5mj_V4G3caZjlaSvw'
 export function CustomMap() {
   return(
     <>
@@ -101,7 +100,7 @@ export const MapView = () => {
 
   const geocoderControlProps = useMemo(() => {
     return {
-      mapboxAccessToken: REACT_APP_MAPBOX_TOKEN,
+      mapboxAccessToken: process.env.REACT_APP_MAPBOX_TOKEN,
       position: 'top',
       flyTo: true,
       onResult: onGeocoderResult,
@@ -130,7 +129,7 @@ export const MapView = () => {
       id="onlyMap"
       style={{height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/navigation-night-v1"
-      mapboxAccessToken={REACT_APP_MAPBOX_TOKEN}
+      mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onLoad={onMapLoad}
       onMove={onMapMove}
       onIdle={onMapIdle}
