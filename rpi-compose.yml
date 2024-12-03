@@ -40,16 +40,20 @@ services:
       - "traefik.http.routers.frontend-secure.tls=true"
       - "traefik.http.routers.frontend-secure.tls.domains[0].main=${DOMAIN}"
       - "traefik.http.routers.frontend-secure.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     depends_on:
       - traefik
     tty: true
     stdin_open: true
     build:
       context: ./containers/react-frontend/
-      dockerfile: rpi.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_MAPBOX_TOKEN=${REACT_APP_MAPBOX_TOKEN}
+        - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
     environment:
       REACT_APP_MAPBOX_TOKEN: ${REACT_APP_MAPBOX_TOKEN}
+      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
     restart: unless-stopped
     networks:
       - traefik
@@ -97,6 +101,11 @@ services:
       - traefik
       - valhalla
       - postgis
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "1"
     stdin_open: true
     tty: true
     env_file:
@@ -115,6 +124,7 @@ services:
   traefik:
     environment:
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      TZ: 'Europe/Bucharest'
     image: arm64v8/traefik:latest
     networks:
       - traefik
@@ -125,6 +135,7 @@ services:
     security_opt:
       - no-new-privileges=true
     volumes:
+      - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /run/user/1000/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/certs
