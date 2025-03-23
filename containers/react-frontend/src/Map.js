@@ -1,11 +1,12 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect} from 'react';
-import Map, {GeolocateControl, MapProvider} from 'react-map-gl';
+import Map, {MapProvider} from 'react-map-gl';
 import toast, {Toaster} from 'react-hot-toast';
 
 import {MenuSheet} from './components/MenuSheet'
 import {RouteLineLayer} from './components/RouteLineLayer'
 import {useMapInfo, MapInfoProvider} from './context/UserLocationProvider'
 import {GeocoderControlMemo} from './control/GeocoderControl'
+import GeolocateControl from './control/GeolocationControlWrapper'
 import {useReverseGeocoderQuery} from './hooks/useReverseGeocoderQuery'
 
 
