@@ -1,4 +1,4 @@
-// src/components/map/MapView.js - Core map component
+// src/components/MapView.js - Updated with hold functionality
 import React, { useRef, useState } from 'react';
 import Map from 'react-map-gl';
 import { Toaster } from 'react-hot-toast';
@@ -7,6 +7,7 @@ import { useMapInfo } from '../context/UserLocationProvider';
 import { MapControls } from './MapControls';
 import { MapLayers } from './MapLayers';
 import { useMapHandlers } from '../hooks/useMapHandlers';
+import { HoldLocationPopup } from './HoldLocationPopup';
 
 export const MapView = () => {
   const mapRef = useRef();
@@ -23,10 +24,18 @@ export const MapView = () => {
     onMapLoad,
     onMapMove,
     onMapClick,
+    onMapMouseDown,
+    onMapMouseUp,
+    onMapTouchStart,
+    onMapTouchEnd,
     onMapIdle,
     onMapDragStart,
     onMapDragEnd,
-    onGeolocate
+    onGeolocate,
+    holdPopupVisible,
+    holdPosition,
+    onCloseHoldPopup,
+    onDriveToHoldLocation
   } = useMapHandlers({
     mapRef,
     geoControlRef,
@@ -54,6 +63,10 @@ export const MapView = () => {
         onMove={onMapMove}
         onIdle={onMapIdle}
         onClick={onMapClick}
+        onMouseDown={onMapMouseDown}
+        onMouseUp={onMapMouseUp}
+        onTouchStart={onMapTouchStart}
+        onTouchEnd={onMapTouchEnd}
         onDragStart={onMapDragStart}
         onDragEnd={onMapDragEnd}
       >
@@ -66,6 +79,15 @@ export const MapView = () => {
         />
 
         <MapLayers mapInfo={mapInfo} />
+
+        {/* Render the hold popup when visible */}
+        {holdPopupVisible && holdPosition && (
+          <HoldLocationPopup
+            position={holdPosition}
+            onClose={onCloseHoldPopup}
+            onDrive={onDriveToHoldLocation}
+          />
+        )}
       </Map>
     </>
   );
