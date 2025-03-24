@@ -19,7 +19,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <Router/>:
+          <Router/>
         </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>
