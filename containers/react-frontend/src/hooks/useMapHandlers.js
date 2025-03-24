@@ -1,6 +1,5 @@
 // src/hooks/useMapHandlers.js - Custom hook for map event handlers
 import { useCallback } from 'react';
-import { useReverseGeocoderQuery } from './useReverseGeocoderQuery';
 
 export const useMapHandlers = ({ mapRef, geoControlRef, mapInfo, setViewState }) => {
   const onMapLoad = useCallback(async (evt) => {
@@ -37,11 +36,11 @@ export const useMapHandlers = ({ mapRef, geoControlRef, mapInfo, setViewState })
       mapInfo.setTripMenu({state: 'driving'});
     }
 
-    if (evt.target?._heading && mapInfo.tripMenu.state === 'driving') {
-      await new Promise(r => setTimeout(r, 300));
-      mapRef.current?.rotateTo(evt.target._heading);
-    }
-  }, [mapInfo, mapRef]);
+    // if (evt.target?._heading && mapInfo.tripMenu.state === 'driving') {
+    //   await new Promise(r => setTimeout(r, 300));
+    //   mapRef.current?.rotateTo(evt.target._heading);
+    // }
+  }, [mapInfo]);
 
   const onMapIdle = useCallback((evt) => {
     if (mapInfo.tripMenu.event === 'trigger-geolocate') {

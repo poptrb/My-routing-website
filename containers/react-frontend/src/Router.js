@@ -1,7 +1,7 @@
 import {Route, Routes} from 'react-router-dom';
 
 import PrivateRoutes from './PrivateRoutes';
-import {CustomMap} from './Map.js'
+import {MapContainer} from './components/MapContainer'
 import {Login} from './screens/Login';
 import {Register} from './screens/Register';
 
@@ -21,7 +21,7 @@ export function Router() {
       >
         <Route
           path={"/explore"}
-          element={<CustomMap />}
+          element={<MapContainer />}
         />
       </Route>
     </Routes>

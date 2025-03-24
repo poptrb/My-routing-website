@@ -1,7 +1,7 @@
 // src/components/map/MapView.js - Core map component
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import Map, { GeolocateControl } from 'react-map-gl';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useRef, useState } from 'react';
+import Map from 'react-map-gl';
+import { Toaster } from 'react-hot-toast';
 
 import { useMapInfo } from '../context/UserLocationProvider';
 import { MapControls } from './MapControls';

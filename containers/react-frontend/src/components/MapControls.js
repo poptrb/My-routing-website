@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { GeolocateControl } from 'react-map-gl';
+import GeolocateControl from '../control/GeolocationControlWrapper';
 import { GeocoderControlMemo } from '../control/GeocoderControl';
 
 export const MapControls = ({ mapInfo, geoControlRef, onGeolocate }) => {
