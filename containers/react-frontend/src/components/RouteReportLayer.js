@@ -95,7 +95,7 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
                 {toTitleCase(elem.properties.type)}
                 </div>
                 <div className="report-popup-container">
-                  {formatDateTime(elem.properties.lastSeenDate)}
+                  {formatDateTime(elem.properties.firstSeenDate)}
                   <br />
                   {elem.properties.street}
                 </div>
