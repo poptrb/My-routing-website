@@ -148,13 +148,13 @@ async def get_reports_by_bbox(
         for user_coord in data.user_coords
     ]
 
+    result_limit = 40 if len(bbox_conditions) == 1 else 13
     result_near_user = (
         select(Report)
         .filter(
             and_(
                 Report.lastSeenDate > limit_date,
                 dwithin_conditions[0],
-                # bbox_conditions[0],
             )
         )
         .order_by(
@@ -168,8 +168,15 @@ async def get_reports_by_bbox(
                 ),
             )
         )
-        .limit(15)
+        .limit(result_limit)
     )
+
+
+    if len(bbox_conditions) == 1:
+        result = await db.execute(
+            select(Report).from_statement(result_near_user)
+        )
+        return result.scalars()
 
     result_near_destination = (
         select(Report)
@@ -191,7 +198,7 @@ async def get_reports_by_bbox(
                 ),
             )
         )
-        .limit(15)
+        .limit(result_limit)
     )
 
     result = await db.execute(
