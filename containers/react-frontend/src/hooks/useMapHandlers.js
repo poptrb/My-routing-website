@@ -45,7 +45,7 @@ export const useMapHandlers = ({ mapRef, geoControlRef, mapInfo, setViewState })
         });
         setHoldPopupVisible(true);
       }
-    }, 500);
+    }, 400);
   }, [mapInfo.tripMenu.state]);
 
   // Handle map click with press and hold logic
@@ -59,6 +59,9 @@ export const useMapHandlers = ({ mapRef, geoControlRef, mapInfo, setViewState })
     // If it wasn't a hold (meaning it was a regular click), don't do anything special
     if (!isPressHoldRef.current) {
       console.log('Regular click detected:', evt);
+      // Close any popups
+        setHoldPopupVisible(false);
+        setHoldPosition(null);
       // Do regular click handling here if needed
     }
 

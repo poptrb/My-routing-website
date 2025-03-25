@@ -18,7 +18,6 @@ export const HoldLocationPopup = ({ position, onClose, onDrive }) => {
     if (isLoading) return 'Loading...';
     if (isError) return 'Location';
 
-    console.log(reverseGeocoderData);
     if (reverseGeocoderData?.features && reverseGeocoderData.features.length > 0) {
       const feature = reverseGeocoderData.features[0];
       // Try to get the street name, or fallback to place name
@@ -39,8 +38,6 @@ export const HoldLocationPopup = ({ position, onClose, onDrive }) => {
         place_name: getLocationName()
       }
     };
-
-    // Call the onDrive handler with the created destination
     onDrive(destinationObj);
   };
 
@@ -62,12 +59,20 @@ export const HoldLocationPopup = ({ position, onClose, onDrive }) => {
       >
         <div className="hold-popup-container">
           <div className="hold-popup-title">{getLocationName()}</div>
-          <button
-            className="hold-popup-drive-btn"
-            onClick={handleDriveClick}
-          >
-            Drive
-          </button>
+          <div className="hold-popup-container-btn">
+            <button
+              className="hold-popup-drive-btn"
+              onClick={handleDriveClick}
+            >
+              Drive
+            </button>
+            <button
+              className="hold-popup-back-btn"
+              onClick={onClose}
+            >
+              Back
+            </button>
+          </div>
         </div>
       </Popup>
     </>

@@ -17,7 +17,7 @@ export const MapView = () => {
   const [viewState, setViewState] = useState({
     longitude: 26.1025,
     latitude: 44.4268,
-    zoom: 1
+    zoom: 6
   });
 
   const {
@@ -58,6 +58,7 @@ export const MapView = () => {
         id="onlyMap"
         style={{height: "100vh"}}
         mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+        // mapStyle="mapbox://styles/mapbox/standard"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onLoad={onMapLoad}
         onMove={onMapMove}
