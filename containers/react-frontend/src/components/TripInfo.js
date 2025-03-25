@@ -99,25 +99,6 @@ export const TripInfo = () => {
     return (
       <div className='trip-container'>
         <div className='trip-left-menu'>
-          <div className='trip-controls'>
-            {(mapInfo.userLocation?.coords &&
-               mapInfo.destinationLocation?.result?.center &&
-               mapInfo.tripMenu?.state === 'previewing-route') ? (
-                <button onClick={startDriving}>
-                  Start driving
-                </button>
-              ) : null
-            }
-
-            {(mapInfo.tripMenu?.state === 'driving' ||
-              mapInfo.tripMenu?.state === 'driving-browsing') ? (
-                <button onClick={stopDriving}>
-                  Stop driving
-                </button>
-              ) : null
-            }
-          </div>
-
           <div className='trip-header'>
             {mapInfo.trip?.legs?.length > 0 ? (
               <>
@@ -129,6 +110,31 @@ export const TripInfo = () => {
                 </div>
               </>
             ) : null}
+          </div>
+
+          <div className='trip-controls'>
+            {(mapInfo.userLocation?.coords &&
+               mapInfo.destinationLocation?.result?.center &&
+               mapInfo.tripMenu?.state === 'previewing-route') ? (
+                <button
+                  className="start-driving-button"
+                  onClick={startDriving}
+                >
+                  Start driving
+                </button>
+              ) : null
+            }
+
+            {(mapInfo.tripMenu?.state === 'driving' ||
+              mapInfo.tripMenu?.state === 'driving-browsing') ? (
+                <button
+                  className="stop-driving-button"
+                  onClick={stopDriving}
+                >
+                  Stop driving
+                </button>
+              ) : null
+            }
           </div>
         </div>
 

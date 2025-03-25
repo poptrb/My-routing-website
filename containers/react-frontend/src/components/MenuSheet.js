@@ -49,6 +49,12 @@ export const MenuSheet = () => {
     }
   };
 
+  const handleBack = () => {
+    mapInfo.setDestinationLocation();
+    mapInfo.setTripMenu({state: 'browsing'});
+    setOpen(false);
+  };
+
   if (!open) return null;
 
   return (
@@ -67,9 +73,24 @@ export const MenuSheet = () => {
           className="sheet-content"
           style={{ paddingBottom: ref.current?.y }}
         >
-          <Sheet.Scroller draggableAt={"both"}>
-            <TripInfo />
-          </Sheet.Scroller>
+          {mapInfo.tripMenu.state === 'previewing-route' && (
+            <div className="menu-controls">
+              <button
+                className="back-button"
+                onClick={handleBack}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <TripInfo />
+            </div>
+          )}
+          {(mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') && (
+            <Sheet.Scroller draggableAt={"both"}>
+              <TripInfo />
+            </Sheet.Scroller>
+          )}
         </Sheet.Content>
       </Sheet.Container>
     </Sheet>

@@ -392,9 +392,10 @@ code {
 .hold-popup-container-btn {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  padding: 8px;
-  min-width: 150px;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px;
+  width: 100%;
 }
 
 .hold-popup-title {
@@ -406,32 +407,35 @@ code {
   max-width: 200px;
 }
 
+.hold-popup-back-btn,
+.hold-popup-drive-btn {
+  flex: 1; /* Make buttons take equal space */
+  padding: 10px 16px;
+  border-radius: 7px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
 .hold-popup-drive-btn {
   background-color: #00b300;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.hold-popup-back-btn {
-  background-color: #84878c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .hold-popup-drive-btn:hover {
-  background-color: #008800;
+  background-color: #009900;
+}
+
+.hold-popup-back-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #d0d0d0;
+}
+
+.hold-popup-back-btn:hover {
+  background-color: #e0e0e0;
 }
 
 .sheet-content {
@@ -442,6 +446,36 @@ code {
 :root {
   --rsm-overlay-background: rgba(0, 0, 0, 0.3);
   --rsm-content-background: #ffffff;
+}
+
+.menu-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+  position: relative;
+  width: 100%;
+}
+
+.back-button {
+  position: absolute;
+  left: 16px;
+  top: 0;
+  background: none;
+  border: none;
+  color: #333;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Add shadow to the sheet */
@@ -459,12 +493,17 @@ code {
   border-radius: 2px;
 }
 
-/* Improve spacing in the sheet content */
 .trip-container {
   margin-bottom: 10px;
 }
 
-/* Improve button styling in TripInfo */
+.trip-controls {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
 .trip-controls button {
   padding: 8px 16px;
   border-radius: 20px;
