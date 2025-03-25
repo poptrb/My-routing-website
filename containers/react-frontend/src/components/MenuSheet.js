@@ -13,23 +13,20 @@ export const MenuSheet = () => {
 
   // Update sheet behavior based on mapInfo changes
   useEffect(() => {
-    // Case 1: No destination - hide the sheet
     if (!mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
       setOpen(false);
       return;
     }
 
-    // Case 2: Has destination but not driving - show at 40% and disable drag
     if (mapInfo.destinationLocation &&
         (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route')) {
       setOpen(true);
-      setSnapPoints([0.3, 0.2]);
+      setSnapPoints([0.2]);
       setDisableDrag(true);
       setInitialSnap(0);
       return;
     }
 
-    // Case 3: Driving mode - show at 30% and enable drag
     if (mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') {
       setOpen(true);
       setSnapPoints([0.5, 0.25, 0.2]);

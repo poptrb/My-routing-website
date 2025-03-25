@@ -389,6 +389,14 @@ code {
   min-width: 150px;
 }
 
+.hold-popup-container-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 8px;
+  min-width: 150px;
+}
+
 .hold-popup-title {
   font-weight: bold;
   margin-bottom: 10px;
@@ -400,6 +408,18 @@ code {
 
 .hold-popup-drive-btn {
   background-color: #00b300;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.hold-popup-back-btn {
+  background-color: #84878c;
   color: white;
   border: none;
   border-radius: 4px;
