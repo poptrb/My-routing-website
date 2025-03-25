@@ -1,4 +1,4 @@
-import {convertAndMapSpeed} from '../utils/utils.js'
+import {convertAndMapSpeed} from '../utils/utils'
 import {GeolocateControl, LngLat} from 'mapbox-gl'
 
 export function extend(dest,  ...sources) {

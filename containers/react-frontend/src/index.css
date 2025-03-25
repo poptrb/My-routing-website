@@ -413,3 +413,54 @@ code {
 .hold-popup-drive-btn:hover {
   background-color: #008800;
 }
+
+.sheet-content {
+  padding: 16px;
+}
+
+/* Styling for the menu sheet */
+:root {
+  --rsm-overlay-background: rgba(0, 0, 0, 0.3);
+  --rsm-content-background: #ffffff;
+}
+
+/* Add shadow to the sheet */
+[data-rsm-sheet] {
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+
+/* Customize the drag indicator */
+[data-rsm-drag-handle]::before {
+  width: 36px;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* Improve spacing in the sheet content */
+.trip-container {
+  margin-bottom: 10px;
+}
+
+/* Improve button styling in TripInfo */
+.trip-controls button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: #00b300;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.trip-controls button:hover {
+  background-color: #009900;
+}
+
+.trip-controls button:active {
+  transform: translateY(1px);
+}
