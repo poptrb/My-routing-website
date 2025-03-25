@@ -34,6 +34,7 @@ export const useReverseGeocoderQuery = (state) => {
     },
     throwOnError: true,
     select: useCallback((data) => data.data, []),
+    placeholderData: 'Loading',
     enabled: state.enabled
   });
 
