@@ -25,7 +25,7 @@ export const MapControls = ({ mapInfo, geoControlRef, onGeolocate }) => {
       {isInBrowsingMode && <GeocoderControlMemo {...geocoderControlProps} />}
       <GeolocateControl
         ref={geoControlRef}
-        position={"bottom-left"}
+        position={"left"}
         onGeolocate={onGeolocate}
         trackUserLocation={true}
         showUserHeading={true}
