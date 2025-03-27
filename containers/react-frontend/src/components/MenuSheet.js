@@ -21,7 +21,7 @@ export const MenuSheet = () => {
     if (mapInfo.destinationLocation &&
         (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route')) {
       setOpen(true);
-      setSnapPoints([0.2]);
+      setSnapPoints([0.35, 0.2]);
       setDisableDrag(true);
       setInitialSnap(0);
       return;

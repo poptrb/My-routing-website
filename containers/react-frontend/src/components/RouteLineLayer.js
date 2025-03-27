@@ -15,7 +15,7 @@ const lineLayerStyle = {
   type: "line",
   paint: {
     'line-color': '#00b300',
-    'line-width': 4
+    'line-width': 7
   },
   layout: {
     'line-cap': 'round',

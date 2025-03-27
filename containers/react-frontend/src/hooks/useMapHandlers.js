@@ -1,10 +1,12 @@
 // src/hooks/useMapHandlers.js - Updated with hold functionality
 import { useCallback, useState, useRef } from 'react';
+import { useMapInfo } from '../context/UserLocationProvider';
 
-export const useMapHandlers = ({ mapRef, geoControlRef, mapInfo, setViewState }) => {
+export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
   // State to track the hold popup visibility and position
   const [holdPopupVisible, setHoldPopupVisible] = useState(false);
   const [holdPosition, setHoldPosition] = useState(null);
+  const mapInfo = useMapInfo();
 
   // Refs to track press timer and mouse state
   const pressTimerRef = useRef(null);

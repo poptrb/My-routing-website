@@ -31,6 +31,13 @@ export const MapControls = ({ mapInfo, geoControlRef, onGeolocate }) => {
         showUserHeading={true}
         enableHighAccuracy={true}
         marker={false}
+        fitBoundsOptions={{
+          essential: true,
+          maxDuration: 1000,
+          linear: true,
+          maxZoom: 17,
+          minZoom: 17,
+        }}
       />
     </>
   );
