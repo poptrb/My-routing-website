@@ -8,16 +8,14 @@ networks:
   internal:
   db:
   traefik:
+    enable_ipv6: true
     name: traefik
 
 services:
-
   valhalla:
     tty: true
     stdin_open: true
-    # Linux arm64 v3.5.1
-    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
-      # entrypoint: /bin/bash
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:3.5.1@sha256:77f4f2695b647892b493aa35af74edfba386fcf6a3cafd38b87f2f566639916c
     environment:
       tile_urls: "https://download.geofabrik.de/europe/romania-latest.osm.pbf"
       server_threads: 4
@@ -30,14 +28,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend-secure.entrypoints=https"
-      - "traefik.http.middlewares.frontend-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader2.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.frontend.middlewares=frontend-https-redirect"
-      - "traefik.http.routers.frontend-secure.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend-secure.tls=true"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) && PathPrefix(`/`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
     tty: true
     stdin_open: true
     build:
@@ -63,12 +57,10 @@ services:
       - POSTGRES_DB=${POSTGIS_DB}
     healthcheck:
       test:
-        [
-            "CMD-SHELL", "pg_isready -d $POSTGIS_DB -U $POSTGIS_USER"
-        ]
+        [ "CMD-SHELL", "pg_isready -d $POSTGIS_DB -U $POSTGIS_USER" ]
       timeout: 5s
       retries: 10
-    image: postgis/postgis:16-3.4-alpine
+    image: tobi312/rpi-postgresql-postgis:16-3.4-alpine-arm64
     networks:
       - db
     restart: always
@@ -81,16 +73,11 @@ services:
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.backend-rewrite.stripprefix.prefixes=/api"
-      - "traefik.http.routers.backend-secure.entrypoints=https"
-      - "traefik.http.middlewares.backend-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader2.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.backend.middlewares=backend-rewrite,backend-https-redirect"
-      - "traefik.http.routers.backend-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-secure.tls=true"
+      - "traefik.http.routers.backend.middlewares=backend-rewrite"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
     build:
       context: ./containers/backend/
-      dockerfile: Dockerfile
+      dockerfile: rpi.Dockerfile
     depends_on:
       - traefik
       - valhalla
@@ -111,7 +98,6 @@ services:
     restart: unless-stopped
     command: uvicorn api:app --reload --host 0.0.0.0 --port 80
     volumes:
-      # Read-only volume with source code
       - ./containers/backend/src:/app/:rw
       - /etc/localtime:/etc/localtime
 
@@ -119,31 +105,19 @@ services:
     environment:
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
       TZ: 'Europe/Bucharest'
-    image: traefik:latest
+    image: arm64v8/traefik:latest
     networks:
       - traefik
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
     restart: unless-stopped
     security_opt:
       - no-new-privileges=true
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/certs
       - ./containers/traefik/traefik.yml:/traefik.yml:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && PathPrefix(`/dashboard`)"
-      - "traefik.http.middlewares.traefik-rewrite.stripprefix.prefixes=/dashboard"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-rewrite"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/dashboard`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
