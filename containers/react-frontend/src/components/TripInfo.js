@@ -96,6 +96,9 @@ export const TripInfo = () => {
       );
     }
 
+                // <div>
+                //   {`${Math.floor(mapInfo.trip.legs[0].duration / 60)} min`}
+                // </div>
     return (
       <div className='trip-container'>
         <div className='trip-left-menu'>
@@ -104,9 +107,6 @@ export const TripInfo = () => {
               <>
                 <div>
                   {`${Math.floor(mapInfo.trip.legs[0].distance / 1000)} KM`}
-                </div>
-                <div>
-                  {`${Math.floor(mapInfo.trip.legs[0].duration / 60)} min`}
                 </div>
               </>
             ) : null}

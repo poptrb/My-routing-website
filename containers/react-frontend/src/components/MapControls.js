@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import GeolocateControl from '../control/GeolocationControlWrapper';
-import { GeocoderControlMemo } from '../control/GeocoderControl';
 
 export const MapControls = ({ mapInfo, geoControlRef, onGeolocate }) => {
   const isInBrowsingMode = mapInfo.tripMenu.state === 'browsing' ||
@@ -22,7 +21,6 @@ export const MapControls = ({ mapInfo, geoControlRef, onGeolocate }) => {
 
   return (
     <>
-      {isInBrowsingMode && <GeocoderControlMemo {...geocoderControlProps} />}
       <GeolocateControl
         ref={geoControlRef}
         position={"left"}

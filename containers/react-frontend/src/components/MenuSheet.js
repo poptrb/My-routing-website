@@ -1,27 +1,34 @@
-import { useRef, useState, useEffect } from 'react';
+// src/components/MenuSheet.js
+import React, { useRef, useState, useEffect } from 'react';
 import { Sheet } from 'react-modal-sheet';
 import { useMapInfo } from '../context/UserLocationProvider';
 import { TripInfo } from './TripInfo';
+import { APIProvider } from "@vis.gl/react-google-maps";
+import GooglePlacesAutocomplete from './GooglePlacesAutocomplete';
 
 export const MenuSheet = () => {
   const mapInfo = useMapInfo();
-  const ref = useRef();
+  const sheetRef = useRef();
   const [open, setOpen] = useState(false);
-  const [snapPoints, setSnapPoints] = useState([0.4, 0.2]);
+  const [snapPoints, setSnapPoints] = useState([0.25]);
   const [disableDrag, setDisableDrag] = useState(true);
   const [initialSnap, setInitialSnap] = useState(0);
 
-  // Update sheet behavior based on mapInfo changes
+  // Update sheet configuration based on app state
   useEffect(() => {
     if (!mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
-      setOpen(false);
+      setOpen(true);
+      // Set snap points where 1 is 100% of screen height
+      setSnapPoints([1, 0.3]);
+      setDisableDrag(false);
+      setInitialSnap(1); // Start small (at 0.2 height)
       return;
     }
 
     if (mapInfo.destinationLocation &&
         (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route')) {
       setOpen(true);
-      setSnapPoints([0.35, 0.2]);
+      setSnapPoints([0.2]);
       setDisableDrag(true);
       setInitialSnap(0);
       return;
@@ -31,35 +38,68 @@ export const MenuSheet = () => {
       setOpen(true);
       setSnapPoints([0.5, 0.25, 0.2]);
       setDisableDrag(false);
-      setInitialSnap(1); // Start at 30% (index 1)
+      setInitialSnap(1);
       return;
     }
   }, [mapInfo.destinationLocation, mapInfo.tripMenu.state]);
 
+  // Simple onSnap handler
   const onSnap = (index) => {
     console.log('> Current snap point index:', index);
   };
 
-  // When in driving mode, prevent sheet from closing completely
+  // Handle click on input - expand the sheet to its maximum size
+  const handleInputClick = () => {
+    if (sheetRef.current) {
+      // Snap to the first snap point (0 index), which should be the largest size
+      sheetRef.current.snapTo(0);
+
+      console.log("Input clicked, expanding sheet to maximum size");
+    }
+  };
+
+  // Handle place selection
+  const handlePlaceSelect = (place) => {
+    if (place && place.location) {
+      mapInfo.setDestinationLocation({
+        result: {
+          center: [
+            place.location.lng(),
+            place.location.lat()
+          ]
+        }
+      });
+    }
+  };
+
+  // Handle sheet close
   const handleClose = () => {
-    if (mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') {
-      ref.current?.snapTo(snapPoints.length - 1); // Snap to smallest point (20%)
+    if (mapInfo.tripMenu.state === 'driving' ||
+        mapInfo.tripMenu.state === 'driving-browsing' ||
+        mapInfo.tripMenu.state === 'browsing') {
+      if (sheetRef.current && snapPoints.length > 0) {
+        sheetRef.current.snapTo(snapPoints.length - 1);
+      }
     } else {
       setOpen(false);
     }
   };
 
+  // Handle back button
   const handleBack = () => {
     mapInfo.setDestinationLocation();
     mapInfo.setTripMenu({state: 'browsing'});
-    setOpen(false);
+
+    if (sheetRef.current && snapPoints.length > 0) {
+      sheetRef.current.snapTo(snapPoints.length - 1);
+    }
   };
 
   if (!open) return null;
 
   return (
     <Sheet
-      ref={ref}
+      ref={sheetRef}
       isOpen={open}
       onClose={handleClose}
       snapPoints={snapPoints}
@@ -69,10 +109,22 @@ export const MenuSheet = () => {
     >
       <Sheet.Container>
         <Sheet.Header disableDrag={disableDrag} />
-        <Sheet.Content
-          className="sheet-content"
-          style={{ paddingBottom: ref.current?.y }}
-        >
+        <Sheet.Content className="sheet-content">
+          {mapInfo.tripMenu.state === 'browsing' && !mapInfo.destinationLocation && mapInfo.userLocation && (
+            <div className="search-container">
+              <APIProvider
+                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+                libraries={["places"]}
+                authReferrerPolicy={"origin"}
+              >
+                <GooglePlacesAutocomplete
+                  onPlaceSelect={handlePlaceSelect}
+                  onSuggestionInputClick={handleInputClick}
+                />
+              </APIProvider>
+            </div>
+          )}
+
           {mapInfo.tripMenu.state === 'previewing-route' && (
             <div className="menu-controls">
               <button
@@ -86,8 +138,9 @@ export const MenuSheet = () => {
               <TripInfo />
             </div>
           )}
+
           {(mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') && (
-            <Sheet.Scroller draggableAt={"both"}>
+            <Sheet.Scroller draggableAt="both">
               <TripInfo />
             </Sheet.Scroller>
           )}
