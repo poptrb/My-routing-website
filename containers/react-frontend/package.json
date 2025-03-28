@@ -13,23 +13,25 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@vis.gl/react-google-maps": "^1.5.2",
     "@turf/turf": "^7.1.0",
     "axios": "^1.7.7",
     "create-react-app": "^5.0.1",
     "framer-motion": "^11.11.17",
     "geojson": "^0.5.0",
     "jwt-decode": "^4.0.0",
+    "lodash.debounce": "^4.0.8",
     "mapbox-gl": "^3.7.0",
     "maplibre-gl": "^4.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-map-gl": "^7.1.7",
+    "react-modal-sheet": "^3.3.0",
     "react-query": "^3.39.3",
     "react-router": "^6.27.0",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
-    "react-modal-sheet": "^3.3.0",
     "styled-components": "^6.1.13",
     "web-vitals": "^2.1.4"
   },
@@ -56,5 +58,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
 }

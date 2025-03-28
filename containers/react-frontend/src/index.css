@@ -20,6 +20,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
 }
 
 .toaster {
@@ -522,4 +523,26 @@ code {
 
 .trip-controls button:active {
   transform: translateY(1px);
+}
+
+.autocomplete-container {
+  padding: 16px;
+  width: 100%;
+}
+
+.autocomplete-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 20px;
 }
