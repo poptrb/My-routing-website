@@ -41,6 +41,11 @@ body {
   justify-content: space-around;
 }
 
+.trip-instructions-maneuvers {
+  padding-left: 15px;
+  padding: 5px;
+}
+
 .trip-instructions-symbol {
   display: flex;
   align-items: center;
