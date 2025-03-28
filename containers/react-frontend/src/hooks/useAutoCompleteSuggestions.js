@@ -29,6 +29,7 @@ export function useAutoCompleteSuggestions(inputString, requestOptions = {}) {
 
         service.fetchAutocompleteSuggestions(request)
           .then(result => {
+            console.log("Fetching Google Autocomplete Places suggestions");
             setSuggestions(result.suggestions || []);
             setIsLoading(false);
           })
