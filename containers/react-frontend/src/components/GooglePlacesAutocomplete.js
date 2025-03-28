@@ -10,7 +10,12 @@ function GooglePlacesAutocomplete({ onPlaceSelect, onSuggestionInputClick }) {
   const clickedRef = useRef(false);
 
   // Get suggestions using our hook
-  const { suggestions, resetSession } = useAutoCompleteSuggestions(inputValue);
+  const { suggestions, resetSession } = useAutoCompleteSuggestions(
+    inputValue, {
+      language: "ro-RO",
+      region: "ro",
+    }
+   );
 
   // Handle input changes
   const handleInput = (event) => {
@@ -26,6 +31,14 @@ function GooglePlacesAutocomplete({ onPlaceSelect, onSuggestionInputClick }) {
       setTimeout(() => {
         clickedRef.current = false;
       }, 1000);
+    }
+  };
+
+  // Handle input focus specifically
+  const handleInputFocus = () => {
+    // Always expand sheet on focus
+    if (onSuggestionInputClick) {
+      onSuggestionInputClick();
     }
   };
 
@@ -60,6 +73,7 @@ function GooglePlacesAutocomplete({ onPlaceSelect, onSuggestionInputClick }) {
         className="autocomplete-input"
         value={inputValue}
         onChange={handleInput}
+        onFocus={handleInputFocus}
         placeholder="Search for a place"
         autoComplete="off"
       />

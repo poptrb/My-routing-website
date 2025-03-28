@@ -18,21 +18,15 @@ export const MenuSheet = () => {
   useEffect(() => {
     if (!mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
       setOpen(true);
+      // Set snap points where 1 is 100% of screen height
       setSnapPoints([1, 0.3]);
       setDisableDrag(false);
-      setInitialSnap(1); // Start small
+      setInitialSnap(1); // Start small (at 0.2 height)
       return;
     }
 
-    if (mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
-      setOpen(true);
-      setSnapPoints([0.35, 0.2]);
-      setDisableDrag(true);
-      setInitialSnap(0);
-      return;
-    }
-
-    if (mapInfo.destinationLocation && mapInfo.tripMenu.state === 'previewing-route') {
+    if (mapInfo.destinationLocation &&
+        (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route')) {
       setOpen(true);
       setSnapPoints([0.25]);
       setDisableDrag(true);
@@ -54,10 +48,13 @@ export const MenuSheet = () => {
     console.log('> Current snap point index:', index);
   };
 
-  // Handle click on input - simplified to just expand the sheet
+  // Handle click on input - expand the sheet to its maximum size
   const handleInputClick = () => {
     if (sheetRef.current) {
+      // Snap to the first snap point (0 index), which should be the largest size
       sheetRef.current.snapTo(0);
+
+      console.log("Input clicked, expanding sheet to maximum size");
     }
   };
 
