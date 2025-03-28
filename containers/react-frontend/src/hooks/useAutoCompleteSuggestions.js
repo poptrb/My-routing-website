@@ -1,75 +1,95 @@
-import {useEffect, useRef, useState, useCallback} from 'react';
+// src/hooks/useAutoCompleteSuggestions.js
+import { useState, useEffect, useRef } from 'react';
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import debounceFn from "lodash.debounce";
+import debounce from "lodash.debounce";
 
-export function useAutoCompleteSuggestions(
-  inputString,
-  requestOptions = {},
-  debounce = 1000,
-) {
+export function useAutoCompleteSuggestions(inputString, requestOptions = {}) {
   const placesLib = useMapsLibrary('places');
-
-  // stores the current sessionToken
-  const sessionTokenRef =
-    useRef(null);
-
-  // the suggestions based on the specified input
   const [suggestions, setSuggestions] = useState([]);
-
-  // indicates if there is currently an incomplete request to the places API
   const [isLoading, setIsLoading] = useState(false);
 
-  // once the PlacesLibrary is loaded and whenever the input changes, a query
-  // is sent to the Autocomplete Data API.
+  // Use refs to maintain stable identity across renders
+  const sessionTokenRef = useRef(null);
+  const debounceFuncRef = useRef(null);
 
-  const debouncedPlacePredictions =  useCallback(
-    debounceFn((args) => {
-      console.log('Called autocompleter')
-      args.suggestionService.fetchAutocompleteSuggestions(args.request).then(res => {
-        args.setSuggestions(res.suggestions);
-        args.setIsLoading(false);
-      })
-    }, debounce),
-  [debounce]);
-
+  // Initialize the debounce function once
   useEffect(() => {
+    if (!debounceFuncRef.current) {
+      debounceFuncRef.current = debounce((input, token, service) => {
+        if (!input || !service) {
+          setIsLoading(false);
+          return;
+        }
+
+        const request = {
+          ...requestOptions,
+          input: input,
+          sessionToken: token
+        };
+
+        service.fetchAutocompleteSuggestions(request)
+          .then(result => {
+            setSuggestions(result.suggestions || []);
+            setIsLoading(false);
+          })
+          .catch(error => {
+            console.error("Error fetching suggestions:", error);
+            setSuggestions([]);
+            setIsLoading(false);
+          });
+      }, 500); // 300ms is a good balance for typing
+    }
+
+    // Cleanup function
+    return () => {
+      if (debounceFuncRef.current) {
+        debounceFuncRef.current.cancel();
+      }
+    };
+  }, [requestOptions]);
+
+  // Handle input changes
+  useEffect(() => {
+    // Can't do anything without places library
     if (!placesLib) return;
 
-    const {AutocompleteSessionToken, AutocompleteSuggestion} = placesLib;
+    const { AutocompleteSessionToken, AutocompleteSuggestion } = placesLib;
 
-    // Create a new session if one doesn't already exist. This has to be reset
-    // after `fetchFields` for one of the returned places is called by calling
-    // the `resetSession` function returned from this hook.
+    // Create a new session token if needed
     if (!sessionTokenRef.current) {
       sessionTokenRef.current = new AutocompleteSessionToken();
     }
 
-    const request = {
-      ...requestOptions,
-      input: inputString,
-      sessionToken: sessionTokenRef.current
-    };
+    // Clear suggestions if input is empty
+    // if (!inputString) {
+    //   setSuggestions([]);
+    //   return;
+    // }
 
-    if (inputString === '') {
-      if (suggestions.length) setSuggestions([]);
-      return;
-    }
-
+    // Set loading state and fetch suggestions
     setIsLoading(true);
-    debouncedPlacePredictions({
-      request: request,
-      suggestionService: AutocompleteSuggestion,
-      setSuggestions: setSuggestions,
-      setIsLoading: setIsLoading
-    });
-  }, [placesLib, inputString, requestOptions, suggestions, debouncedPlacePredictions]);
+
+    // Call debounced function
+    debounceFuncRef.current(
+      inputString,
+      sessionTokenRef.current,
+      AutocompleteSuggestion
+    );
+
+  }, [inputString, placesLib]);
+
+  // Reset function
+  const resetSession = () => {
+    sessionTokenRef.current = null;
+    setSuggestions([]);
+    if (debounceFuncRef.current) {
+      debounceFuncRef.current.cancel();
+    }
+  };
 
   return {
     suggestions,
     isLoading,
-    resetSession: () => {
-      sessionTokenRef.current = null;
-      setSuggestions([]);
-    }
+    resetSession
   };
 }

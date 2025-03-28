@@ -1,49 +1,40 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+// src/components/MenuSheet.js
+import React, { useRef, useState, useEffect } from 'react';
 import { Sheet } from 'react-modal-sheet';
 import { useMapInfo } from '../context/UserLocationProvider';
 import { TripInfo } from './TripInfo';
 import { APIProvider } from "@vis.gl/react-google-maps";
-
 import GooglePlacesAutocomplete from './GooglePlacesAutocomplete';
 
 export const MenuSheet = () => {
   const mapInfo = useMapInfo();
-  const ref = useRef();
+  const sheetRef = useRef();
   const [open, setOpen] = useState(false);
   const [snapPoints, setSnapPoints] = useState([0.25]);
   const [disableDrag, setDisableDrag] = useState(true);
   const [initialSnap, setInitialSnap] = useState(0);
 
-  const onSuggestionInputClick = useCallback((evt) => {
-      ref.current?.snapTo(snapPoints[0]);
-  }, [snapPoints])
-
-  const onPlaceSelect = useCallback((evt) => {
-    console.log(evt.location);
-    mapInfo.setDestinationLocation({
-      result: {
-        center: [
-          evt.location.lng(),
-          evt.location.lat()
-        ]
-      }
-    })
-  }, [mapInfo]);
-
-  // Update sheet behavior based on mapInfo changes
+  // Update sheet configuration based on app state
   useEffect(() => {
     if (!mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
-      setOpen(true); // Always show the sheet in browsing mode for search
-      setSnapPoints([1, 0.35, 0.2]);
+      setOpen(true);
+      setSnapPoints([1, 0.3]);
       setDisableDrag(false);
-      setInitialSnap(1); // Start at 20% height
+      setInitialSnap(1); // Start small
       return;
     }
 
-    if (mapInfo.destinationLocation &&
-        (mapInfo.tripMenu.state === 'browsing' || mapInfo.tripMenu.state === 'previewing-route')) {
+    if (mapInfo.destinationLocation && mapInfo.tripMenu.state === 'browsing') {
       setOpen(true);
       setSnapPoints([0.35, 0.2]);
+      setDisableDrag(true);
+      setInitialSnap(0);
+      return;
+    }
+
+    if (mapInfo.destinationLocation && mapInfo.tripMenu.state === 'previewing-route') {
+      setOpen(true);
+      setSnapPoints([0.25]);
       setDisableDrag(true);
       setInitialSnap(0);
       return;
@@ -53,38 +44,65 @@ export const MenuSheet = () => {
       setOpen(true);
       setSnapPoints([0.5, 0.25, 0.2]);
       setDisableDrag(false);
-      setInitialSnap(1); // Start at 25% (index 1)
+      setInitialSnap(1);
       return;
     }
   }, [mapInfo.destinationLocation, mapInfo.tripMenu.state]);
 
+  // Simple onSnap handler
   const onSnap = (index) => {
     console.log('> Current snap point index:', index);
   };
 
-  // When in driving mode, prevent sheet from closing completely
+  // Handle click on input - simplified to just expand the sheet
+  const handleInputClick = () => {
+    if (sheetRef.current) {
+      sheetRef.current.snapTo(0);
+    }
+  };
+
+  // Handle place selection
+  const handlePlaceSelect = (place) => {
+    if (place && place.location) {
+      mapInfo.setDestinationLocation({
+        result: {
+          center: [
+            place.location.lng(),
+            place.location.lat()
+          ]
+        }
+      });
+    }
+  };
+
+  // Handle sheet close
   const handleClose = () => {
-    if (mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') {
-      ref.current?.snapTo(snapPoints.length - 1); // Snap to smallest point (20%)
-    } else if (mapInfo.tripMenu.state === 'browsing') {
-      ref.current?.snapTo(snapPoints.length - 1); // Just snap to smallest in browsing too
+    if (mapInfo.tripMenu.state === 'driving' ||
+        mapInfo.tripMenu.state === 'driving-browsing' ||
+        mapInfo.tripMenu.state === 'browsing') {
+      if (sheetRef.current && snapPoints.length > 0) {
+        sheetRef.current.snapTo(snapPoints.length - 1);
+      }
     } else {
       setOpen(false);
     }
   };
 
+  // Handle back button
   const handleBack = () => {
     mapInfo.setDestinationLocation();
     mapInfo.setTripMenu({state: 'browsing'});
-    ref.current?.snapTo(snapPoints.length - 1); // Snap to smallest point when going back to browsing
+
+    if (sheetRef.current && snapPoints.length > 0) {
+      sheetRef.current.snapTo(snapPoints.length - 1);
+    }
   };
 
   if (!open) return null;
 
-
   return (
     <Sheet
-      ref={ref}
+      ref={sheetRef}
       isOpen={open}
       onClose={handleClose}
       snapPoints={snapPoints}
@@ -94,23 +112,18 @@ export const MenuSheet = () => {
     >
       <Sheet.Container>
         <Sheet.Header disableDrag={disableDrag} />
-        <Sheet.Content
-          className="sheet-content"
-          style={{ paddingBottom: ref.current?.y }}
-        >
+        <Sheet.Content className="sheet-content">
           {mapInfo.tripMenu.state === 'browsing' && !mapInfo.destinationLocation && mapInfo.userLocation && (
             <div className="search-container">
               <APIProvider
                 apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
                 libraries={["places"]}
                 authReferrerPolicy={"origin"}
-                solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
               >
                 <GooglePlacesAutocomplete
-                  onPlaceSelect={onPlaceSelect}
-                  onSuggestionInputClick={onSuggestionInputClick}
+                  onPlaceSelect={handlePlaceSelect}
+                  onSuggestionInputClick={handleInputClick}
                 />
-
               </APIProvider>
             </div>
           )}
@@ -130,7 +143,7 @@ export const MenuSheet = () => {
           )}
 
           {(mapInfo.tripMenu.state === 'driving' || mapInfo.tripMenu.state === 'driving-browsing') && (
-            <Sheet.Scroller draggableAt={"both"}>
+            <Sheet.Scroller draggableAt="both">
               <TripInfo />
             </Sheet.Scroller>
           )}
