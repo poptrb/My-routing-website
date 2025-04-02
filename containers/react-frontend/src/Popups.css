@@ -1,0 +1,139 @@
+/* Add this to your index.css or create a new CSS file for mapbox popup styling */
+
+/* Styling for Mapbox popups - make them bubble-like with larger fonts */
+
+.mapboxgl-popup {
+  animation: popupFadeIn 0.5s ease-out;
+  max-width: 280px !important;
+  z-index: 5;
+}
+
+/* Animation keyframes for popup appearance */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Main popup container styling */
+.mapboxgl-popup-content {
+  animation: popupContentScale 0.5s ease-out;
+  padding: 16px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+  background: white !important;
+}
+
+@keyframes popupContentScale {
+  from {
+    transform: scale(0.85);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Popup tip/arrow styling - make it match the bubble look */
+.mapboxgl-popup-tip {
+  border-top-color: white !important;
+  border-width: 10px !important;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* For bottom positioned popups */
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: white !important;
+}
+
+/* Close button styling */
+.mapboxgl-popup-close-button {
+  font-size: 22px !important;
+  color: #666 !important;
+  right: 10px !important;
+  top: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  transition: color 0.2s;
+}
+
+.mapboxgl-popup-close-button:hover {
+  color: #333 !important;
+  background: transparent !important;
+}
+
+/* Report popup specific styling */
+.report-popup-header {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  color: #333 !important;
+}
+
+.report-popup-container {
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  color: #666 !important;
+}
+
+/* Hold location popup - make it match the same style */
+.hold-location-popup .mapboxgl-popup-content {
+  padding: 18px !important;
+}
+
+.hold-popup-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+  text-align: center !important;
+}
+
+.hold-popup-container {
+  padding: 0 !important;
+}
+
+.hold-popup-container-btn {
+  gap: 12px !important;
+  margin-top: 8px !important;
+}
+
+.hold-popup-drive-btn,
+.hold-popup-back-btn {
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Media queries for better mobile experience */
+@media (max-width: 768px) {
+  .mapboxgl-popup {
+    max-width: 300px !important; /* Even wider on mobile */
+  }
+
+  .mapboxgl-popup-content {
+    padding: 20px !important;
+  }
+
+  .report-popup-header {
+    font-size: 20px !important;
+  }
+
+  .report-popup-container {
+    font-size: 17px !important;
+  }
+
+  .hold-popup-title {
+    font-size: 20px !important;
+  }
+
+  .hold-popup-drive-btn,
+  .hold-popup-back-btn {
+    padding: 14px 18px !important;
+    font-size: 17px !important;
+  }
+}

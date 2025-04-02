@@ -1,0 +1,105 @@
+/* Add this to your index.css or create a new CSS file for autocomplete styling */
+
+.autocomplete-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+  position: relative;
+  padding: 1px;
+  width: 100%;
+}
+
+.autocomplete-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  padding: 14px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.2s;
+  font-size: 20px;
+}
+
+.autocomplete-input:focus {
+  outline: none;
+  border-color: #4682B4;
+  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.2);
+}
+
+.autocomplete-suggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  position: absolute;
+  top: calc(100% + 8px);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  z-index: 1000;
+  max-height: 600px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  width: 85%;
+
+  /* Animation for appearing */
+  animation: fadeIn 0.5s ease-out;
+  transform-origin: top center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.autocomplete-suggestions-item {
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 19px; /* Larger font for mobile readability */
+  color: #333;
+  margin: 6px 8px;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.autocomplete-suggestions-item:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.autocomplete-loading {
+  text-align: center;
+  padding: 12px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .autocomplete-suggestions-item {
+    font-size: 19px; /* Keep the font size large on mobile */
+    padding: 16px; /* Add more padding on mobile for easier touch targets */
+  }
+
+  .autocomplete-input {
+    font-size: 16px;
+    padding: 16px;
+  }
+}
