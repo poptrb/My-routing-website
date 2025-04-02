@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'SFProDisplay';
+  src: url('./SFPRODISPLAYREGULAR.OTF') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SFProDisplay';
+  src: url('./SFPRODISPLAYMEDIUM.OTF') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SFProDisplay';
+  src: url('./SFPRODISPLAYMEDIUM.OTF') format('opentype');
+  font-weight: bold;
+  font-style: title;
+  font-display: swap;
+}
+
