@@ -1,17 +1,42 @@
-// src/hooks/useMapHandlers.js - Updated with hold functionality
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { useMapInfo } from '../context/UserLocationProvider';
+import { useMapMatching } from '../hooks/useMapMatching';
+import toast from 'react-hot-toast';
 
 export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
-  // State to track the hold popup visibility and position
+  // Get the existing map handlers
   const [holdPopupVisible, setHoldPopupVisible] = useState(false);
   const [holdPosition, setHoldPosition] = useState(null);
   const mapInfo = useMapInfo();
 
-  // Refs to track press timer and mouse state
+  // Add map matching functionality
+  const {
+    matchedData,
+    isMapMatchingPending,
+    deviationDetected
+  } = useMapMatching();
+
   const pressTimerRef = useRef(null);
   const isPressingRef = useRef(false);
   const isPressHoldRef = useRef(false);
+  const lastGeolocateTimestampRef = useRef(null);
+
+  // Notify user when route deviation is detected
+  useEffect(() => {
+    if (deviationDetected) {
+      toast('Recalculating route...', {
+        duration: 5000,
+        position: 'top-center',
+      });
+    }
+  }, [deviationDetected]);
+
+  // Track the matched data for debugging
+  useEffect(() => {
+    if (matchedData && mapInfo.tripMenu?.state === 'driving') {
+      console.log('Map matched data:', matchedData);
+    }
+  }, [matchedData, mapInfo.tripMenu?.state]);
 
   const onMapLoad = useCallback(async (evt) => {
     await new Promise(r => setTimeout(r, 1200));
@@ -23,6 +48,39 @@ export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
   const onMapMove = useCallback((evt) => {
     setViewState(evt.viewState);
   }, [setViewState]);
+
+  // Enhanced onGeolocate handler that captures all position data
+  const onGeolocate = useCallback(async (evt) => {
+    console.log(`Geolocation result`, evt);
+
+    // Only process if we have a valid position
+    if (evt && evt.coords) {
+      // Create an enhanced position object with all available data
+      const enhancedPosition = {
+        coords: {
+          latitude: evt.coords.latitude,
+          longitude: evt.coords.longitude,
+          accuracy: evt.coords.accuracy || 0,
+          altitude: evt.coords.altitude,
+          altitudeAccuracy: evt.coords.altitudeAccuracy,
+          heading: evt.coords.heading,
+          speed: evt.coords.speed
+        },
+        timestamp: evt.timestamp || Date.now()
+      };
+
+      // Store the timestamp of this geolocation event
+      lastGeolocateTimestampRef.current = Date.now();
+
+      // Update the user location in our context
+      mapInfo.setUserLocation(enhancedPosition);
+    }
+
+    // Adjust the map state based on current tripMenu state
+    if (mapInfo.tripMenu?.state === 'driving-browsing') {
+      mapInfo.setTripMenu({state: 'driving'});
+    }
+  }, [mapInfo]);
 
   // Start timer for press and hold
   const startPressTimer = useCallback((evt) => {
@@ -62,9 +120,8 @@ export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
     if (!isPressHoldRef.current) {
       console.log('Regular click detected:', evt);
       // Close any popups
-        setHoldPopupVisible(false);
-        setHoldPosition(null);
-      // Do regular click handling here if needed
+      setHoldPopupVisible(false);
+      setHoldPosition(null);
     }
 
     // Reset press tracking
@@ -134,15 +191,6 @@ export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
     // Handle drag end if needed
   }, []);
 
-  const onGeolocate = useCallback(async (evt) => {
-    console.log(`Geolocation result`, evt);
-    mapInfo.setUserLocation(evt);
-
-    if (mapInfo.tripMenu.state === 'driving-browsing') {
-      mapInfo.setTripMenu({state: 'driving'});
-    }
-  }, [mapInfo]);
-
   const onMapIdle = useCallback((evt) => {
     if (mapInfo.tripMenu.event === 'trigger-geolocate') {
       console.log('onMapIdle with trigger-geolocate');
@@ -166,6 +214,10 @@ export const useMapHandlers = ({ mapRef, geoControlRef, setViewState }) => {
     holdPopupVisible,
     holdPosition,
     onCloseHoldPopup,
-    onDriveToHoldLocation
+    onDriveToHoldLocation,
+    // New props related to map matching
+    matchedData,
+    isMapMatchingPending,
+    deviationDetected
   };
 };

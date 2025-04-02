@@ -1,6 +1,6 @@
-// src/components/MapView.js - Updated with hold functionality
-import React, { useRef, useState } from 'react';
-import Map from 'react-map-gl';
+// Enhanced MapView with Map Matching
+import React, { useRef, useState, useEffect } from 'react';
+import Map, { Source, Layer } from 'react-map-gl';
 import { Toaster } from 'react-hot-toast';
 
 import { useMapInfo } from '../context/UserLocationProvider';
@@ -8,6 +8,8 @@ import { MapControls } from './MapControls';
 import { MapLayers } from './MapLayers';
 import { useMapHandlers } from '../hooks/useMapHandlers';
 import { HoldLocationPopup } from './HoldLocationPopup';
+import { MapMatchedLayer } from './MapMatchedLayer';
+
 
 export const MapView = () => {
   const mapRef = useRef();
@@ -35,13 +37,17 @@ export const MapView = () => {
     holdPopupVisible,
     holdPosition,
     onCloseHoldPopup,
-    onDriveToHoldLocation
+    onDriveToHoldLocation,
+    matchedData,
+    deviationDetected
   } = useMapHandlers({
     mapRef,
     geoControlRef,
     mapInfo,
     setViewState
   });
+
+  // Create a GeoJSON object for the map-matched path
 
   return (
     <>
@@ -57,7 +63,6 @@ export const MapView = () => {
         reuseMaps={true}
         id="onlyMap"
         style={{height: "100vh"}}
-        // mapStyle="mapbox://styles/mapbox/navigation-night-v1"
         mapStyle="mapbox://styles/mapbox/standard"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onLoad={onMapLoad}
@@ -79,7 +84,9 @@ export const MapView = () => {
           onGeolocate={onGeolocate}
         />
 
-        <MapLayers mapInfo={mapInfo} />
+        <MapLayers />
+        <MapMatchedLayer matchedData={matchedData} />
+
 
         {/* Render the hold popup when visible */}
         {holdPopupVisible && holdPosition && (

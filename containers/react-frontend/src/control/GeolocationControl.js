@@ -11,51 +11,76 @@ export function extend(dest,  ...sources) {
 }
 
 export class MyGeolocateControl extends GeolocateControl {
-  _updateCamera(position) {
-        const center = new LngLat(position.coords.longitude, position.coords.latitude);
-        const radius = position.coords.accuracy;
-        const bearing = this._heading || this._map.getBearing();
-        const pitch = convertAndMapSpeed(position.coords.speed)
-        const options = extend({bearing, pitch, duration: 750}, this.options.fitBoundsOptions);
+  // Enhanced position capture to record all geolocation data
+  _onSuccess(position) {
+    // Call the original implementation
+    super._onSuccess(position);
 
-        this._map.fitBounds(center.toBounds(radius), options, {
-            geolocateSource: true // tag this camera change so it won't cause the control to change to background state
-        });
+    // Store the complete position object for later use
+    this._lastKnownPosition = position;
+
+    // Emit a custom event with all position data
+    if (this._map) {
+      this._map.fire('geolocate', {
+        coords: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          altitude: position.coords.altitude,
+          altitudeAccuracy: position.coords.altitudeAccuracy,
+          heading: position.coords.heading,
+          speed: position.coords.speed
+        },
+        timestamp: position.timestamp
+      });
     }
+  }
 
-// Modified _onDeviceOrientation method
+  _updateCamera(position) {
+    const center = new LngLat(position.coords.longitude, position.coords.latitude);
+    const radius = position.coords.accuracy;
+    const bearing = this._heading || this._map.getBearing();
+    const pitch = convertAndMapSpeed(position.coords.speed)
+    const options = extend({bearing, pitch, duration: 750}, this.options.fitBoundsOptions);
+
+    this._map.fitBounds(center.toBounds(radius), options, {
+      geolocateSource: true // tag this camera change so it won't cause the control to change to background state
+    });
+  }
+
+  // Modified _onDeviceOrientation method
   _onDeviceOrientation(deviceOrientationEvent) {
     // absolute is true if the orientation data is provided as the difference between the Earth's coordinate frame and the device's coordinate frame, or false if the orientation data is being provided in reference to some arbitrary, device-determined coordinate frame.
     if (this._userLocationDotMarker) {
-        let headingChanged = false;
-        const oldHeading = this._heading;
+      let headingChanged = false;
+      const oldHeading = this._heading;
 
-        if (deviceOrientationEvent.webkitCompassHeading) {
-            // Safari
-            this._heading = deviceOrientationEvent.webkitCompassHeading;
-            headingChanged = oldHeading !== this._heading;
-        } else if (deviceOrientationEvent.absolute === true) {
-            // non-Safari alpha increases counter clockwise around the z axis
-            this._heading = deviceOrientationEvent.alpha * -1;
-            headingChanged = oldHeading !== this._heading;
-        }
+      if (deviceOrientationEvent.webkitCompassHeading) {
+        // Safari
+        this._heading = deviceOrientationEvent.webkitCompassHeading;
+        headingChanged = oldHeading !== this._heading;
+      } else if (deviceOrientationEvent.absolute === true) {
+        // non-Safari alpha increases counter clockwise around the z axis
+        this._heading = deviceOrientationEvent.alpha * -1;
+        headingChanged = oldHeading !== this._heading;
+      }
 
-        this._updateMarkerRotationThrottled();
+      this._updateMarkerRotationThrottled();
 
-        // Only update camera if in ACTIVE_LOCK state, we have a position, and heading changed significantly
-        // Use a threshold to avoid constant small updates
-        if (headingChanged &&
-            this._watchState === 'ACTIVE_LOCK' &&
-            this._lastKnownPosition &&
-            Math.abs((oldHeading || 0) - (this._heading || 0)) > 1) {
+      // Only update camera if in ACTIVE_LOCK state, we have a position, and heading changed significantly
+      // Use a threshold to avoid constant small updates
+      if (headingChanged &&
+          this._watchState === 'ACTIVE_LOCK' &&
+          this._lastKnownPosition &&
+          Math.abs((oldHeading || 0) - (this._heading || 0)) > 1) {
 
-            // Instead of directly manipulating the map, simulate a position update
-            // with the same position but new heading
-            const simulatedPosition = this._lastKnownPosition;
+        // Instead of directly manipulating the map, simulate a position update
+        // with the same position but new heading
+        const simulatedPosition = this._lastKnownPosition;
 
-            // This will reuse all the existing control flow with geolocateSource properly set
-            this._updateCamera(simulatedPosition);
-        }
+        // This will reuse all the existing control flow with geolocateSource properly set
+        this._updateCamera(simulatedPosition);
+      }
     }
-}
+  }
 }

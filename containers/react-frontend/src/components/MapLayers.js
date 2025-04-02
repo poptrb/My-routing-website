@@ -2,8 +2,11 @@
 import React from 'react';
 import { RouteLineLayer } from './RouteLineLayer';
 import { RouteNearbyReportLayer } from './RouteNearbyReportLayer';
+import { useMapInfo } from '../context/UserLocationProvider';
 
-export const MapLayers = ({ mapInfo }) => {
+export const MapLayers = () => {
+  const mapInfo = useMapInfo();
+
   const hasRoutingData = mapInfo.userLocation && mapInfo.destinationLocation;
   if (mapInfo.userLocation && ! mapInfo.destinationLocation) {
     return (
