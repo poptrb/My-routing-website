@@ -7,7 +7,6 @@ const pointLayerStyle = {
   paint: {
     'circle-radius': 14,
     'circle-color': ' #3333ff',
-    'cirle-opacity-transition': {duration: 500},
   }
 };
 
@@ -110,6 +109,7 @@ export const RouteReportLayer = ({routeReportGeoJSON}) => {
   const markers = useMemo(() => {
     return routeReportGeoJSON?.features?.map((x,i) =>
       <Marker
+        className={"mapboxgl-marker-custom"}
         longitude={x.geometry.coordinates[0]}
         latitude={x.geometry.coordinates[1]}
         id={`marker-${i}`}
